@@ -79,8 +79,8 @@ public class PlayerMovement : MonoBehaviour //NetworkBehaviour
     public float yMouseSensitivity = 20.0f;
 
     // Camera rotations
-    private float rotX = 0.0f;
-    private float rotY = 0.0f;
+    private float mouseY = 0.0f;
+    private float mouseX = 0.0f;
     private Vector3 moveDirectionNorm = Vector3.zero;
     private Vector3 playerVelocity = Vector3.zero;
     private float playerTopVelocity = 0.0f;
@@ -265,11 +265,11 @@ public class PlayerMovement : MonoBehaviour //NetworkBehaviour
         }
 
         /* Camera rotation stuff, mouse controls this shit */
-        rotX -= Input.GetAxisRaw("Mouse Y") * xMouseSensitivity * mouseYaw;
-        //rotY += Input.GetAxisRaw("Mouse X") * yMouseSensitivity * mouseYaw
+        mouseY -= Input.GetAxisRaw("Mouse Y") * yMouseSensitivity * mouseYaw;
+        //mouseX += Input.GetAxisRaw("Mouse X") * xMouseSensitivity * mouseYaw
 
-        float rotDiffY = 0.0f;
-        rotDiffY += Input.GetAxisRaw("Mouse X") * yMouseSensitivity * mouseYaw;
+        float horizontalDifference = 0.0f;
+        horizontalDifference += Input.GetAxisRaw("Mouse X") * xMouseSensitivity * mouseYaw;
 
 
 
@@ -283,26 +283,26 @@ public class PlayerMovement : MonoBehaviour //NetworkBehaviour
         //if capped ->
         if (Mathf.Abs(torsoAngle) < turnrateAngle) // Is within limits
         {
-            rotY += Input.GetAxisRaw("Mouse X") * yMouseSensitivity * mouseYaw;
-            torsoAngle += Input.GetAxisRaw("Mouse X") * yMouseSensitivity * mouseYaw;
+            mouseX += Input.GetAxisRaw("Mouse X") * xMouseSensitivity * mouseYaw;
+            torsoAngle += Input.GetAxisRaw("Mouse X") * xMouseSensitivity * mouseYaw;
         }
         else // Capped turnrate
         {
-            if (Mathf.Abs(rotDiffY) < cappedTurnRate) // Is below maximum turning speed
+            if (Mathf.Abs(horizontalDifference) < cappedTurnRate) // Is below maximum turning speed
             {
-                rotY += Input.GetAxisRaw("Mouse X") * yMouseSensitivity * mouseYaw;
-                torsoAngle += Input.GetAxisRaw("Mouse X") * yMouseSensitivity * mouseYaw;
+                mouseX += Input.GetAxisRaw("Mouse X") * xMouseSensitivity * mouseYaw;
+                torsoAngle += Input.GetAxisRaw("Mouse X") * xMouseSensitivity * mouseYaw;
             }
             else
             {
-                if (rotDiffY > 0) // cap turn speed
+                if (horizontalDifference > 0) // cap turn speed
                 {
-                    rotY += cappedTurnRate;
+                    mouseX += cappedTurnRate;
                     torsoAngle += cappedTurnRate;
                 }
-                if (rotDiffY < 0)
+                if (horizontalDifference < 0)
                 {
-                    rotY -= cappedTurnRate;
+                    mouseX -= cappedTurnRate;
                     torsoAngle -= cappedTurnRate;
                 }
             }
@@ -332,15 +332,15 @@ public class PlayerMovement : MonoBehaviour //NetworkBehaviour
             }
         }
 
-        // Clamp the X rotation
-        if (rotX < -90)
-            rotX = -90;
-        else if (rotX > 90)
-            rotX = 90;
+        // Clamp the vertical rotation
+        if (mouseY < -90)
+            mouseY = -90;
+        else if (mouseY > 90)
+            mouseY = 90;
 
-        this.transform.rotation = Quaternion.Euler(0, rotY, 0); // Rotates the collider
-        playerView.rotation = Quaternion.Euler(rotX, rotY, 0); // Rotates the camera
         // X,Y,Z // Vertical, Horizontal, Tilt
+        this.transform.rotation = Quaternion.Euler(0, mouseX, 0); // Rotates the collider
+        playerView.rotation = Quaternion.Euler(mouseY, mouseX, 0); // Rotates the camera
 
         #endregion
 
