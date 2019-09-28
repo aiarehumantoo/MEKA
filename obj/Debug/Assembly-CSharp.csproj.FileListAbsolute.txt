@@ -1,0 +1,2 @@
+D:\Program Files\Unity projects\MEKA\obj\Debug\Assembly-CSharp.csprojAssemblyReference.cache
+D:\Program Files\Unity projects\MEKA\obj\Debug\Assembly-CSharp.csproj.CoreCompileInputs.cache
