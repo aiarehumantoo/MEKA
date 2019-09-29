@@ -89,7 +89,7 @@ public class PlayerMovement : MonoBehaviour //NetworkBehaviour
 
     float torsoAngle = 0.0f; // Angle between mech torso and legs. Used to limit turnrate
     float turnrateAngle = 45.0f; // At what point turnrate cap kicks in. (what was the word for this divider?)
-    float cappedTurnRate = 1.5f; //2.0f; // Max turn speed (when capped)
+    float cappedTurnRate = 1.5f; // Max turn speed (when capped)
     float legsResetRate = 1.5f; // How fast legs reset towards torso
                                 
     // use double?

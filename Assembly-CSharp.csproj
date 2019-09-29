@@ -62,10 +62,17 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\EffectExamples\Shared\Scripts\DecalDestroyer.cs" />
+    <Compile Include="Assets\EffectExamples\Shared\Scripts\GunAim.cs" />
+    <Compile Include="Assets\EffectExamples\Shared\Scripts\GunShoot.cs" />
+    <Compile Include="Assets\EffectExamples\Shared\Scripts\ParticleExamples.cs" />
+    <Compile Include="Assets\EffectExamples\Shared\Scripts\ParticleMenu.cs" />
+    <Compile Include="Assets\MEKA\Scripts\CockpitScript.cs" />
     <Compile Include="Assets\MEKA\Scripts\Crosshair.cs" />
     <Compile Include="Assets\MEKA\Scripts\Misc\Debugger.cs" />
     <Compile Include="Assets\MEKA\Scripts\Misc\Settings.cs" />
     <Compile Include="Assets\MEKA\Scripts\Player\PlayerMovement.cs" />
+    <None Include="Assets\EffectExamples\Shared\Shaders\SurfaceShader_VC.shader" />
     <Reference Include="Unity.ProGrids">
       <HintPath>D:/Program Files/Unity projects/MEKA/Library/ScriptAssemblies/Unity.ProGrids.dll</HintPath>
     </Reference>
