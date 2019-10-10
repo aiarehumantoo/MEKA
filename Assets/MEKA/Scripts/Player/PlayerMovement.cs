@@ -115,8 +115,10 @@ public class PlayerMovement : MonoBehaviour
         }
         else
         {
+            bool changedDirection = ((torsoAngle > 0.0f) && (wishTurn < 0.0f)) || ((torsoAngle > 0.0f) && (wishTurn < 0.0f)) ? true : false;
+
             // Torso cannot exceed max turn angle
-            if (Mathf.Abs(torsoAngle) < turnrateAngleThreshold)
+            if (Mathf.Abs(torsoAngle) < turnrateAngleThreshold || changedDirection)
             {
                 // Calc correct angle & direction for the turn
                 float sameSide = turnrateAngleThreshold - Mathf.Abs(torsoAngle);
