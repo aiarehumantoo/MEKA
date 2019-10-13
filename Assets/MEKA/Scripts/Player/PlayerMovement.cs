@@ -15,6 +15,10 @@ using UnityStandardAssets.Utility;  // Utility scripts
 // give speed + stop fiction?
 // Constant slowdown vs slowing after dodging
 
+// Boosting deacceleration based on degree of turn?
+
+// public, protected, private FIX
+
 //=============================================
 
 //Notes:
@@ -322,7 +326,7 @@ public class PlayerMovement : MonoBehaviour
             }
 
             if ( playerVelocity.magnitude <= /*walkSpeed*/ 7.10f) // when walking. velocity is bit wrong due to little bit of vertical velocity
-            {
+            {                                                           // + walk speed can momentarily exceed "cap"
                 // Apply walking effect to camera
                 CameraBobbing();
             }
