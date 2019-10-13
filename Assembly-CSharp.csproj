@@ -71,6 +71,7 @@
     <Compile Include="Assets\MEKA\Scripts\Weapons\RocketLauncher.cs" />
     <Compile Include="Assets\MEKA\Scripts\Weapons\WeaponTypes\Hitscan.cs" />
     <Compile Include="Assets\MEKA\Scripts\Weapons\WeaponTypes\Projectile.cs" />
+    <Compile Include="Assets\MEKA\Scripts\Weapons\WeaponTypes\SFX\Beam.cs" />
     <Compile Include="Assets\MEKA\Scripts\Weapons\WeaponTypes\Weapon.cs" />
     <Reference Include="Unity.ProGrids">
       <HintPath>D:/Program Files/Unity projects/MEKA/Library/ScriptAssemblies/Unity.ProGrids.dll</HintPath>

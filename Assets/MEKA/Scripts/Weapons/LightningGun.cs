@@ -13,14 +13,9 @@ using UnityEngine;
  */
 
 //**************************************************
-[RequireComponent(typeof(LineRenderer))]
-public class LightningGun : Hitscan
+public class LightningGun : Beam
 {
-    // SFX
-    private Vector3 beamStartPos; // Is used to sync beam start/end position in multiplayer
-    private Vector3 beamEndPos;
-    private float effectDisplayTime = 0.25f; // For how long beam is displayed
-    private LineRenderer beamLine;
+    
 
     //**************************************************
     protected override void Start()
@@ -31,8 +26,8 @@ public class LightningGun : Hitscan
         timeBetweenShots = 0.055f;
         maximumRange = 50.0f;
 
-        // Get line renderer component
-        beamLine = GetComponent<LineRenderer>();
+        useContinuousBeamSFX = true;
+        //beamMaterial = (Material)Resources.Load("BeamMaterial", typeof(Material));
 
         timer = timeBetweenShots; // Start without cooldown
     }
@@ -53,7 +48,7 @@ public class LightningGun : Hitscan
             // Reset the timer.
             timer = 0f;
 
-            base.Fire(); // Access Hitscan.Fire()
+            base.Fire(); // Access Hitscan.Fire()      
         }
     }
 }

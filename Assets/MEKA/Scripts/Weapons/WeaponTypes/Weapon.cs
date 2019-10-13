@@ -5,6 +5,9 @@ using UnityEngine;
 //**************************************************
 public struct WeaponInput
 {
+    public bool primaryFireButtonDown;
+    public bool secondaryFireButtonDown;
+
     public bool firePrimaryWeapon;
     public bool fireSecondaryWeapon;
 }
@@ -27,6 +30,9 @@ public class Weapon : MonoBehaviour
     //**************************************************
     private void GetWeaponInputs()
     {
+        weaponInput.primaryFireButtonDown = Input.GetButton("Fire1");
+        weaponInput.secondaryFireButtonDown = Input.GetButton("Fire2");
+
         weaponInput.firePrimaryWeapon = Input.GetButton("Fire1") && timer >= timeBetweenShots;
         weaponInput.fireSecondaryWeapon = Input.GetButton("Fire2") && timer >= timeBetweenShots;
     }
