@@ -2,14 +2,18 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+// TODO
+/*
+ * bool for buttondown here, move fireweapon to weapon itself
+ * 
+ * 
+ */
+
 //**************************************************
 public struct WeaponInput
 {
-    public bool primaryFireButtonDown;
-    public bool secondaryFireButtonDown;
-
-    public bool firePrimaryWeapon;
-    public bool fireSecondaryWeapon;
+    public bool fireButtonDown;
+    public bool fireWeapon;
 }
 
 //**************************************************
@@ -28,16 +32,6 @@ public class Weapon : MonoBehaviour
     public WeaponInput weaponInput;
 
     //**************************************************
-    private void GetWeaponInputs()
-    {
-        weaponInput.primaryFireButtonDown = Input.GetButton("Fire1");
-        weaponInput.secondaryFireButtonDown = Input.GetButton("Fire2");
-
-        weaponInput.firePrimaryWeapon = Input.GetButton("Fire1") && timer >= timeBetweenShots;
-        weaponInput.fireSecondaryWeapon = Input.GetButton("Fire2") && timer >= timeBetweenShots;
-    }
-
-    //**************************************************
     protected virtual void Start()
     {
         // Get camera
@@ -50,10 +44,12 @@ public class Weapon : MonoBehaviour
     //**************************************************
     protected virtual void Update()
     {
-        // Add the time since Update was last called to the timer.
-        timer += Time.deltaTime;
-
-        GetWeaponInputs();
+        // Use timer = -1.0f to disable counting. ie. during burst fire
+        if (timer >= 0.0f)
+        {
+            // Add the time since Update was last called to the timer.
+            timer += Time.deltaTime;
+        }
     }
 
     //**************************************************

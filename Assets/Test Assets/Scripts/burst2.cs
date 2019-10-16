@@ -2,9 +2,17 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+// TODO;
+/*
+ * Beam SFX displays burstfire wrong
+ * 
+ */
+
 //**************************************************
-public class RocketLauncher : Projectile
+public class burst2 : SecondaryWeapon
 {
+    int numberOfShots = 3;
+
     //**************************************************
     protected override void Start()
     {
@@ -31,12 +39,32 @@ public class RocketLauncher : Projectile
     //**************************************************
     protected override void Fire()
     {
-        if (weaponInput.fireWeapon)
+        if (weaponInput.fireWeapon && !outOfAmmo)
         {
-            // Reset the timer.
-            timer = 0f;
+            // Stop the timer
+            timer = -1.0f;
 
-            base.Fire(); // Access Projectile.Fire()
+            StartCoroutine(BurstFire());
         }
     }
+
+    //**************************************************
+    IEnumerator BurstFire()
+    {
+        for (int i = 0; i < numberOfShots; i++)
+        {
+            if (i == 0)
+            {
+                base.Fire();
+            }
+            else
+            {
+                yield return new WaitForSeconds(0.25f);
+                base.Fire();
+            }
+        }
+
+        // Reset the timer
+        timer = 0.0f;
+    }  
 }

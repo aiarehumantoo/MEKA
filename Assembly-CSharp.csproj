@@ -70,9 +70,14 @@
     <Compile Include="Assets\MEKA\Scripts\Weapons\LightningGun.cs" />
     <Compile Include="Assets\MEKA\Scripts\Weapons\RocketLauncher.cs" />
     <Compile Include="Assets\MEKA\Scripts\Weapons\WeaponTypes\Hitscan.cs" />
+    <Compile Include="Assets\MEKA\Scripts\Weapons\WeaponTypes\PrimaryWeapon.cs" />
     <Compile Include="Assets\MEKA\Scripts\Weapons\WeaponTypes\Projectile.cs" />
+    <Compile Include="Assets\MEKA\Scripts\Weapons\WeaponTypes\SecondaryWeapon.cs" />
     <Compile Include="Assets\MEKA\Scripts\Weapons\WeaponTypes\SFX\Beam.cs" />
     <Compile Include="Assets\MEKA\Scripts\Weapons\WeaponTypes\Weapon.cs" />
+    <Compile Include="Assets\Test Assets\Scripts\burst2.cs" />
+    <Compile Include="Assets\Test Assets\Scripts\burstfiretest.cs" />
+    <Compile Include="Assets\Test Assets\Scripts\testprojectile.cs" />
     <Reference Include="Unity.ProGrids">
       <HintPath>D:/Program Files/Unity projects/MEKA/Library/ScriptAssemblies/Unity.ProGrids.dll</HintPath>
     </Reference>

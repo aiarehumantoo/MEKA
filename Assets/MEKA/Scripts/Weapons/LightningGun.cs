@@ -7,16 +7,15 @@ using UnityEngine;
  * Better way to select if weapon is primary or secondary
  * Currently just firePrimaryWeapon || fireSecondaryWeapon in weapons code (below)
  * 
- * 
- * 
+ * Delay after firing before cooling starts?
+ * Reload that dissipates all heat (like that weapon in lawbreakers)
+ * Move heat/cooling to base > avoids dealing with able to fire or not
  * 
  */
 
 //**************************************************
 public class LightningGun : Beam
 {
-    
-
     //**************************************************
     protected override void Start()
     {
@@ -43,12 +42,13 @@ public class LightningGun : Beam
     //**************************************************
     protected override void Fire()
     {
-        if (weaponInput.firePrimaryWeapon)
+        if (weaponInput.fireWeapon && !overHeated)
         {
             // Reset the timer.
             timer = 0f;
 
-            base.Fire(); // Access Hitscan.Fire()      
+            base.Fire(); // Access Hitscan.Fire()
         }
     }
+
 }

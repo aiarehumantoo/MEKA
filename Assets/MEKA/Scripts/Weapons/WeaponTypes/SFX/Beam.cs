@@ -7,20 +7,22 @@ using UnityEngine;
  * Configure beam settings in start rather than in editor
  * Beam startpos is at guns barrel
  * 
- * 
- * 
+ * SFX should use weapon firing to update instead of just mouse1
+ * ie. weapon overheating
  * 
  */
 
 [RequireComponent(typeof(LineRenderer))]
-public class Beam : Hitscan
+public class Beam : PrimaryWeapon //Hitscan
 {
     // SFX
     protected bool useContinuousBeamSFX;
     private Vector3 beamStartPos; // Is used to sync beam start/end position in multiplayer
     private Vector3 beamEndPos;
-    private float effectDisplayTime = 0.25f; // For how long beam is displayed
+    protected float effectDisplayTime; // For how long beam is displayed
     protected LineRenderer beamLine;
+
+    public Transform weapon; // For SFX starting position
 
     //[SerializeField]
     //protected Material beamMaterial;
@@ -37,7 +39,7 @@ public class Beam : Hitscan
         beamLine.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
         beamLine.receiveShadows = false;
         //beamLine.materials[0] = beamMaterial;
-        beamLine.material = (Material)Resources.Load("BeamMaterial", typeof(Material));
+        //beamLine.material = (Material)Resources.Load("BeamMaterial", typeof(Material));
         beamLine.startWidth = 0.3f;
         beamLine.endWidth = 0.1f;
 
@@ -63,8 +65,10 @@ public class Beam : Hitscan
         beamStartPos = transform.position;
         beamEndPos = transform.position;
 
-        if (weaponInput.primaryFireButtonDown)
+        if (weaponInput.fireButtonDown)
         {
+            beamStartPos = weapon.transform.position;
+
             // Shoot ray forward from camera
             shootRay.origin = playerCamera.transform.position;
             shootRay.direction = playerCamera.transform.forward;
@@ -89,8 +93,10 @@ public class Beam : Hitscan
     //**************************************************
     private void SingleBeamSFX()
     {
-        if (weaponInput.firePrimaryWeapon)
+        if (weaponInput.fireWeapon)
         {
+            beamStartPos = weapon.transform.position;
+
             // Shoot ray forward from camera
             shootRay.origin = playerCamera.transform.position;
             shootRay.direction = playerCamera.transform.forward;
