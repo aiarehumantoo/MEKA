@@ -18,6 +18,7 @@ public class burst2 : SecondaryWeapon
     {
         base.Start();
 
+        isHitscan = false;
         damagePerShot = 90.0f;
         timeBetweenShots = 1.5f;
         //projectilePrefab = ;
@@ -55,12 +56,13 @@ public class burst2 : SecondaryWeapon
         {
             if (i == 0)
             {
-                base.Fire();
+                base.Fire(); // Access Weapon.Fire() 
+                // Skips Primary/SecondaryWeapon.Fire() since they do not have implementation
             }
             else
             {
                 yield return new WaitForSeconds(0.25f);
-                base.Fire();
+                base.Fire(); // Fire projectile weapon
             }
         }
 

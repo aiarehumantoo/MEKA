@@ -13,7 +13,7 @@ using UnityEngine;
  */
 
 [RequireComponent(typeof(LineRenderer))]
-public class Beam : PrimaryWeapon //Hitscan
+public class Beam : Weapon //Hitscan
 {
     // SFX
     protected bool useContinuousBeamSFX;

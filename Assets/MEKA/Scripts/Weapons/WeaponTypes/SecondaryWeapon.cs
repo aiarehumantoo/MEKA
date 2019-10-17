@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SecondaryWeapon : Projectile // Not weapon but type?
+public class SecondaryWeapon : Weapon
 {
     protected bool outOfAmmo = false;
     private float maxShots = 5.0f; // Use int // or universal implementation for heat/ammo (primary/secondary?)
@@ -21,7 +21,7 @@ public class SecondaryWeapon : Projectile // Not weapon but type?
     }
 
     //**************************************************
-    protected virtual void Start()
+    protected override void Start()
     {
         base.Start();
 
@@ -33,7 +33,7 @@ public class SecondaryWeapon : Projectile // Not weapon but type?
     }
 
     //**************************************************
-    protected virtual void Update()
+    protected override void Update()
     {
         base.Update();
 

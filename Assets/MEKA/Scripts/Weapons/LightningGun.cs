@@ -14,18 +14,20 @@ using UnityEngine;
  */
 
 //**************************************************
-public class LightningGun : Beam
+//[RequireComponent(typeof(Beam))] // TODO; make sfx into standalone code and include as component? -> split into types of sfx ie. ContinuousBeamSFX
+public class LightningGun : PrimaryWeapon //Beam
 {
     //**************************************************
     protected override void Start()
     {
         base.Start();
 
+        isHitscan = true;
         damagePerShot = 7.0f;
         timeBetweenShots = 0.055f;
         maximumRange = 50.0f;
 
-        useContinuousBeamSFX = true;
+        //useContinuousBeamSFX = true;
         //beamMaterial = (Material)Resources.Load("BeamMaterial", typeof(Material));
 
         timer = timeBetweenShots; // Start without cooldown
@@ -47,7 +49,8 @@ public class LightningGun : Beam
             // Reset the timer.
             timer = 0f;
 
-            base.Fire(); // Access Hitscan.Fire()
+            base.Fire(); // Access Weapon.Fire()
+            // Skips Primary/SecondaryWeapon.Fire() since they do not have implementation
         }
     }
 
