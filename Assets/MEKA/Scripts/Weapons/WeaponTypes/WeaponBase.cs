@@ -21,21 +21,20 @@ public struct WeaponInput
 }
 
 //**************************************************
-public class Weapon : MonoBehaviour
+public class WeaponBase : MonoBehaviour
 {
     protected bool isHitscan;
-
-    protected float damagePerShot; // The damage inflicted by each shot or impact damage for projectiles
     protected float timeBetweenShots; // The time between each shot
     
-    protected RaycastHit shootHit; // A raycast hit to get information about what was hit.
-    protected int shootableMask; // A layer mask so the raycast only hits things on the shootable layer.
-
     protected Camera playerCamera; // Camera location for shooting
+    public WeaponInput weaponInput; // Player inputs
 
     protected float weaponTimer; // A timer to determine when to fire.
 
-    // Hitscan weapon
+    // Hitscan weapon type
+    protected float damagePerShot; // The damage inflicted by each shot. Projectile type weapon damage is set in class of that projectile
+    protected RaycastHit shootHit; // A raycast hit to get information about what was hit.
+    protected int shootableMask; // A layer mask so the raycast only hits things on the shootable layer.
     protected Ray shootRay = new Ray(); // A ray from the gun end forwards.
     protected float maximumRange; // Maximum range
     protected Vector3 beamSFXStartPos;
@@ -43,16 +42,13 @@ public class Weapon : MonoBehaviour
     protected float beamLength; // Length of the beam sfx
     [SerializeField] protected Transform weapon; // For SFX starting position
 
-    //Projectile weapon
-    [SerializeField]
-    protected GameObject projectilePrefab; // Prefab of the projectile
-    protected float splashDamage; // Maximum amount of splash damage projectile can deal
+    //Projectile weapon type
+    [SerializeField] protected GameObject projectilePrefab; // Prefab of the projectile        // projectile cannot inherit this?
+    //protected float splashDamage; // Maximum amount of splash damage projectile can deal
     protected float spawnDistance = 0.0f; // How far from the player projectile should spawn. // Spawn distance is pointless with projectiles igonring the shooter. Might be needed for better visuals?
     protected float projectileSpeed = 25.0f;
-    protected float splashRadius;
-    protected float projectileLifeTime = 2.0f; // For deleting projectiles that hit nothing
-
-    public WeaponInput weaponInput;
+    //protected float splashRadius;
+    //protected float projectileLifeTime = 2.0f; // For deleting projectiles that hit nothing
 
     //**************************************************
     protected virtual void Start()

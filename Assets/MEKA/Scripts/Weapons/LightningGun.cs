@@ -56,8 +56,7 @@ public class LightningGun : PrimaryWeapon
             // Reset the timer.
             weaponTimer = 0.0f;
 
-            base.Fire(); // Access Weapon.Fire()
-                         // Skips Primary/SecondaryWeapon.Fire() since they do not have implementation
+            base.Fire(); // Fire weapon
 
             sfx.UpdateBeam(beamLength);
         }

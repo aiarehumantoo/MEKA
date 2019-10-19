@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SecondaryWeapon : Weapon
+public class SecondaryWeapon : WeaponBase
 {
     protected bool outOfAmmo = false;
     private float maxShots = 5.0f; // Use int // or universal implementation for heat/ammo (primary/secondary?)

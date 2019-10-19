@@ -2,18 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-// TODO
-/*
- * Configure beam settings in start rather than in editor
- * Beam startpos is at guns barrel
- * 
- * SFX should use weapon firing to update instead of just mouse1
- * ie. weapon overheating
- * 
- */
+// Old beam sfx
+// Used world coordinates for both beam types
+// Updated beam every frame
+// New systems only flaw is that beam length of continuous type updates only when shot is fired
 
 [RequireComponent(typeof(LineRenderer))]
-public class Beam : Weapon //Hitscan
+public class Beam : WeaponBase //Hitscan
 {
     // SFX
     protected bool useContinuousBeamSFX;

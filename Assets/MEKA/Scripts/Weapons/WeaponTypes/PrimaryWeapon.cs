@@ -11,10 +11,10 @@ using UnityEngine;
  * 
  */
 
-public class PrimaryWeapon : Weapon
+public class PrimaryWeapon : WeaponBase
 {
     protected bool overHeated = false;
-    private float maxHeat = 100.0f;
+    private const float maxHeat = 100.0f; // <-- TODO: add constants
     protected float heatPerShot; // Heat generated per shot
     private float heatLevel = 0.0f;
     private float coolingRate = 0.1f; // Passive cooling per Update

@@ -2,20 +2,32 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+// NOTE;
+/*
+ * [SerializeField] private is inherited by child classes
+ * 
+ * 
+ * 
+ */
+
 //**************************************************
-public class RocketLauncher : Projectile
+public class RocketLauncher : SecondaryWeapon
 {
+
     //**************************************************
     protected override void Start()
     {
         base.Start();
 
-        damagePerShot = 90.0f;
+        isHitscan = false;
+        //damagePerShot = 90.0f;
         timeBetweenShots = 1.5f;
-        //projectilePrefab = ;
+        //projectilePrefab = ; // Set in editor?
         projectileSpeed = 25.0f;
-        splashDamage = 50.0f;
-        splashRadius = 2.0f;
+        //splashDamage = 50.0f;
+        //splashRadius = 2.0f;
+
+        //spawnDistance =;
 
         weaponTimer = timeBetweenShots; // Start without cooldown
     }
@@ -31,7 +43,7 @@ public class RocketLauncher : Projectile
     //**************************************************
     protected override void Fire()
     {
-        if (weaponInput.fireWeapon)
+        if (weaponInput.fireWeapon && !outOfAmmo)
         {
             // Reset the timer.
             weaponTimer = 0f;
