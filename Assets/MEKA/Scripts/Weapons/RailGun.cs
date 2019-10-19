@@ -2,24 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-// TODO:
-/*
- * Better way to select if weapon is primary or secondary
- * Currently just firePrimaryWeapon || fireSecondaryWeapon in weapons code (below)
- * 
- * Delay after firing before cooling starts?
- * Reload that dissipates all heat (like that weapon in lawbreakers)
- * Move heat/cooling to base > avoids dealing with able to fire or not
- * 
- */
-
 //**************************************************
 [RequireComponent(typeof(LineRenderer))]
-public class LightningGun : PrimaryWeapon
+public class RailGun : PrimaryWeapon
 {
     // SFX
-    private ContinuousBeamSFX sfx = new ContinuousBeamSFX();
-    //[SerializeField] private Transform weapon; // For SFX starting position
+    private SingleBeamSFX sfx = new SingleBeamSFX();
     private LineRenderer beamLine; // Use linerenderer
 
     //**************************************************
@@ -28,16 +16,17 @@ public class LightningGun : PrimaryWeapon
         base.Start();
 
         isHitscan = true;
-        damagePerShot = 7.0f;
-        timeBetweenShots = 0.055f;
+        damagePerShot = 30.0f;
+        timeBetweenShots = 1.5f;
         maximumRange = 50.0f;
         weaponTimer = timeBetweenShots; // Start without cooldown
 
-        heatPerShot = 1.0f;
+        heatPerShot = 10.0f;
 
         // SFX setup
         beamLine = GetComponent<LineRenderer>();
-        sfx.Setup(beamLine, weapon.localPosition);
+        float sfxDisplayTime = 0.35f;
+        sfx.Setup(beamLine, sfxDisplayTime);
     }
 
     //**************************************************
@@ -46,6 +35,8 @@ public class LightningGun : PrimaryWeapon
         base.Update();
 
         Fire();
+
+        sfx.UpdateSFXTimer(Time.deltaTime); // Update sfx timer
     }
 
     //**************************************************
@@ -59,11 +50,11 @@ public class LightningGun : PrimaryWeapon
             base.Fire(); // Access Weapon.Fire()
                          // Skips Primary/SecondaryWeapon.Fire() since they do not have implementation
 
-            sfx.UpdateBeam(beamLength);
+            sfx.UpdateBeam(beamSFXStartPos, beamSFXEndPos);
         }
-        else if (!weaponInput.fireButtonDown || overHeated)
+        else
         {
-            // Disable SFX when not firing
+            // Disable SFX
             sfx.DisableSFX();
         }
     }

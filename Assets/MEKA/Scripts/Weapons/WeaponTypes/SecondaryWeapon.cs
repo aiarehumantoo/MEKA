@@ -17,7 +17,7 @@ public class SecondaryWeapon : Weapon
     private void GetWeaponInputs()
     {
         weaponInput.fireButtonDown = Input.GetButton("Fire2");
-        weaponInput.fireWeapon = Input.GetButton("Fire2") && timer >= timeBetweenShots;
+        weaponInput.fireWeapon = Input.GetButton("Fire2") && weaponTimer >= timeBetweenShots;
     }
 
     //**************************************************

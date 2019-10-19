@@ -7,15 +7,17 @@ using UnityEngine;
  * Reload
  * Recovery from overheat. just force reload? penalty?
  * 
+ * Bug; After reloading (over overheating) heat generation has delay before starting
+ * 
  */
 
 public class PrimaryWeapon : Weapon
 {
     protected bool overHeated = false;
     private float maxHeat = 100.0f;
-    private float heatPerShot = 0.1f; //isnt per shot atm, just per tick while m1 is down
-    private float heatLevel = 0.0f;     // cooling rate same as heating up.
-    private float coolingRate = 0.1f;
+    protected float heatPerShot; // Heat generated per shot
+    private float heatLevel = 0.0f;
+    private float coolingRate = 0.1f; // Passive cooling per Update
     private float coolingTimer = 0.0f;
 
     [HideInInspector]
@@ -25,7 +27,7 @@ public class PrimaryWeapon : Weapon
     private void GetWeaponInputs()
     {
         weaponInput.fireButtonDown = Input.GetButton("Fire1");
-        weaponInput.fireWeapon = Input.GetButton("Fire1") && timer >= timeBetweenShots;
+        weaponInput.fireWeapon = Input.GetButton("Fire1") && weaponTimer >= timeBetweenShots;
 
         weaponInput.reload = Input.GetButton("Reload");
     }
@@ -46,8 +48,15 @@ public class PrimaryWeapon : Weapon
         base.Update();
 
         GetWeaponInputs();
-        WeaponHeat();
+        WeaponCooling();
         Reload();
+    }
+
+    //**************************************************
+    protected override void Fire()
+    {
+        base.Fire();
+        WeaponHeat();
     }
 
     //**************************************************
@@ -71,7 +80,16 @@ public class PrimaryWeapon : Weapon
                 overHeated = true;
             }
         }
-        else //if (!overHeated)
+    }
+
+    //**************************************************
+    private void WeaponCooling()
+    {
+        if (overHeated)
+        {
+            StartCoroutine(ResetHeat());
+        }
+        else if (!weaponInput.fireButtonDown)
         {
             float coolingDelay = 1.0f; // Delay before passive cooling starts
             coolingTimer += Time.deltaTime;

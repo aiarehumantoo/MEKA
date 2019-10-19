@@ -17,7 +17,7 @@ public class RocketLauncher : Projectile
         splashDamage = 50.0f;
         splashRadius = 2.0f;
 
-        timer = timeBetweenShots; // Start without cooldown
+        weaponTimer = timeBetweenShots; // Start without cooldown
     }
 
     //**************************************************
@@ -34,7 +34,7 @@ public class RocketLauncher : Projectile
         if (weaponInput.fireWeapon)
         {
             // Reset the timer.
-            timer = 0f;
+            weaponTimer = 0f;
 
             base.Fire(); // Access Projectile.Fire()
         }

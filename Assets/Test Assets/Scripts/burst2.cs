@@ -26,7 +26,7 @@ public class burst2 : SecondaryWeapon
         splashDamage = 50.0f;
         splashRadius = 2.0f;
 
-        timer = timeBetweenShots; // Start without cooldown
+        weaponTimer = timeBetweenShots; // Start without cooldown
     }
 
     //**************************************************
@@ -43,7 +43,7 @@ public class burst2 : SecondaryWeapon
         if (weaponInput.fireWeapon && !outOfAmmo)
         {
             // Stop the timer
-            timer = -1.0f;
+            weaponTimer = -1.0f;
 
             StartCoroutine(BurstFire());
         }
@@ -67,6 +67,6 @@ public class burst2 : SecondaryWeapon
         }
 
         // Reset the timer
-        timer = 0.0f;
+        weaponTimer = 0.0f;
     }  
 }

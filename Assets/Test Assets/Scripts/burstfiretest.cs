@@ -26,7 +26,7 @@ public class burstfiretest : Beam
         effectDisplayTime = 0.1f;
         //beamMaterial = (Material)Resources.Load("BeamMaterial", typeof(Material));
 
-        timer = timeBetweenShots; // Start without cooldown
+        weaponTimer = timeBetweenShots; // Start without cooldown
     }
 
     //**************************************************
@@ -43,7 +43,7 @@ public class burstfiretest : Beam
         if (weaponInput.fireWeapon)
         {
             // Stop the timer
-            timer = -1.0f;
+            weaponTimer = -1.0f;
 
             StartCoroutine(BurstFire());
         }
@@ -67,6 +67,6 @@ public class burstfiretest : Beam
         }
 
         // Reset the timer
-        timer = 0.0f;
+        weaponTimer = 0.0f;
     }
 }

@@ -33,11 +33,15 @@ public class Weapon : MonoBehaviour
 
     protected Camera playerCamera; // Camera location for shooting
 
-    protected float timer; // A timer to determine when to fire.
+    protected float weaponTimer; // A timer to determine when to fire.
 
     // Hitscan weapon
     protected Ray shootRay = new Ray(); // A ray from the gun end forwards.
     protected float maximumRange; // Maximum range
+    protected Vector3 beamSFXStartPos;
+    protected Vector3 beamSFXEndPos;
+    protected float beamLength; // Length of the beam sfx
+    [SerializeField] protected Transform weapon; // For SFX starting position
 
     //Projectile weapon
     [SerializeField]
@@ -64,10 +68,10 @@ public class Weapon : MonoBehaviour
     protected virtual void Update()
     {
         // Use timer = -1.0f to disable counting. ie. during burst fire
-        if (timer >= 0.0f)
+        if (weaponTimer >= 0.0f)
         {
             // Add the time since Update was last called to the timer.
-            timer += Time.deltaTime;
+            weaponTimer += Time.deltaTime;
         }
     }
 
@@ -87,6 +91,8 @@ public class Weapon : MonoBehaviour
     //**************************************************
     private void FireHitscan()
     {
+        beamSFXStartPos = weapon.transform.position;
+
         // Shoot ray forward from camera
         shootRay.origin = playerCamera.transform.position;
         shootRay.direction = playerCamera.transform.forward;
@@ -94,11 +100,21 @@ public class Weapon : MonoBehaviour
         // Perform the raycast against gameobjects on the shootable layer and if it hits something...
         if (Physics.Raycast(shootRay, out shootHit, maximumRange, shootableMask))
         {
+            // Set the second position of the line renderer to the point the raycast hit.
+            beamSFXEndPos = shootHit.point;
+            beamLength = shootHit.distance; // Length
+
             // Hits CapsuleCollider of player
             if (shootHit.collider.tag == "Player" && shootHit.collider is CapsuleCollider)
             {
                 // Deal damage
             }
+        }
+        else // Raycast hit nothing
+        {
+            // ... set the second position of the line renderer to the fullest extent of the gun's range.
+            beamSFXEndPos = shootRay.origin + shootRay.direction * maximumRange;
+            beamLength = maximumRange;
         }
 
         Debug.Log("Fired a hitscan weapon");
@@ -121,4 +137,6 @@ public class Weapon : MonoBehaviour
 
         Debug.Log("Fired a projectile weapon");
     }
+
+    //virtual sfx?
 }

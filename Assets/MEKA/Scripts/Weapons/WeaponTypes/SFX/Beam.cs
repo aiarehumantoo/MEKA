@@ -116,7 +116,7 @@ public class Beam : Weapon //Hitscan
         else
         {
             // Turn beam SFX off when duration expires
-            if (timer >= effectDisplayTime)
+            if (weaponTimer >= effectDisplayTime)
             {
                 beamStartPos = transform.position;
                 beamEndPos = transform.position;
