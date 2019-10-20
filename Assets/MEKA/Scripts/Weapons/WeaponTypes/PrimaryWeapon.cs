@@ -13,6 +13,7 @@ using UnityEngine;
 
 public class PrimaryWeapon : WeaponBase
 {
+    private bool reloading = false;
     protected bool overHeated = false;
     private const float maxHeat = 100.0f; // <-- TODO: add constants
     protected float heatPerShot; // Heat generated per shot
@@ -62,14 +63,14 @@ public class PrimaryWeapon : WeaponBase
     //**************************************************
     private void WeaponHeat()
     {
-        if (overHeated)
+        if (overHeated && !reloading)
         {
             StartCoroutine(ResetHeat());
             return;
         }
 
-        if (weaponInput.fireButtonDown) //+ if actually able to fire
-        {
+        //if (weaponInput.fireButtonDown) //+ if actually able to fire
+        //{
             coolingTimer = 0.0f;
 
             // Heating
@@ -79,13 +80,13 @@ public class PrimaryWeapon : WeaponBase
                 heatLevel = maxHeat;
                 overHeated = true;
             }
-        }
+        //}
     }
 
     //**************************************************
     private void WeaponCooling()
     {
-        if (overHeated)
+        if (overHeated && !reloading)
         {
             StartCoroutine(ResetHeat());
         }
@@ -107,7 +108,7 @@ public class PrimaryWeapon : WeaponBase
     private void Reload()
     {
         if (weaponInput.reload)
-        {
+        { 
             overHeated = true;
             StartCoroutine(ResetHeat());
         }
@@ -115,10 +116,12 @@ public class PrimaryWeapon : WeaponBase
 
     IEnumerator ResetHeat()
     {
+        reloading = true;
         float reloadDuration = 2.5f;
         yield return new WaitForSeconds(reloadDuration);
         heatLevel = 0.0f;
         overHeated = false;
+        reloading = false;
     }
 
     //**************************************************
