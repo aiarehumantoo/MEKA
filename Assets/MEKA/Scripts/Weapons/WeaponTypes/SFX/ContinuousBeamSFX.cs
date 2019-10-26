@@ -27,8 +27,7 @@ public class ContinuousBeamSFX
         beamLine = lineRenderer;
 
         // Configure beam and set length to zero
-        //beamStartPos = new Vector3(weaponPos.x, weaponPos.y, weaponPos.z); // Get weapon local position // Get distance to camera rather than local position?
-        beamStartPos = new Vector3(weaponPos.x, 0.0f, 0.0f);
+        beamStartPos = new Vector3(weaponPos.x, weaponPos.y, weaponPos.z); // Get weapon local position // Location is wrong since weapon parent location differs from camera`s (and cant parent weapons to camera directly because of viewmodels) // Using empty gameobject as placeholder until this is fixed            
         beamEndPos = beamStartPos;
 
         // Set line renderer

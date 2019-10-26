@@ -74,7 +74,6 @@
     <Compile Include="Assets\MEKA\Scripts\Weapons\RocketLauncher.cs" />
     <Compile Include="Assets\MEKA\Scripts\Weapons\WeaponTypes\PrimaryWeapon.cs" />
     <Compile Include="Assets\MEKA\Scripts\Weapons\WeaponTypes\SecondaryWeapon.cs" />
-    <Compile Include="Assets\MEKA\Scripts\Weapons\WeaponTypes\SFX\BeamSFX.cs" />
     <Compile Include="Assets\MEKA\Scripts\Weapons\WeaponTypes\SFX\ContinuousBeamSFX.cs" />
     <Compile Include="Assets\MEKA\Scripts\Weapons\WeaponTypes\SFX\SingleBeamSFX.cs" />
     <Compile Include="Assets\MEKA\Scripts\Weapons\WeaponTypes\WeaponBase.cs" />

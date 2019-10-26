@@ -3,12 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 
 //**************************************************
-//[RequireComponent(typeof(LineRenderer))]
 public class RailGun : PrimaryWeapon
 {
     // SFX
     private SingleBeamSFX sfx = new SingleBeamSFX();
-    //private LineRenderer beamLine; // Use linerenderer
 
     //**************************************************
     protected override void Start()
@@ -24,9 +22,8 @@ public class RailGun : PrimaryWeapon
         heatPerShot = 10.0f;
 
         // SFX setup
-        //beamLine = GetComponent<LineRenderer>();
-        LineRenderer beamLine = this.gameObject.AddComponent<LineRenderer>();
         float sfxDisplayTime = 0.35f;
+        LineRenderer beamLine = this.gameObject.AddComponent<LineRenderer>();
         sfx.Setup(beamLine, "Materials/Green", sfxDisplayTime);
     }
 

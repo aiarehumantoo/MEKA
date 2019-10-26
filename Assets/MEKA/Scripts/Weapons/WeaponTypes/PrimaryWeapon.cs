@@ -4,10 +4,6 @@ using UnityEngine;
 
 // TODO;
 /*
- * Reload
- * Recovery from overheat. just force reload? penalty?
- * 
- * Bug; After reloading (over overheating) heat generation has delay before starting
  * 
  */
 
@@ -68,6 +64,7 @@ public class PrimaryWeapon : WeaponBase
             StartCoroutine(ResetHeat());
             return;
         }
+        
 
         //if (weaponInput.fireButtonDown) //+ if actually able to fire
         //{
@@ -90,7 +87,7 @@ public class PrimaryWeapon : WeaponBase
         {
             StartCoroutine(ResetHeat());
         }
-        else if (!weaponInput.fireButtonDown)
+        else if (!weaponInput.fireButtonDown && !overHeated)
         {
             float coolingDelay = 1.0f; // Delay before passive cooling starts
             coolingTimer += Time.deltaTime;

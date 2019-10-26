@@ -4,23 +4,15 @@ using UnityEngine;
 
 // TODO:
 /*
- * Better way to select if weapon is primary or secondary
- * Currently just firePrimaryWeapon || fireSecondaryWeapon in weapons code (below)
- * 
- * Delay after firing before cooling starts?
- * Reload that dissipates all heat (like that weapon in lawbreakers)
- * Move heat/cooling to base > avoids dealing with able to fire or not
- * 
+ * Addcomponent vs requirecomponent + getcomponent.
+ * Case of both weapons using beamSFX?
  */
 
 //**************************************************
-//[RequireComponent(typeof(LineRenderer))]
 public class LightningGun : PrimaryWeapon
 {
     // SFX
     private ContinuousBeamSFX sfx = new ContinuousBeamSFX();
-    //[SerializeField] private Transform weapon; // For SFX starting position
-    //private LineRenderer beamLine; // Use linerenderer
 
     //**************************************************
     protected override void Start()
@@ -36,7 +28,6 @@ public class LightningGun : PrimaryWeapon
         heatPerShot = 1.0f;
 
         // SFX setup
-        //beamLine = GetComponent<LineRenderer>();
         LineRenderer beamLine = this.gameObject.AddComponent<LineRenderer>();
         sfx.Setup(beamLine, "Materials/Blue", weapon.localPosition);
     }
