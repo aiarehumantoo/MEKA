@@ -2,6 +2,17 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/* NOTES;
+ Materials, like textures, are not cleaned up automatically. 
+ When you destroy objects whose scripts have explicitly created materials like this, you MUST manually destroy the material asset yourself. 
+ Forgetting to do so causes a memory leak.
+ private void OnDestroy()
+ {
+     Destroy(this.renderer.material);
+ }
+
+ */
+
 public class ContinuousBeamSFX
 {
     private Vector3 beamStartPos;
@@ -10,7 +21,7 @@ public class ContinuousBeamSFX
     private LineRenderer beamLine;
 
     //**************************************************
-    public void Setup(LineRenderer lineRenderer, Vector3 weaponPos)
+    public void Setup(LineRenderer lineRenderer, string materialPath, Vector3 weaponPos)
     {
         // Get line renderer component
         beamLine = lineRenderer;
@@ -24,10 +35,9 @@ public class ContinuousBeamSFX
         beamLine.useWorldSpace = false; // Local space for continuous sfx, world for single shot
         beamLine.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
         beamLine.receiveShadows = false;
-        //beamLine.materials[0] = beamMaterial;
-        //beamLine.material = (Material)Resources.Load("BeamMaterial", typeof(Material));
         beamLine.startWidth = 0.3f;
         beamLine.endWidth = 0.1f;
+        beamLine.material = Resources.Load<Material>(materialPath);
     }
 
     //**************************************************

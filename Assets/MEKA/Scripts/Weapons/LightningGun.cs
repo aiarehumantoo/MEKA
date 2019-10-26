@@ -14,13 +14,13 @@ using UnityEngine;
  */
 
 //**************************************************
-[RequireComponent(typeof(LineRenderer))]
+//[RequireComponent(typeof(LineRenderer))]
 public class LightningGun : PrimaryWeapon
 {
     // SFX
     private ContinuousBeamSFX sfx = new ContinuousBeamSFX();
     //[SerializeField] private Transform weapon; // For SFX starting position
-    private LineRenderer beamLine; // Use linerenderer
+    //private LineRenderer beamLine; // Use linerenderer
 
     //**************************************************
     protected override void Start()
@@ -36,8 +36,9 @@ public class LightningGun : PrimaryWeapon
         heatPerShot = 1.0f;
 
         // SFX setup
-        beamLine = GetComponent<LineRenderer>();
-        sfx.Setup(beamLine, weapon.localPosition);
+        //beamLine = GetComponent<LineRenderer>();
+        LineRenderer beamLine = this.gameObject.AddComponent<LineRenderer>();
+        sfx.Setup(beamLine, "Materials/Blue", weapon.localPosition);
     }
 
     //**************************************************

@@ -10,7 +10,7 @@ public class SingleBeamSFX
     private float timer; // Timer for sfx
 
     //**************************************************
-    public void Setup(LineRenderer lineRenderer, float displayTime)
+    public void Setup(LineRenderer lineRenderer, string materialPath, float displayTime)
     {
         sfxDisplayTime = displayTime;
 
@@ -21,10 +21,9 @@ public class SingleBeamSFX
         beamLine.useWorldSpace = true; // Local space for continuous sfx, world for single shot
         beamLine.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
         beamLine.receiveShadows = false;
-        //beamLine.materials[0] = beamMaterial;
-        //beamLine.material = (Material)Resources.Load("BeamMaterial", typeof(Material));
         beamLine.startWidth = 0.3f;
         beamLine.endWidth = 0.1f;
+        beamLine.material = Resources.Load<Material>(materialPath);
     }
 
     //**************************************************
