@@ -2,22 +2,22 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SingleBeamSFX
+public class SingleBeamSFX : MonoBehaviour
 {
     private float sfxDisplayTime; // For how long beam is displayed
-    private LineRenderer beamLine;
-
     private float timer; // Timer for sfx
 
+    private LineRenderer beamLine;
+
     //**************************************************
-    public void Setup(LineRenderer lineRenderer, string materialPath, float displayTime)
+    public void Setup(string materialPath, float displayTime)
     {
         sfxDisplayTime = displayTime;
 
-        // Get line renderer component
-        beamLine = lineRenderer;
+        // Add LineRenderer
+        beamLine = this.gameObject.AddComponent<LineRenderer>();
 
-        // Set line renderer
+        // Set LineRenderer
         beamLine.useWorldSpace = true; // Local space for continuous sfx, world for single shot
         beamLine.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
         beamLine.receiveShadows = false;

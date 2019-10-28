@@ -12,7 +12,7 @@ using UnityEngine;
 public class LightningGun : PrimaryWeapon
 {
     // SFX
-    private ContinuousBeamSFX sfx = new ContinuousBeamSFX();
+    private ContinuousBeamSFX sfx;
 
     //**************************************************
     protected override void Start()
@@ -28,8 +28,8 @@ public class LightningGun : PrimaryWeapon
         heatPerShot = 1.0f;
 
         // SFX setup
-        LineRenderer beamLine = this.gameObject.AddComponent<LineRenderer>();
-        sfx.Setup(beamLine, "Materials/Blue", weapon.localPosition);
+        sfx = gameObject.AddComponent<ContinuousBeamSFX>();
+        sfx.Setup("Materials/Blue", weapon.localPosition);
     }
 
     //**************************************************

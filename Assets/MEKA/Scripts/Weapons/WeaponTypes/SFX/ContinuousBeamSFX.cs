@@ -13,7 +13,7 @@ using UnityEngine;
 
  */
 
-public class ContinuousBeamSFX
+public class ContinuousBeamSFX : MonoBehaviour
 {
     private Vector3 beamStartPos;
     private Vector3 beamEndPos;
@@ -21,16 +21,16 @@ public class ContinuousBeamSFX
     private LineRenderer beamLine;
 
     //**************************************************
-    public void Setup(LineRenderer lineRenderer, string materialPath, Vector3 weaponPos)
+    public void Setup(string materialPath, Vector3 weaponPos)
     {
-        // Get line renderer component
-        beamLine = lineRenderer;
+        // Add LineRenderer
+        beamLine = this.gameObject.AddComponent<LineRenderer>();
 
         // Configure beam and set length to zero
         beamStartPos = new Vector3(weaponPos.x, weaponPos.y, weaponPos.z); // Get weapon local position // Location is wrong since weapon parent location differs from camera`s (and cant parent weapons to camera directly because of viewmodels) // Using empty gameobject as placeholder until this is fixed            
         beamEndPos = beamStartPos;
 
-        // Set line renderer
+        // Set LineRenderer
         beamLine.useWorldSpace = false; // Local space for continuous sfx, world for single shot
         beamLine.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
         beamLine.receiveShadows = false;

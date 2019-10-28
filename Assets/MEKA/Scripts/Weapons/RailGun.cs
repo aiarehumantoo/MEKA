@@ -6,7 +6,7 @@ using UnityEngine;
 public class RailGun : PrimaryWeapon
 {
     // SFX
-    private SingleBeamSFX sfx = new SingleBeamSFX();
+    private SingleBeamSFX sfx;
 
     //**************************************************
     protected override void Start()
@@ -23,8 +23,8 @@ public class RailGun : PrimaryWeapon
 
         // SFX setup
         float sfxDisplayTime = 0.35f;
-        LineRenderer beamLine = this.gameObject.AddComponent<LineRenderer>();
-        sfx.Setup(beamLine, "Materials/Green", sfxDisplayTime);
+        sfx = gameObject.AddComponent<SingleBeamSFX>();
+        sfx.Setup("Materials/Green", sfxDisplayTime);
     }
 
     //**************************************************
