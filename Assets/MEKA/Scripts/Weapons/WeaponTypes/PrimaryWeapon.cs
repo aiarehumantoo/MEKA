@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+using UnityEngine.UI;
+
 // TODO;
 /*
  * 
@@ -16,6 +18,8 @@ public class PrimaryWeapon : WeaponBase
     private float heatLevel = 0.0f;
     private float coolingRate = 0.1f; // Passive cooling per Update
     private float coolingTimer = 0.0f;
+
+    public Image heatBar; // HUD for displaying heat level
 
     [HideInInspector]
     public GUIStyle style; // For debug
@@ -47,6 +51,8 @@ public class PrimaryWeapon : WeaponBase
         GetWeaponInputs();
         WeaponCooling();
         Reload();
+
+        heatBar.fillAmount = heatLevel / maxHeat;
     }
 
     //**************************************************
