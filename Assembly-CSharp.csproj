@@ -80,6 +80,7 @@
     <Compile Include="Assets\Test Assets\Scripts\Beam.cs" />
     <Compile Include="Assets\Test Assets\Scripts\burst2.cs" />
     <Compile Include="Assets\Test Assets\Scripts\burstfiretest.cs" />
+    <Compile Include="Assets\Test Assets\Scripts\ProjectileV2.cs" />
     <Compile Include="Assets\Test Assets\Scripts\testprojectile.cs" />
     <Reference Include="Unity.ProGrids">
       <HintPath>D:/Program Files/Unity projects/MEKA/Library/ScriptAssemblies/Unity.ProGrids.dll</HintPath>

@@ -13,12 +13,8 @@ public class RocketLauncherProjectile : ProjectileBase
         splashRadius = 2.0f;
     }
 
-    void OnTriggerEnter(Collider other)
+    protected override void Update()
     {
-        // Hits terrain 
-        if (other.gameObject.layer == LayerMask.NameToLayer("Environment"))
-        {
-            Debug.Log("dmg " +damagePerShot);
-        }
+        base.Update();
     }
 }

@@ -10,6 +10,13 @@ using UnityEngine;
  * Change stats for alt fire mode?
  * 
  * 
+ * 
+ * 
+ * Raycast for projectile weapons too incase of player is too close to a wall
+ * For projectiles;
+ * Raycast camera to spawnpoint > hits > splash
+ *                              > no hit > spawn projectile
+ * 
  */
 
 //**************************************************
@@ -128,8 +135,8 @@ public class WeaponBase : MonoBehaviour
         GameObject projectile = null;
         projectile = (GameObject)Instantiate(projectilePrefab, projectileSpawn, playerCamera.transform.rotation);
 
-        // Add velocity to the projectile
-        projectile.GetComponent<Rigidbody>().velocity = projectile.transform.forward * projectileSpeed;
+        // Add velocity to the projectile // not using rigidbody method anymore
+        //projectile.GetComponent<Rigidbody>().velocity = projectile.transform.forward * projectileSpeed;
 
         Debug.Log("Fired a projectile weapon");
     }

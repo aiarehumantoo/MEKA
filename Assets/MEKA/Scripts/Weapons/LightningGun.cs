@@ -6,6 +6,8 @@ using UnityEngine;
 /*
  * Addcomponent vs requirecomponent + getcomponent.
  * Case of both weapons using beamSFX?
+ * 
+ * Use Physics.SphereCast instead? For beam width
  */
 
 //**************************************************
