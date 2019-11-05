@@ -40,6 +40,11 @@ public class ProjectileBase : MonoBehaviour
 
     protected virtual void Update()
     {
+        if (!move)
+        {
+            return;
+        }
+
         // Hit detection, raycast between current and predicted location
         RaycastHit closestHit = new RaycastHit();
         closestHit.distance = Mathf.Infinity;
@@ -72,11 +77,13 @@ public class ProjectileBase : MonoBehaviour
             //OnHit(closestHit.point, closestHit.normal, closestHit.collider);
             Debug.Log("HIT GROUND");
             move = false;
-            transform.position = closestHit.point;
-            //transform.position = hitLocation;
+            //transform.position = closestHit.point;
+            transform.position = hitLocation;
         }
-        else if (move)
+        else
         {
+
+            // Move projectile
             //transform.position += projectileVelocity * Time.deltaTime;
             transform.position = nextPosition;
         }

@@ -30,6 +30,7 @@ public class ProjectileV2 : MonoBehaviour
     float radius = 0.1f;
     float speed = 300f; // test has projectiles with speed of 300.0
     Vector3 m_Velocity;
+    Vector3 projectileVelocity; //ditto
 
     Vector3 previousPosition;
     Vector3 rootPosition;
@@ -37,6 +38,7 @@ public class ProjectileV2 : MonoBehaviour
     private void Start()
     {
         m_Velocity = -transform.up * speed;
+        projectileVelocity = -transform.up * speed;
 
         // Create a layer mask for the Shootable layer.
         shootableMask = LayerMask.GetMask("Enemy", "Environment");
@@ -45,6 +47,7 @@ public class ProjectileV2 : MonoBehaviour
         previousPosition = transform.position;
     }
 
+#if false
     void Update()
     {
         if (move)
@@ -101,6 +104,54 @@ public class ProjectileV2 : MonoBehaviour
             {
                 previousPosition = transform.position;
             }
+        }
+    }
+#endif
+
+    void Update()
+    {
+        if (!move)
+        {
+            return;
+        }
+
+        // Hit detection, raycast between current and predicted location
+        RaycastHit closestHit = new RaycastHit();
+        closestHit.distance = Mathf.Infinity;
+        bool foundHit = false;
+
+        // Sphere cast
+        Vector3 nextPosition = transform.position + projectileVelocity * Time.deltaTime; // Projectile location after update
+        var predictedMovement = nextPosition - transform.position;
+        RaycastHit[] hits = Physics.SphereCastAll(transform.position, radius, predictedMovement.normalized, predictedMovement.magnitude, shootableMask);
+        foreach (var hit in hits)
+        {
+            if (IsHitValid(hit) && hit.distance < closestHit.distance)
+            {
+                foundHit = true;
+                closestHit = hit;
+            }
+        }
+        if (foundHit)
+        {
+            // Handle case of casting while already inside a collider
+            if (closestHit.distance <= 0f)
+            {
+                //closestHit.point = root.position;
+                closestHit.point = rootPosition;
+                closestHit.normal = -transform.forward;
+            }
+
+            //OnHit(closestHit.point, closestHit.normal, closestHit.collider);
+            Debug.Log("HIT GROUND");
+            move = false;
+            transform.position = closestHit.point;
+            //transform.position = hitLocation;
+        }
+        else if (move)
+        {
+            //transform.position += projectileVelocity * Time.deltaTime;
+            transform.position = nextPosition;
         }
     }
 

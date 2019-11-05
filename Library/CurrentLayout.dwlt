@@ -21,7 +21,7 @@ MonoBehaviour:
   m_ShowMode: 4
   m_Title: 
   m_RootView: {fileID: 5}
-  m_MinSize: {x: 950, y: 445}
+  m_MinSize: {x: 950, y: 401}
   m_MaxSize: {x: 10000, y: 10000}
 --- !u!114 &2
 MonoBehaviour:
@@ -42,8 +42,8 @@ MonoBehaviour:
     y: 0
     width: 405
     height: 766
-  m_MinSize: {x: 202, y: 222}
-  m_MaxSize: {x: 4002, y: 4022}
+  m_MinSize: {x: 200, y: 200}
+  m_MaxSize: {x: 4000, y: 4000}
   m_ActualView: {fileID: 17}
   m_Panes:
   - {fileID: 17}
@@ -96,10 +96,10 @@ MonoBehaviour:
     y: 0
     width: 405
     height: 982
-  m_MinSize: {x: 202, y: 273}
-  m_MaxSize: {x: 4002, y: 8044}
+  m_MinSize: {x: 200, y: 251}
+  m_MaxSize: {x: 4002, y: 8022}
   vertical: 1
-  controlID: 15
+  controlID: 32
 --- !u!114 &5
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -188,10 +188,10 @@ MonoBehaviour:
     y: 30
     width: 2560
     height: 1307
-  m_MinSize: {x: 683, y: 395}
-  m_MaxSize: {x: 12008, y: 12066}
+  m_MinSize: {x: 681, y: 351}
+  m_MaxSize: {x: 12008, y: 12022}
   vertical: 0
-  controlID: 12
+  controlID: 29
 --- !u!114 &9
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -213,10 +213,10 @@ MonoBehaviour:
     y: 0
     width: 2005
     height: 1307
-  m_MinSize: {x: 406, y: 395}
-  m_MaxSize: {x: 8006, y: 12066}
+  m_MinSize: {x: 404, y: 351}
+  m_MaxSize: {x: 8006, y: 12022}
   vertical: 1
-  controlID: 13
+  controlID: 30
 --- !u!114 &10
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -238,10 +238,10 @@ MonoBehaviour:
     y: 0
     width: 2005
     height: 982
-  m_MinSize: {x: 406, y: 273}
-  m_MaxSize: {x: 8006, y: 8044}
+  m_MinSize: {x: 404, y: 251}
+  m_MaxSize: {x: 8006, y: 8022}
   vertical: 0
-  controlID: 14
+  controlID: 31
 --- !u!114 &11
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -387,20 +387,20 @@ MonoBehaviour:
     m_ShowAllHits: 0
     m_SearchArea: 1
     m_Folders:
-    - Assets/MEKA/Prefabs/Projectiles
+    - Assets/Test Assets/Scripts
   m_ViewMode: 1
   m_StartGridSize: 64
   m_LastFolders:
-  - Assets/MEKA/Prefabs/Projectiles
+  - Assets/Test Assets/Scripts
   m_LastFoldersGridSize: -1
   m_LastProjectPath: D:\Program Files\Unity projects\MEKA
   m_LockTracker:
     m_IsLocked: 0
   m_FolderTreeState:
-    scrollPos: {x: 0, y: 79}
-    m_SelectedIDs: 9c2b0000
-    m_LastClickedID: 11164
-    m_ExpandedIDs: 00000000e4280000f8280000902900009a290000642a0000a22a0000ee2a0000222b0000ea2b00000a2c0000642c0000fa2c00000a2d0000102d00001c2d0000222d0000523000005430000056300000583000005a3000005c3000005e3000006030000000ca9a3b
+    scrollPos: {x: 0, y: 110}
+    m_SelectedIDs: 142d0000
+    m_LastClickedID: 11540
+    m_ExpandedIDs: 00000000e4280000f8280000902900009a290000642a0000a22a0000ee2a0000222b0000ea2b00000a2c0000642c0000fa2c00000a2d0000102d00001c2d0000222d00006430000066300000683000006a3000006c3000006e300000703000007230000000ca9a3b
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -428,7 +428,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: 
     m_LastClickedID: 0
-    m_ExpandedIDs: 00000000e4280000f8280000902900009a290000642a0000a22a0000ee2a0000222b0000ea2b00000a2c0000642c0000fa2c00000a2d0000102d00001c2d0000222d0000523000005430000056300000583000005a3000005c3000005e30000060300000
+    m_ExpandedIDs: 00000000e4280000f8280000902900009a290000642a0000a22a0000ee2a0000222b0000ea2b00000a2c0000642c0000fa2c00000a2d0000102d00001c2d0000222d00006430000066300000683000006a3000006c3000006e3000007030000072300000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -453,8 +453,8 @@ MonoBehaviour:
       m_Icon: {fileID: 0}
       m_ResourceFile: 
   m_ListAreaState:
-    m_SelectedInstanceIDs: 1a2a0000
-    m_LastClickedInstanceID: 10778
+    m_SelectedInstanceIDs: 9c2b0000
+    m_LastClickedInstanceID: 11164
     m_HadKeyboardFocusLastEvent: 1
     m_ExpandedInstanceIDs: 
     m_RenameOverlay:
@@ -593,9 +593,9 @@ MonoBehaviour:
   m_SceneHierarchy:
     m_TreeViewState:
       scrollPos: {x: 0, y: 0}
-      m_SelectedIDs: c02d0000
-      m_LastClickedID: 11712
-      m_ExpandedIDs: 88fbffffc02d00003e2e0000942e0000fc2e0000a42f0000e02f0000
+      m_SelectedIDs: 3c2f0000
+      m_LastClickedID: 12092
+      m_ExpandedIDs: 88fbffffa42e0000
       m_RenameOverlay:
         m_UserAcceptedRename: 0
         m_Name: 
@@ -655,9 +655,9 @@ MonoBehaviour:
   m_PlayAudio: 0
   m_AudioPlay: 0
   m_Position:
-    m_Target: {x: 21.543653, y: 23.170782, z: -29.847488}
+    m_Target: {x: 7.5924015, y: 10.357278, z: 3.4446893}
     speed: 2
-    m_Value: {x: 21.543653, y: 23.170782, z: -29.847488}
+    m_Value: {x: 7.5924015, y: 10.357278, z: 3.4446893}
   m_RenderMode: 0
   m_CameraMode:
     drawMode: 0
@@ -686,13 +686,13 @@ MonoBehaviour:
       speed: 2
       m_Value: 0
   m_Rotation:
-    m_Target: {x: -0.25349373, y: -0.6506984, z: 0.24499595, w: -0.6724287}
+    m_Target: {x: 0.08138715, y: 0.50948834, z: -0.04833607, w: 0.85514843}
     speed: 2
-    m_Value: {x: -0.25351262, y: -0.65074694, z: 0.24501422, w: -0.67247885}
+    m_Value: {x: 0.081394576, y: 0.50953484, z: -0.04834048, w: 0.85522646}
   m_Size:
-    m_Target: 0.85494936
+    m_Target: 0.6967805
     speed: 2
-    m_Value: 0.85494936
+    m_Value: 0.6967805
   m_Ortho:
     m_Target: 0
     speed: 2
