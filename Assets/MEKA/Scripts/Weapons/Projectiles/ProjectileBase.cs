@@ -2,13 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-/*
- * Inheriting weapon vs base code
- * weapon -> inherits lot of unnecessary things
- * projectilebase -> 
- * 
- * 
- */
 
 public class ProjectileBase : MonoBehaviour
 {
@@ -19,18 +12,18 @@ public class ProjectileBase : MonoBehaviour
 
     private bool move = true;
     private float projectileSpeed = 300.0f;
-    private Vector3 projectileVelocity;
+    private Vector3 movementVector;
     protected int shootableMask; // A layer mask so the raycast only hits things on the shootable layer.
-    float radius = 0.1f;
+    float projectileRadius = 0.15f;
 
     private Vector3 spawnPosition;
 
-    Vector3 hitLocation;
 
 
+    //**************************************************
     protected virtual void Start()
     {
-        projectileVelocity = transform.forward * projectileSpeed;
+        movementVector = transform.forward * projectileSpeed;
 
         // Create a layer mask for the Shootable layer.
         shootableMask = LayerMask.GetMask("Enemy", "Environment");
@@ -38,6 +31,7 @@ public class ProjectileBase : MonoBehaviour
         spawnPosition = transform.position;
     }
 
+    //**************************************************
     protected virtual void Update()
     {
         if (!move)
@@ -45,137 +39,98 @@ public class ProjectileBase : MonoBehaviour
             return;
         }
 
-        // Hit detection, raycast between current and predicted location
         RaycastHit closestHit = new RaycastHit();
         closestHit.distance = Mathf.Infinity;
         bool foundHit = false;
+        Vector3 hitLocation = new Vector3(0, 0, 0);
 
-        // Sphere cast
-        Vector3 nextPosition = transform.position + projectileVelocity * Time.deltaTime; // Projectile location after update
+        // Predict projectile movement
+        Vector3 nextPosition = transform.position + movementVector * Time.deltaTime;
         var predictedMovement = nextPosition - transform.position;
-        RaycastHit[] hits = Physics.SphereCastAll(transform.position, radius, predictedMovement.normalized, predictedMovement.magnitude, shootableMask);
+
+        // Sphere cast from current to next position
+        RaycastHit[] hits = Physics.SphereCastAll(transform.position, projectileRadius, predictedMovement.normalized, predictedMovement.magnitude, shootableMask);
         foreach (var hit in hits)
         {
             if (IsHitValid(hit) && hit.distance < closestHit.distance)
             {
                 foundHit = true;
                 closestHit = hit;
-
                 hitLocation = hit.point;
             }
         }
         if (foundHit)
         {
-            // Handle case of casting while already inside a collider
-            if (closestHit.distance <= 0f)
-            {
-                //closestHit.point = root.position;
-                closestHit.point = spawnPosition;
-                closestHit.normal = -transform.forward;
-            }
-
-            //OnHit(closestHit.point, closestHit.normal, closestHit.collider);
-            Debug.Log("HIT GROUND");
+            // Projectile hit something, update position
             move = false;
-            //transform.position = closestHit.point;
-            transform.position = hitLocation;
-        }
-        else
-        {
+            nextPosition = hitLocation;
 
-            // Move projectile
-            //transform.position += projectileVelocity * Time.deltaTime;
-            transform.position = nextPosition;
+            // Create explosion
+            Explosion(nextPosition);
         }
+
+        // Move projectile
+        transform.position = nextPosition;
+
+        // Orient towards velocity
+        transform.forward = predictedMovement.normalized;
     }
 
+    //**************************************************
     private bool IsHitValid(RaycastHit hit)
     {
         if (hit.collider.gameObject.layer == LayerMask.NameToLayer("Environment"))
-        //if (hit.collider.tag == "TargetWall")
         {
+            Debug.Log("PROJECTILE HIT ENVIRONMENT");
             return true;
         }
 
-        return true;
+        if (hit.collider.gameObject.layer == LayerMask.NameToLayer("Enemy"))
+        {
+            Debug.Log("PROJECTILE HIT ENEMY");
+            return true;
+        }
+
+        //if hits enemy
+        // Deal direct damage, exclude target from taking splash damage
+
+        return false;
+    }
+
+    //**************************************************
+    private void Explosion(Vector3 location)
+    {
+        // Layers that can receive damage
+        var damageLayer = LayerMask.GetMask("Player", "Enemy");
+
+        // Check for enemies inside the splash radius
+        Collider[] hitColliders = Physics.OverlapSphere(location, splashRadius, damageLayer);
+        for (int i = 0; i < hitColliders.Length; i++)
+        {
+            if (hitColliders[i].gameObject.layer == LayerMask.NameToLayer("Player"))
+            {
+                Debug.Log("SPLASH DID SELFDAMAGE");
+            }
+            if (hitColliders[i].gameObject.layer == LayerMask.NameToLayer("Enemy"))
+            {
+                Debug.Log("SPLASH HIT ENEMY");
+            }
+        }
+    }
+
+    //**************************************************
+    private void OnDrawGizmosSelected()
+    {
+        // DEBUG; Pause & select projectile to display radiuses
+
+        // Projectile
+        Color radiusColor = Color.cyan * 0.5f;
+        Gizmos.color = radiusColor;
+        Gizmos.DrawSphere(transform.position, projectileRadius);
+
+        // Splash
+        Color radiusColorSplash = Color.red * 0.5f;
+        Gizmos.color = radiusColorSplash;
+        Gizmos.DrawSphere(transform.position, splashRadius);
     }
 }
-
-
-
-
-
-/*
-        // Move
-        transform.position += m_Velocity * Time.deltaTime;
-        if (inheritWeaponVelocity)
-        {
-            transform.position += m_ProjectileBase.inheritedMuzzleVelocity * Time.deltaTime;
-        }
-
-        // !!! fix for projectile path / visual sfx !!!
-
-        // Drift towards trajectory override (this is so that projectiles can be centered 
-        // with the camera center even though the actual weapon is offset)
-        if (m_HasTrajectoryOverride && m_ConsumedTrajectoryCorrectionVector.sqrMagnitude < m_TrajectoryCorrectionVector.sqrMagnitude)
-        {
-            Vector3 correctionLeft = m_TrajectoryCorrectionVector - m_ConsumedTrajectoryCorrectionVector;
-            float distanceThisFrame = (root.position - m_LastRootPosition).magnitude;
-            Vector3 correctionThisFrame = (distanceThisFrame / trajectoryCorrectionDistance) * m_TrajectoryCorrectionVector;
-            correctionThisFrame = Vector3.ClampMagnitude(correctionThisFrame, correctionLeft.magnitude);
-            m_ConsumedTrajectoryCorrectionVector += correctionThisFrame;
-
-            // Detect end of correction
-            if(m_ConsumedTrajectoryCorrectionVector.sqrMagnitude == m_TrajectoryCorrectionVector.sqrMagnitude)
-            {
-                m_HasTrajectoryOverride = false;
-            }
-
-            transform.position += correctionThisFrame;
-        }
-
-        ///
-
-        // Orient towards velocity
-        transform.forward = m_Velocity.normalized;
-
-        // Gravity
-        if (gravityDownAcceleration > 0)
-        {
-            // add gravity to the projectile velocity for ballistic effect
-            m_Velocity += Vector3.down * gravityDownAcceleration * Time.deltaTime;
-        }
-
-        // Hit detection
-        {
-            RaycastHit closestHit = new RaycastHit();
-            closestHit.distance = Mathf.Infinity;
-            bool foundHit = false;
-
-            // Sphere cast
-            Vector3 displacementSinceLastFrame = tip.position - m_LastRootPosition;
-            RaycastHit[] hits = Physics.SphereCastAll(m_LastRootPosition, radius, displacementSinceLastFrame.normalized, displacementSinceLastFrame.magnitude, hittableLayers, k_TriggerInteraction);
-            foreach (var hit in hits)
-            {
-                if (IsHitValid(hit) && hit.distance < closestHit.distance)
-                {
-                    foundHit = true;
-                    closestHit = hit;
-                }
-            }
-
-            if (foundHit)
-            {
-                // Handle case of casting while already inside a collider
-                if(closestHit.distance <= 0f)
-                {
-                    closestHit.point = root.position;
-                    closestHit.normal = -transform.forward;
-                }
-
-                OnHit(closestHit.point, closestHit.normal, closestHit.collider);
-            }
-        }
-
-        m_LastRootPosition = root.position;
-        */

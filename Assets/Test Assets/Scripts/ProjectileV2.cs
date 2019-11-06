@@ -143,7 +143,7 @@ public class ProjectileV2 : MonoBehaviour
             }
 
             //OnHit(closestHit.point, closestHit.normal, closestHit.collider);
-            Debug.Log("HIT GROUND");
+            //Debug.Log("HIT GROUND");
             move = false;
             transform.position = closestHit.point;
             //transform.position = hitLocation;

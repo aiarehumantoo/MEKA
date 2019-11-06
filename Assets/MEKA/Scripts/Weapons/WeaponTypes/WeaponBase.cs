@@ -16,6 +16,13 @@ using UnityEngine;
  * For projectiles;
  * Raycast camera to spawnpoint > hits > splash
  *                              > no hit > spawn projectile
+ *                              
+ *                              
+ *                              
+ * Hit detection: Raycast forward from camera
+ * But also from gun to hit location?
+ *      For correct bullet/beam sfx
+ *      Wouldnt work for projectiles
  * 
  */
 
