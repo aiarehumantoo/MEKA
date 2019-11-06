@@ -18,6 +18,7 @@ public class ProjectileBase : MonoBehaviour
 
     private Vector3 spawnPosition;
 
+    List<Collider> ignoreColliders = new List<Collider>(); // Save damaged colliders so that same damage is not dealt twice
 
 
     //**************************************************
@@ -87,8 +88,16 @@ public class ProjectileBase : MonoBehaviour
 
         if (hit.collider.gameObject.layer == LayerMask.NameToLayer("Enemy"))
         {
-            Debug.Log("PROJECTILE HIT ENEMY");
-            return true;
+            if (!ignoreColliders.Contains(hit.collider))
+            {
+                Debug.Log("PROJECTILE HIT ENEMY");
+
+                // Save collider(s) projectile hit directly
+                Collider[] hitCollider = hit.collider.gameObject.GetComponentsInChildren<Collider>();
+                ignoreColliders.AddRange(hitCollider);
+
+                return true;
+            }
         }
 
         //if hits enemy
@@ -113,7 +122,14 @@ public class ProjectileBase : MonoBehaviour
             }
             if (hitColliders[i].gameObject.layer == LayerMask.NameToLayer("Enemy"))
             {
-                Debug.Log("SPLASH HIT ENEMY");
+                if (!ignoreColliders.Contains(hitColliders[i]))
+                {
+                    Debug.Log("SPLASH HIT ENEMY");
+
+                    // Save collider(s) inside splash radius
+                    Collider[] hitCollider = hitColliders[i].gameObject.GetComponentsInChildren<Collider>();
+                    ignoreColliders.AddRange(hitCollider);
+                }
             }
         }
     }
