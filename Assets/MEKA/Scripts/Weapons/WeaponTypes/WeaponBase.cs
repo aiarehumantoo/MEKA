@@ -4,10 +4,11 @@ using UnityEngine;
 
 // TODO
 /*
- * bool for buttondown here, move fireweapon to weapon itself
  * 
- * What about mixed type? ie. hitscan with projectile alt fire mode
+ * 
+ * What about mixed type? ie. hitscan with projectile alt fire mode (charged shot?)
  * Change stats for alt fire mode?
+ *                  *normal shot is projectile, charged shot is hitscan (could just raise speed a lot?)
  * 
  * 
  * 
@@ -16,18 +17,14 @@ using UnityEngine;
  * For projectiles;
  * Raycast camera to spawnpoint > hits > splash
  *                              > no hit > spawn projectile
- *                              
- *                              
- *                              
+ *                                                           
  * Hit detection: Raycast forward from camera
  * But also from gun to hit location?
  *      For correct bullet/beam sfx
  *      Wouldnt work for projectiles
  *      
  *      
- *      
- *  // Or fire raycast regardless of weapon type and use it as spawn check for projectiles
- *                              +do spawning projectile in weapons code
+ *  // fire raycast regardless of weapon type and use it as spawn check for projectiles?
  *                              
  *  
  */
@@ -158,15 +155,5 @@ public class WeaponBase : MonoBehaviour
         projectile.GetComponent<RocketLauncherProjectile>().Setup(damagePerShot, splashDamage);
 
         Debug.Log("Fired a projectile weapon");
-    }
-
-    protected void SomeFunction(out int return1, out string return2)
-    {
-        return1 = 7;
-        return2 = "trala";
-    }
-    protected void SomeFunction(out int return1)
-    {
-        return1 = 7;
     }
 }

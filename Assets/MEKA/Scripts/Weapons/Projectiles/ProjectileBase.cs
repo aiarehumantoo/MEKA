@@ -8,7 +8,9 @@ using UnityEngine;
  * Save gameobject instead of colliders? For cases when enemy has multiple colliders
  * So that damage is applied just once, regardless of how many colliders enemy has
  *  saving all colliders works too
- * 
+ *  
+ *  max distance option; *explodes*
+ *  Delayed explosion. ie. 1 second after contact with ground (but direct is instant?)
  * 
  */
 
@@ -30,6 +32,7 @@ public class ProjectileBase : MonoBehaviour
     private Vector3 movementVector;
 
     private const float projectileLifeTime = 10.0f; // For deleting projectiles that hit nothing
+    private float lifetime = 0.0f;
 
     List<Collider> ignoreColliders = new List<Collider>(); // Save damaged colliders so that same damage is not dealt twice
 
@@ -54,6 +57,12 @@ public class ProjectileBase : MonoBehaviour
     //**************************************************
     protected virtual void Update()
     {
+        lifetime += Time.deltaTime;
+        if (lifetime >= projectileLifeTime)
+        {
+            Destroy(this.gameObject); // Delete projectile
+        }
+
         if (!move)
         {
             return;
