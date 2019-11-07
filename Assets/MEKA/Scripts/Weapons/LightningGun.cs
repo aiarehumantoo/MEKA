@@ -21,7 +21,6 @@ public class LightningGun : PrimaryWeapon
     {
         base.Start();
 
-        isHitscan = true;
         damagePerShot = 7.0f;
         timeBetweenShots = 0.055f;
         maximumRange = 50.0f;
@@ -50,7 +49,9 @@ public class LightningGun : PrimaryWeapon
             // Reset the timer.
             weaponTimer = 0.0f;
 
-            base.Fire(); // Fire weapon
+            float beamLength; // Length of the beam SFX
+            FireHitscan(out beamLength); // Fire hitscan
+            base.Fire(); // Increase heat level
 
             sfx.UpdateBeam(beamLength);
         }

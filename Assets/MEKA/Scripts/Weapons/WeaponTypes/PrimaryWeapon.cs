@@ -6,6 +6,7 @@ using UnityEngine.UI;
 
 // TODO;
 /*
+ *
  * 
  */
 
@@ -58,7 +59,7 @@ public class PrimaryWeapon : WeaponBase
     //**************************************************
     protected override void Fire()
     {
-        base.Fire();
+        //base.Fire();
         WeaponHeat();
     }
 
@@ -95,7 +96,7 @@ public class PrimaryWeapon : WeaponBase
         }
         else if (!weaponInput.fireButtonDown && !overHeated)
         {
-            float coolingDelay = 1.0f; // Delay before passive cooling starts
+            float coolingDelay = timeBetweenShots + 1.0f; // Delay before passive cooling starts
             coolingTimer += Time.deltaTime;
 
             // Passive cooling

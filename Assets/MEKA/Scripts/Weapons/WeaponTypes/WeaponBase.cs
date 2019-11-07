@@ -23,7 +23,13 @@ using UnityEngine;
  * But also from gun to hit location?
  *      For correct bullet/beam sfx
  *      Wouldnt work for projectiles
- * 
+ *      
+ *      
+ *      
+ *  // Or fire raycast regardless of weapon type and use it as spawn check for projectiles
+ *                              +do spawning projectile in weapons code
+ *                              
+ *  
  */
 
 //**************************************************
@@ -37,41 +43,22 @@ public struct WeaponInput
 //**************************************************
 public class WeaponBase : MonoBehaviour
 {
-    protected bool isHitscan;
+    // Weapon stats
+    protected float damagePerShot; // The damage inflicted by each shot
     protected float timeBetweenShots; // The time between each shot
-    
-    protected Camera playerCamera; // Camera location for shooting
+    protected float maximumRange; // Maximum range                                // Todo; Add as optional for projectiles. ie. MIRV pellets explode at max range
+
+    [SerializeField] protected Transform weapon; // Weapon location
     public WeaponInput weaponInput; // Player inputs
+    protected Camera playerCamera; // Camera location for shooting
+    protected float weaponTimer; // A timer to determine when to fire
 
-    protected float weaponTimer; // A timer to determine when to fire.
-
-    // Hitscan weapon type
-    protected float damagePerShot; // The damage inflicted by each shot. Projectile type weapon damage is set in class of that projectile
-    protected RaycastHit shootHit; // A raycast hit to get information about what was hit.
-    protected int shootableMask; // A layer mask so the raycast only hits things on the shootable layer.
-    protected Ray shootRay = new Ray(); // A ray from the gun end forwards.
-    protected float maximumRange; // Maximum range
-    protected Vector3 beamSFXStartPos;
-    protected Vector3 beamSFXEndPos;
-    protected float beamLength; // Length of the beam sfx
-    [SerializeField] protected Transform weapon; // For SFX starting position
-
-    //Projectile weapon type
-    [SerializeField] protected GameObject projectilePrefab; // Prefab of the projectile        // projectile cannot inherit this?
-    //protected float splashDamage; // Maximum amount of splash damage projectile can deal
-    protected float spawnDistance = 0.0f; // How far from the player projectile should spawn. // Spawn distance is pointless with projectiles igonring the shooter. Might be needed for better visuals?
-    protected float projectileSpeed = 25.0f;
-    //protected float splashRadius;
-    //protected float projectileLifeTime = 2.0f; // For deleting projectiles that hit nothing
 
     //**************************************************
     protected virtual void Start()
     {
         // Get camera
-        playerCamera = Camera.main;
-
-        // Create a layer mask for the Shootable layer.
-        shootableMask = LayerMask.GetMask("Enemy", "Environment");   
+        playerCamera = Camera.main;  
     }
 
     //**************************************************
@@ -88,19 +75,50 @@ public class WeaponBase : MonoBehaviour
     //**************************************************
     protected virtual void Fire()
     {
-        if (isHitscan)
+    }
+
+    //**************************************************
+    protected void FireHitscan(out float beamLength)
+    {
+        Debug.Log("Fired a hitscan weapon");
+
+        RaycastHit shootHit; // A raycast hit to get information about what was hit
+        var shootableMask = LayerMask.GetMask("Environment", "Enemy"); // A layer mask so the raycast only hits things on the shootable layer
+        Ray shootRay = new Ray(); // A ray from the gun end forwards
+
+        // Shoot ray forward from camera
+        shootRay.origin = playerCamera.transform.position;
+        shootRay.direction = playerCamera.transform.forward;
+
+        // Perform the raycast against gameobjects on the shootable layer and if it hits something...
+        if (Physics.Raycast(shootRay, out shootHit, maximumRange, shootableMask))
         {
-            FireHitscan();
+            // Set the second position of the line renderer to the point the raycast hit.
+            beamLength = shootHit.distance; // Length
+
+            // Hits CapsuleCollider of enemy
+            if (shootHit.collider.gameObject.layer == LayerMask.NameToLayer("Enemy") && shootHit.collider is CapsuleCollider)
+            {
+                Debug.Log("HITSCAN HIT ENEMY. " + damagePerShot + " damage");
+                // Deal damage
+            }
         }
-        else
+        else // Raycast hit nothing
         {
-            FireProjectile();
+            // ... set the second position of the line renderer to the fullest extent of the gun's range.
+            beamLength = maximumRange;
         }
     }
 
     //**************************************************
-    private void FireHitscan()
+    protected void FireHitscan(out Vector3 beamSFXStartPos, out Vector3 beamSFXEndPos)
     {
+        Debug.Log("Fired a hitscan weapon");
+
+        RaycastHit shootHit; // A raycast hit to get information about what was hit
+        var shootableMask = LayerMask.GetMask("Environment", "Enemy"); // A layer mask so the raycast only hits things on the shootable layer
+        Ray shootRay = new Ray(); // A ray from the gun end forwards
+
         beamSFXStartPos = weapon.transform.position;
 
         // Shoot ray forward from camera
@@ -112,11 +130,11 @@ public class WeaponBase : MonoBehaviour
         {
             // Set the second position of the line renderer to the point the raycast hit.
             beamSFXEndPos = shootHit.point;
-            beamLength = shootHit.distance; // Length
 
-            // Hits CapsuleCollider of player
-            if (shootHit.collider.tag == "Player" && shootHit.collider is CapsuleCollider)
+            // Hits CapsuleCollider of enemy
+            if (shootHit.collider.gameObject.layer == LayerMask.NameToLayer("Enemy") && shootHit.collider is CapsuleCollider)
             {
+                Debug.Log("HITSCAN HIT ENEMY. " + damagePerShot + " damage");
                 // Deal damage
             }
         }
@@ -124,29 +142,31 @@ public class WeaponBase : MonoBehaviour
         {
             // ... set the second position of the line renderer to the fullest extent of the gun's range.
             beamSFXEndPos = shootRay.origin + shootRay.direction * maximumRange;
-            beamLength = maximumRange;
         }
-
-        Debug.Log("Fired a hitscan weapon");
     }
 
     //**************************************************
-    private void FireProjectile()
+    protected void FireProjectile(GameObject projectilePrefab, float splashDamage)
     {
-        // Fire projectile. just instantiate > projectile has stats and sfx?
-
         // Spawn point
-        Vector3 projectileSpawn = playerCamera.transform.position + playerCamera.transform.forward.normalized * spawnDistance;
+        Vector3 projectileSpawn = playerCamera.transform.position;
+        //Vector3 projectileSpawn = weapon.transform.position; // TODO; Use weapon location after pathing is done
 
-        // Create the projectile from the Prefab
+        //Create the projectile from the Prefab
         GameObject projectile = null;
         projectile = (GameObject)Instantiate(projectilePrefab, projectileSpawn, playerCamera.transform.rotation);
-
-        // Add velocity to the projectile // not using rigidbody method anymore
-        //projectile.GetComponent<Rigidbody>().velocity = projectile.transform.forward * projectileSpeed;
+        projectile.GetComponent<RocketLauncherProjectile>().Setup(damagePerShot, splashDamage);
 
         Debug.Log("Fired a projectile weapon");
     }
 
-    //virtual sfx?
+    protected void SomeFunction(out int return1, out string return2)
+    {
+        return1 = 7;
+        return2 = "trala";
+    }
+    protected void SomeFunction(out int return1)
+    {
+        return1 = 7;
+    }
 }

@@ -22,8 +22,8 @@ public class burstfiretest : Beam
         timeBetweenShots = 1.5f;
         maximumRange = 50.0f;
 
-        useContinuousBeamSFX = false;
-        effectDisplayTime = 0.1f;
+        //useContinuousBeamSFX = false;
+        //effectDisplayTime = 0.1f;
         //beamMaterial = (Material)Resources.Load("BeamMaterial", typeof(Material));
 
         weaponTimer = timeBetweenShots; // Start without cooldown

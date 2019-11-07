@@ -11,7 +11,7 @@ using UnityEngine;
 public class Beam : WeaponBase //Hitscan
 {
     // SFX
-    protected bool useContinuousBeamSFX;
+    /*protected bool useContinuousBeamSFX;
     private Vector3 beamStartPos; // Is used to sync beam start/end position in multiplayer
     private Vector3 beamEndPos;
     protected float effectDisplayTime; // For how long beam is displayed
@@ -126,5 +126,5 @@ public class Beam : WeaponBase //Hitscan
     protected override void Fire()
     {
         base.Fire(); // Access Hitscan.Fire()
-    }
+    }*/
 }

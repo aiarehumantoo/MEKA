@@ -2,24 +2,43 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/*
+ * TODO;
+ * 
+ * Save gameobject instead of colliders? For cases when enemy has multiple colliders
+ * So that damage is applied just once, regardless of how many colliders enemy has
+ *  saving all colliders works too
+ * 
+ * 
+ */
 
 public class ProjectileBase : MonoBehaviour
 {
-    protected float damagePerShot;
+    // Stats
+    protected float damagePerShot; // Damage dealt by direct hit. Enemies hit directly do not take splash damage
     protected float splashDamage; // Maximum amount of splash damage projectile can deal
-    protected float splashRadius;
-    private float projectileLifeTime = 2.0f; // For deleting projectiles that hit nothing
 
-    private bool move = true;
-    private float projectileSpeed = 300.0f;
-    private Vector3 movementVector;
+    protected float projectileRadius; // Size of the projectile
+    protected float splashRadius; // Explosion damage radius
+    protected float projectileSpeed = 300.0f;
+
+    // Simulation
+    private bool move = true; // Projectile simulation
     protected int shootableMask; // A layer mask so the raycast only hits things on the shootable layer.
-    float projectileRadius = 0.15f;
 
     private Vector3 spawnPosition;
+    private Vector3 movementVector;
+
+    private const float projectileLifeTime = 10.0f; // For deleting projectiles that hit nothing
 
     List<Collider> ignoreColliders = new List<Collider>(); // Save damaged colliders so that same damage is not dealt twice
 
+    //**************************************************
+    public virtual void Setup(float damage, float splashdmg)
+    {
+        damagePerShot = damage;
+        splashDamage = splashdmg;
+    }
 
     //**************************************************
     protected virtual void Start()
@@ -90,7 +109,7 @@ public class ProjectileBase : MonoBehaviour
         {
             if (!ignoreColliders.Contains(hit.collider))
             {
-                Debug.Log("PROJECTILE HIT ENEMY");
+                Debug.Log("PROJECTILE HIT ENEMY. " +damagePerShot +" damage");
 
                 // Save collider(s) projectile hit directly
                 Collider[] hitCollider = hit.collider.gameObject.GetComponentsInChildren<Collider>();
@@ -124,11 +143,16 @@ public class ProjectileBase : MonoBehaviour
             {
                 if (!ignoreColliders.Contains(hitColliders[i]))
                 {
-                    Debug.Log("SPLASH HIT ENEMY");
+                    Debug.Log("SPLASH HIT ENEMY. " + splashDamage +" damage");
 
-                    // Save collider(s) inside splash radius
-                    Collider[] hitCollider = hitColliders[i].gameObject.GetComponentsInChildren<Collider>();
+                    // Save collider(s) inside splash radius    // No need to save colliders, this is done just once. needed for !multihits?
+                    Collider[] hitCollider = hitColliders[i].gameObject.GetComponentsInChildren<Collider>();                             //does this get every collider or just childrens
                     ignoreColliders.AddRange(hitCollider);
+
+                    // Save gameobject, in case of hitting multiple colliders of same enemy. Saving all targets colliders works too?
+                    // Physics.OverlapSphere gets all hit colliders
+                    // but after first time dealing dmg, enemys every collider is in the list and rest are skipped
+                    // gameobject check might be more efficient even if functionally identical
                 }
             }
         }

@@ -13,7 +13,6 @@ public class RailGun : PrimaryWeapon
     {
         base.Start();
 
-        isHitscan = true;
         damagePerShot = 30.0f;
         timeBetweenShots = 1.5f;
         maximumRange = 50.0f;
@@ -45,6 +44,8 @@ public class RailGun : PrimaryWeapon
             // Reset the timer.
             weaponTimer = 0.0f;
 
+            Vector3 beamSFXStartPos, beamSFXEndPos; // Start/End position for beam SFX
+            FireHitscan(out beamSFXStartPos, out beamSFXEndPos); // Fire weapon
             base.Fire(); // Fire weapon
 
             sfx.UpdateBeam(beamSFXStartPos, beamSFXEndPos);

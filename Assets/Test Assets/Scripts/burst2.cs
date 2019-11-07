@@ -18,13 +18,8 @@ public class burst2 : SecondaryWeapon
     {
         base.Start();
 
-        isHitscan = false;
         //damagePerShot = 90.0f;
         timeBetweenShots = 1.5f;
-        //projectilePrefab = ;
-        projectileSpeed = 25.0f;
-        //splashDamage = 50.0f;
-        //splashRadius = 2.0f;
 
         weaponTimer = timeBetweenShots; // Start without cooldown
     }

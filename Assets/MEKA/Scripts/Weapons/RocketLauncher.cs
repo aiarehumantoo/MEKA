@@ -13,21 +13,18 @@ using UnityEngine;
 //**************************************************
 public class RocketLauncher : SecondaryWeapon
 {
+    [SerializeField] private GameObject projectilePrefab; // Prefab of the projectile
+    private float splashDamage = 50.0f; // Maximum amount of splash damage projectile can deal
 
     //**************************************************
     protected override void Start()
     {
         base.Start();
 
-        isHitscan = false;
-        //damagePerShot = 90.0f;
-        timeBetweenShots = 1.5f;
-        //projectilePrefab = ; // Set in editor?
-        projectileSpeed = 25.0f;
+        // Weapon stats
+        damagePerShot = 90.0f;
         //splashDamage = 50.0f;
-        //splashRadius = 2.0f;
-
-        //spawnDistance =;
+        timeBetweenShots = 1.5f;
 
         weaponTimer = timeBetweenShots; // Start without cooldown
     }
@@ -48,7 +45,8 @@ public class RocketLauncher : SecondaryWeapon
             // Reset the timer.
             weaponTimer = 0f;
 
-            base.Fire(); // Access Projectile.Fire()
+            //base.Fire(); // Access WeaponBase.Fire()
+            FireProjectile(projectilePrefab, splashDamage); // Fire projectile
         }
     }
 }

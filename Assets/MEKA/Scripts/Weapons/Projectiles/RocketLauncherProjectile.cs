@@ -8,9 +8,10 @@ public class RocketLauncherProjectile : ProjectileBase
     {
         base.Start();
 
-        damagePerShot = 90.0f;
-        splashDamage = 50.0f;
+        // Projectile stats
+        projectileRadius = 0.15f;
         splashRadius = 2.0f;
+        projectileSpeed = 150.0f;
     }
 
     protected override void Update()
