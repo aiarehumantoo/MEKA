@@ -11,7 +11,7 @@ public class RocketLauncherProjectile : ProjectileBase
         // Projectile stats
         projectileRadius = 0.15f;
         splashRadius = 2.0f;
-        projectileSpeed = 150.0f;
+        projectileSpeed = 100.0f;
     }
 
     protected override void Update()

@@ -194,7 +194,8 @@ public class PlayerMovement : MonoBehaviour
         // Enable camera / audio listener
         playerView = Camera.main;
         playerView.enabled = true;
-        GameObject.Find("PlayerCamera").GetComponent<AudioListener>().enabled = true;
+        //GameObject.Find("PlayerCamera").GetComponent<AudioListener>().enabled = true;
+        playerView.GetComponent<AudioListener>().enabled = true;
 
         // Hide the cursor
         Cursor.visible = false;

@@ -16,6 +16,8 @@ using UnityEngine;
 
 public class ProjectileBase : MonoBehaviour
 {
+    [SerializeField] protected GameObject explosionSFX;
+
     // Stats
     protected float damagePerShot; // Damage dealt by direct hit. Enemies hit directly do not take splash damage
     protected float splashDamage; // Maximum amount of splash damage projectile can deal
@@ -137,6 +139,8 @@ public class ProjectileBase : MonoBehaviour
     //**************************************************
     private void Explosion(Vector3 location)
     {
+        Instantiate(explosionSFX, location, transform.rotation);
+
         // Layers that can receive damage
         var damageLayer = LayerMask.GetMask("Player", "Enemy");
 
