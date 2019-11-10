@@ -153,7 +153,17 @@ public class WeaponBase : MonoBehaviour
         GameObject projectile = null;
         projectile = (GameObject)Instantiate(projectilePrefab, projectileSpawn, playerCamera.transform.rotation);
         projectile.GetComponent<RocketLauncherProjectile>().Setup(damagePerShot, splashDamage);
+        StartCoroutine(DeleteObject(projectile, 5.0f));
 
         Debug.Log("Fired a projectile weapon");
+    }
+
+    //**************************************************
+    private IEnumerator DeleteObject(GameObject obj, float lifetime)
+    {
+        // For deleting expired projectiles
+        yield return new WaitForSeconds(lifetime);
+        Destroy(obj);
+        Debug.Log("PROJECTILE EXPIRED");
     }
 }

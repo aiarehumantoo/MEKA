@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class RocketLauncherProjectile : ProjectileBase
+public class StickyProjectile : ProjectileBase
 {
     protected override void Start()
     {
@@ -15,26 +15,17 @@ public class RocketLauncherProjectile : ProjectileBase
     }
 
     //**************************************************
-    protected override void Update()
-    {
-        base.Update();
-    }
-
-    //**************************************************
     protected override void Explosion(RaycastHit hit)
     {
-        base.Explosion(hit);
-    }
-}
+        if (hit.collider.gameObject.layer == LayerMask.NameToLayer("Enemy"))
+        {
+            // Parent to enemy
+            transform.parent = hit.transform;
 
-
-
-#if false
-    // Override for projectile that explodes with delay
-
-    //**************************************************
-    protected override void Explosion(RaycastHit hit)
-    {
+            // Add delay if hit environment
+            const float explosionDelay = 10.5f;
+            StartCoroutine(DelayedExplosion(hit, explosionDelay));
+        }
         if (hit.collider.gameObject.layer == LayerMask.NameToLayer("Environment"))
         {
             // Add delay if hit environment
@@ -54,4 +45,4 @@ public class RocketLauncherProjectile : ProjectileBase
         yield return new WaitForSeconds(time);
         base.Explosion(hit);
     }
-#endif
+}

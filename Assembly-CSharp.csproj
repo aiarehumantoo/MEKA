@@ -67,6 +67,7 @@
     <Compile Include="Assets\MEKA\Scripts\Player\CockpitScript.cs" />
     <Compile Include="Assets\MEKA\Scripts\Player\Crosshair.cs" />
     <Compile Include="Assets\MEKA\Scripts\Player\PlayerMovement.cs" />
+    <Compile Include="Assets\MEKA\Scripts\Player\SFX\CameraSFX.cs" />
     <Compile Include="Assets\MEKA\Scripts\Weapons\LightningGun.cs" />
     <Compile Include="Assets\MEKA\Scripts\Weapons\Projectiles\ProjectileBase.cs" />
     <Compile Include="Assets\MEKA\Scripts\Weapons\Projectiles\RocketLauncherProjectile.cs" />
@@ -81,7 +82,9 @@
     <Compile Include="Assets\Test Assets\Scripts\burst2.cs" />
     <Compile Include="Assets\Test Assets\Scripts\burstfiretest.cs" />
     <Compile Include="Assets\Test Assets\Scripts\Destroy.cs" />
+    <Compile Include="Assets\Test Assets\Scripts\moveleftright.cs" />
     <Compile Include="Assets\Test Assets\Scripts\ProjectileV2.cs" />
+    <Compile Include="Assets\Test Assets\Scripts\StickyProjectile.cs" />
     <Compile Include="Assets\Test Assets\Scripts\testprojectile.cs" />
     <Reference Include="Unity.ProGrids">
       <HintPath>D:/Program Files/Unity projects/MEKA/Library/ScriptAssemblies/Unity.ProGrids.dll</HintPath>

@@ -33,10 +33,10 @@ public class ProjectileBase : MonoBehaviour
     private Vector3 spawnPosition;
     private Vector3 movementVector;
 
-    private const float projectileLifeTime = 10.0f; // For deleting projectiles that hit nothing
-    private float lifetime = 0.0f;
-
     List<Collider> ignoreColliders = new List<Collider>(); // Save damaged colliders so that same damage is not dealt twice
+
+    // TESTING;
+    private float traveledDistance = 0.0f;
 
     //**************************************************
     public virtual void Setup(float damage, float splashdmg)
@@ -59,12 +59,6 @@ public class ProjectileBase : MonoBehaviour
     //**************************************************
     protected virtual void Update()
     {
-        lifetime += Time.deltaTime;
-        if (lifetime >= projectileLifeTime)
-        {
-            Destroy(this.gameObject); // Delete projectile
-        }
-
         if (!move)
         {
             return;
@@ -73,7 +67,6 @@ public class ProjectileBase : MonoBehaviour
         RaycastHit closestHit = new RaycastHit();
         closestHit.distance = Mathf.Infinity;
         bool foundHit = false;
-        Vector3 hitLocation = new Vector3(0, 0, 0);
 
         // Predict projectile movement
         Vector3 nextPosition = transform.position + movementVector * Time.deltaTime;
@@ -87,24 +80,26 @@ public class ProjectileBase : MonoBehaviour
             {
                 foundHit = true;
                 closestHit = hit;
-                hitLocation = hit.point;
             }
         }
         if (foundHit)
         {
             // Projectile hit something, update position
             move = false;
-            nextPosition = hitLocation;
+            nextPosition = closestHit.point;
 
             // Create explosion
-            Explosion(nextPosition);
+            Explosion(closestHit);
         }
 
         // Move projectile
         transform.position = nextPosition;
 
         // Orient towards velocity
-        transform.forward = predictedMovement.normalized;
+        transform.forward = (nextPosition - transform.position).normalized;
+
+        // Update distance traveled
+        traveledDistance += (nextPosition - transform.position).magnitude;
     }
 
     //**************************************************
@@ -137,8 +132,13 @@ public class ProjectileBase : MonoBehaviour
     }
 
     //**************************************************
-    private void Explosion(Vector3 location)
+    protected virtual void Explosion(RaycastHit hit)
     {
+        // Hit location
+        var location = hit.point; // Remember; hit.point = point of collision; hit.transform.position = location of hit target
+
+        // Destroy projectile & create explosion SFX
+        Destroy(this.gameObject);
         Instantiate(explosionSFX, location, transform.rotation);
 
         // Layers that can receive damage

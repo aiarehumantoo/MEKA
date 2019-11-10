@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 5415132717389239567}
   - component: {fileID: 1163127843939942514}
   - component: {fileID: 8566455010269312527}
-  - component: {fileID: 4908595085320115323}
+  - component: {fileID: 242200584894884225}
   m_Layer: 0
   m_Name: RocketLauncherProjectile
   m_TagString: Untagged
@@ -78,7 +78,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!114 &4908595085320115323
+--- !u!114 &242200584894884225
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
