@@ -36,7 +36,8 @@ public class ProjectileBase : MonoBehaviour
     List<Collider> ignoreColliders = new List<Collider>(); // Save damaged colliders so that same damage is not dealt twice
 
     // TESTING;
-    private float traveledDistance = 0.0f;
+    protected float maximumRange = Mathf.Infinity; // Maximum range             // use max range instead of lifetime? (in weaponbase) 
+    private float totalTraveledDistance = 0.0f;
 
     //**************************************************
     public virtual void Setup(float damage, float splashdmg)
@@ -92,14 +93,42 @@ public class ProjectileBase : MonoBehaviour
             Explosion(closestHit);
         }
 
+        //TEST
+        float traveledDistance = (nextPosition - transform.position).magnitude;
+        if (totalTraveledDistance + traveledDistance >= maximumRange) // Reached max projectile range
+        {
+            Vector3 maxdistPos = transform.position + predictedMovement.normalized * (maximumRange - totalTraveledDistance);
+            if (closestHit.distance > maxdistPos.magnitude) // If maxdist location is closer than hitlocation (in case of both happening)
+            {
+                Debug.Log("MAXIMUM RANGE WAS CLOSER");
+
+                move = false;
+                nextPosition = maxdistPos;
+                closestHit.point = maxdistPos;
+                Explosion(closestHit);
+
+                //totalTraveledDistance += maxdistPos.magnitude; // Add remaining distance
+                totalTraveledDistance += Vector3.Distance(transform.position, maxdistPos);
+                Debug.Log(totalTraveledDistance);
+            }
+            else
+            {
+                Debug.Log("PROJECTILE IMPACT WAS CLOSER");
+            }
+        }
+
+        // Save traveled vector
+        var projectileVector = nextPosition - transform.position;
+
         // Move projectile
         transform.position = nextPosition;
 
         // Orient towards velocity
-        transform.forward = (nextPosition - transform.position).normalized;
+        transform.forward = projectileVector.normalized;
 
         // Update distance traveled
-        traveledDistance += (nextPosition - transform.position).magnitude;
+        //traveledDistance += projectileVector.magnitude;
+        totalTraveledDistance += traveledDistance;
     }
 
     //**************************************************

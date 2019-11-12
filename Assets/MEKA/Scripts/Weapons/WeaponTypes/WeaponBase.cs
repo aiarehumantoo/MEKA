@@ -152,7 +152,8 @@ public class WeaponBase : MonoBehaviour
         //Create the projectile from the Prefab
         GameObject projectile = null;
         projectile = (GameObject)Instantiate(projectilePrefab, projectileSpawn, playerCamera.transform.rotation);
-        projectile.GetComponent<RocketLauncherProjectile>().Setup(damagePerShot, splashDamage);
+        //projectile.GetComponent<RocketLauncherProjectile>().Setup(damagePerShot, splashDamage);
+        projectile.GetComponent<MirvProjectile>().Setup(damagePerShot, splashDamage);
         StartCoroutine(DeleteObject(projectile, 5.0f));
 
         Debug.Log("Fired a projectile weapon");

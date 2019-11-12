@@ -69,6 +69,8 @@
     <Compile Include="Assets\MEKA\Scripts\Player\PlayerMovement.cs" />
     <Compile Include="Assets\MEKA\Scripts\Player\SFX\CameraSFX.cs" />
     <Compile Include="Assets\MEKA\Scripts\Weapons\LightningGun.cs" />
+    <Compile Include="Assets\MEKA\Scripts\Weapons\Mirv.cs" />
+    <Compile Include="Assets\MEKA\Scripts\Weapons\Projectiles\MirvProjectile.cs" />
     <Compile Include="Assets\MEKA\Scripts\Weapons\Projectiles\ProjectileBase.cs" />
     <Compile Include="Assets\MEKA\Scripts\Weapons\Projectiles\RocketLauncherProjectile.cs" />
     <Compile Include="Assets\MEKA\Scripts\Weapons\RailGun.cs" />
@@ -82,6 +84,7 @@
     <Compile Include="Assets\Test Assets\Scripts\burst2.cs" />
     <Compile Include="Assets\Test Assets\Scripts\burstfiretest.cs" />
     <Compile Include="Assets\Test Assets\Scripts\Destroy.cs" />
+    <Compile Include="Assets\Test Assets\Scripts\groundvector.cs" />
     <Compile Include="Assets\Test Assets\Scripts\moveleftright.cs" />
     <Compile Include="Assets\Test Assets\Scripts\ProjectileV2.cs" />
     <Compile Include="Assets\Test Assets\Scripts\StickyProjectile.cs" />

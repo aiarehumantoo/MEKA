@@ -239,6 +239,45 @@ public class PlayerMovement : MonoBehaviour
             WalkMove();
         }
 
+
+#if false
+        //if on ground
+        if (characterController.isGrounded && movementInputs.thrusterMove)
+        {
+            RaycastHit hit; // A raycast hit to get information about what was hit
+            var groundLayer = LayerMask.GetMask("Environment");
+            var raycastDistance = 2.0f;
+
+            // Raycast downwards
+            Ray groundRay = new Ray();
+            groundRay.origin = transform.position;
+            groundRay.direction = -transform.up;
+
+            if (Physics.Raycast(groundRay, out hit, raycastDistance, groundLayer))
+            {
+                // Not on flat ground
+                if ( Vector3.Angle(Vector3.up, hit.normal) >= 5.0f )
+                {
+                    // Use slope to correct players movement vector
+                    var speed = playerVelocity.magnitude;
+                    var vel = playerVelocity;
+                    vel.y = 0.0f;
+                    var correctedVector = Vector3.Cross(transform.right, hit.normal); // Vector along the surface, direction player is looking at
+                    correctedVector *= vel.magnitude;
+                    Debug.DrawLine(transform.position, transform.position + correctedVector, Color.red, 2.0f);
+
+                    playerVelocity = correctedVector;
+                }
+            }
+        }
+#endif
+        
+
+
+
+
+
+
         // Move the controller
         characterController.Move(playerVelocity * Time.deltaTime);
     }
@@ -379,6 +418,54 @@ public class PlayerMovement : MonoBehaviour
 
         playerVelocity.x += accelspeed * wishdir.x;
         playerVelocity.z += accelspeed * wishdir.z;
+    }
+
+    //**************************************************
+    void OnControllerColliderHit(ControllerColliderHit hit)
+    {
+
+#if false
+        // DEBUG/TESTING;
+
+        // Get ground normal
+        var hitNormal = hit.normal;
+
+        var startpos = hit.point;
+        var normal = hit.normal;
+        //Debug.DrawLine(startpos, startpos + normal, Color.green, 2.0f); // Draw ground normal
+        //Debug.DrawLine(startpos, startpos + playerVelocity, Color.red, 2.0f); // Draw player movement vector
+        //Debug.DrawLine(startpos, startpos + transform.forward * 10, Color.red, 2.0f); // Draw forward vector
+
+        //***************************
+        // Slope downwards vector
+        var groundParallel = Vector3.Cross(transform.up, normal);
+        var slopeParallel = Vector3.Cross(groundParallel, normal);
+        Debug.DrawLine(startpos, startpos + slopeParallel, Color.red, 2.0f);
+
+        // Angle of the slope player is standing on
+        float currentSlope = Mathf.Round(Vector3.Angle(hit.normal, transform.up));
+        Debug.Log(currentSlope);
+
+        // If the slope is on a slope too steep and the player is Grounded the player is pushed down the slope.
+        if (currentSlope >= 25f && characterController.isGrounded )
+        {
+            //isSliding = true;
+            transform.position += slopeParallel.normalized / 50;
+        }
+
+        // If the player is standing on a slope that isn't too steep, is grounded, as is not sliding anymore we start a function to count time
+        /*else if (currentSlope < 45 && MaintainingGround() && isSliding)
+        {
+            TimePassed();
+
+            // If enough time has passed the sliding stops. There's no need for these last two if statements, the thing works already, but it's nicer to have the player slide for a little bit more once they get back on the ground
+            if (currentSlope < 45 && MaintainingGround() && isSliding && timePassed > 1f)
+            {
+                isSliding = false;
+            }
+        }*/
+        //***************************
+#endif
     }
 
     //**************************************************
