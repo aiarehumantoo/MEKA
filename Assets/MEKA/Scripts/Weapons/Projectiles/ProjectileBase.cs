@@ -79,10 +79,34 @@ public class ProjectileBase : MonoBehaviour
         {
             if (IsHitValid(hit) && hit.distance < closestHit.distance)
             {
+                Debug.Log("PROJECTILE HIT SOMETHING");
+
                 foundHit = true;
                 closestHit = hit;
             }
         }
+
+        // Check for maximum range
+        var traveledDistance = predictedMovement.magnitude;
+        if (totalTraveledDistance + traveledDistance >= maximumRange) // Reached max projectile range
+        {
+            Vector3 maxdistPos = transform.position + predictedMovement.normalized * (maximumRange - totalTraveledDistance);
+            //if (closestHit.distance > maxdistPos.magnitude) // If maxdist location is closer than hitlocation (in case of both happening) (math.infinity if didnt hit anything)
+            if (closestHit.distance > Vector3.Distance(transform.position, maxdistPos)) // TODO; Make sure this distance check works
+            {
+                // Maximum range was reached before projectile hit anything. Hit distance is math.infinity by default
+                Debug.Log("PROJECTILE REACHED MAXIMUM RANGE");
+
+                foundHit = true;
+                closestHit.point = maxdistPos;
+
+                // Add remaining distance
+                totalTraveledDistance += Vector3.Distance(transform.position, maxdistPos);
+                Debug.Log(totalTraveledDistance);
+            }
+        }
+
+        // Hit something or reached maximum range
         if (foundHit)
         {
             // Projectile hit something, update position
@@ -94,7 +118,7 @@ public class ProjectileBase : MonoBehaviour
         }
 
         //TEST
-        float traveledDistance = (nextPosition - transform.position).magnitude;
+        /*float traveledDistance = (nextPosition - transform.position).magnitude;
         if (totalTraveledDistance + traveledDistance >= maximumRange) // Reached max projectile range
         {
             Vector3 maxdistPos = transform.position + predictedMovement.normalized * (maximumRange - totalTraveledDistance);
@@ -115,7 +139,7 @@ public class ProjectileBase : MonoBehaviour
             {
                 Debug.Log("PROJECTILE IMPACT WAS CLOSER");
             }
-        }
+        }*/
 
         // Save traveled vector
         var projectileVector = nextPosition - transform.position;

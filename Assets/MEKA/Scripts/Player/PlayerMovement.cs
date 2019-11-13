@@ -241,7 +241,6 @@ public class PlayerMovement : MonoBehaviour
 
 
 #if false
-        //if on ground
         if (characterController.isGrounded && movementInputs.thrusterMove)
         {
             RaycastHit hit; // A raycast hit to get information about what was hit
@@ -261,7 +260,7 @@ public class PlayerMovement : MonoBehaviour
                     // Use slope to correct players movement vector
                     var speed = playerVelocity.magnitude;
                     var vel = playerVelocity;
-                    vel.y = 0.0f;
+                    //vel.y = 0.0f;
                     var correctedVector = Vector3.Cross(transform.right, hit.normal); // Vector along the surface, direction player is looking at
                     correctedVector *= vel.magnitude;
                     Debug.DrawLine(transform.position, transform.position + correctedVector, Color.red, 2.0f);
