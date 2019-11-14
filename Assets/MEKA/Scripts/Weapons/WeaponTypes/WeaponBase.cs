@@ -156,7 +156,7 @@ public class WeaponBase : MonoBehaviour
         projectile.GetComponent<MirvProjectile>().Setup(damagePerShot, splashDamage);
         StartCoroutine(DeleteObject(projectile, 5.0f));
 
-        Debug.Log("Fired a projectile weapon");
+        //Debug.Log("Fired a projectile weapon");
     }
 
     //**************************************************
@@ -165,6 +165,6 @@ public class WeaponBase : MonoBehaviour
         // For deleting expired projectiles
         yield return new WaitForSeconds(lifetime);
         Destroy(obj);
-        Debug.Log("PROJECTILE EXPIRED");
+        //Debug.Log("PROJECTILE EXPIRED");
     }
 }

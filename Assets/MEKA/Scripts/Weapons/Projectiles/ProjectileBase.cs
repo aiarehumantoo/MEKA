@@ -91,8 +91,9 @@ public class ProjectileBase : MonoBehaviour
         if (totalTraveledDistance + traveledDistance >= maximumRange) // Reached max projectile range
         {
             Vector3 maxdistPos = transform.position + predictedMovement.normalized * (maximumRange - totalTraveledDistance);
-            //if (closestHit.distance > maxdistPos.magnitude) // If maxdist location is closer than hitlocation (in case of both happening) (math.infinity if didnt hit anything)
-            if (closestHit.distance > Vector3.Distance(transform.position, maxdistPos)) // TODO; Make sure this distance check works
+
+            // Maximum range was reached before projectile hit anything
+            if (closestHit.distance > Vector3.Distance(transform.position, maxdistPos)) // vector3.Distance = (vec1 - vec2).magnitude
             {
                 // Maximum range was reached before projectile hit anything. Hit distance is math.infinity by default
                 Debug.Log("PROJECTILE REACHED MAXIMUM RANGE");
@@ -117,41 +118,13 @@ public class ProjectileBase : MonoBehaviour
             Explosion(closestHit);
         }
 
-        //TEST
-        /*float traveledDistance = (nextPosition - transform.position).magnitude;
-        if (totalTraveledDistance + traveledDistance >= maximumRange) // Reached max projectile range
-        {
-            Vector3 maxdistPos = transform.position + predictedMovement.normalized * (maximumRange - totalTraveledDistance);
-            if (closestHit.distance > maxdistPos.magnitude) // If maxdist location is closer than hitlocation (in case of both happening)
-            {
-                Debug.Log("MAXIMUM RANGE WAS CLOSER");
-
-                move = false;
-                nextPosition = maxdistPos;
-                closestHit.point = maxdistPos;
-                Explosion(closestHit);
-
-                //totalTraveledDistance += maxdistPos.magnitude; // Add remaining distance
-                totalTraveledDistance += Vector3.Distance(transform.position, maxdistPos);
-                Debug.Log(totalTraveledDistance);
-            }
-            else
-            {
-                Debug.Log("PROJECTILE IMPACT WAS CLOSER");
-            }
-        }*/
-
-        // Save traveled vector
-        var projectileVector = nextPosition - transform.position;
-
         // Move projectile
         transform.position = nextPosition;
 
         // Orient towards velocity
-        transform.forward = projectileVector.normalized;
+        transform.forward = predictedMovement.normalized;
 
         // Update distance traveled
-        //traveledDistance += projectileVector.magnitude;
         totalTraveledDistance += traveledDistance;
     }
 
