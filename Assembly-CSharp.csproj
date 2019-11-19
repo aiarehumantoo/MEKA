@@ -83,6 +83,7 @@
     <Compile Include="Assets\Test Assets\Scripts\Beam.cs" />
     <Compile Include="Assets\Test Assets\Scripts\burst2.cs" />
     <Compile Include="Assets\Test Assets\Scripts\burstfiretest.cs" />
+    <Compile Include="Assets\Test Assets\Scripts\define.cs" />
     <Compile Include="Assets\Test Assets\Scripts\Destroy.cs" />
     <Compile Include="Assets\Test Assets\Scripts\groundvector.cs" />
     <Compile Include="Assets\Test Assets\Scripts\moveleftright.cs" />

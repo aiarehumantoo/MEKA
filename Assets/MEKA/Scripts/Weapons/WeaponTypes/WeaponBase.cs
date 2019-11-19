@@ -1,4 +1,6 @@
-﻿using System.Collections;
+﻿//#define SHOWDEBUGLOG
+
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -77,7 +79,9 @@ public class WeaponBase : MonoBehaviour
     //**************************************************
     protected void FireHitscan(out float beamLength)
     {
+#if SHOWDEBUGLOG
         Debug.Log("Fired a hitscan weapon");
+#endif
 
         RaycastHit shootHit; // A raycast hit to get information about what was hit
         var shootableMask = LayerMask.GetMask("Environment", "Enemy"); // A layer mask so the raycast only hits things on the shootable layer
@@ -96,7 +100,9 @@ public class WeaponBase : MonoBehaviour
             // Hits CapsuleCollider of enemy
             if (shootHit.collider.gameObject.layer == LayerMask.NameToLayer("Enemy") && shootHit.collider is CapsuleCollider)
             {
+#if SHOWDEBUGLOG
                 Debug.Log("HITSCAN HIT ENEMY. " + damagePerShot + " damage");
+#endif
                 // Deal damage
             }
         }
@@ -110,7 +116,9 @@ public class WeaponBase : MonoBehaviour
     //**************************************************
     protected void FireHitscan(out Vector3 beamSFXStartPos, out Vector3 beamSFXEndPos)
     {
+#if SHOWDEBUGLOG
         Debug.Log("Fired a hitscan weapon");
+#endif
 
         RaycastHit shootHit; // A raycast hit to get information about what was hit
         var shootableMask = LayerMask.GetMask("Environment", "Enemy"); // A layer mask so the raycast only hits things on the shootable layer
@@ -131,7 +139,9 @@ public class WeaponBase : MonoBehaviour
             // Hits CapsuleCollider of enemy
             if (shootHit.collider.gameObject.layer == LayerMask.NameToLayer("Enemy") && shootHit.collider is CapsuleCollider)
             {
+#if SHOWDEBUGLOG
                 Debug.Log("HITSCAN HIT ENEMY. " + damagePerShot + " damage");
+#endif
                 // Deal damage
             }
         }
@@ -152,8 +162,7 @@ public class WeaponBase : MonoBehaviour
         //Create the projectile from the Prefab
         GameObject projectile = null;
         projectile = (GameObject)Instantiate(projectilePrefab, projectileSpawn, playerCamera.transform.rotation);
-        //projectile.GetComponent<RocketLauncherProjectile>().Setup(damagePerShot, splashDamage);
-        projectile.GetComponent<MirvProjectile>().Setup(damagePerShot, splashDamage);
+        projectile.GetComponent<ProjectileBase>().Setup(damagePerShot, splashDamage); // Setup projectile stats
         StartCoroutine(DeleteObject(projectile, 5.0f));
 
         //Debug.Log("Fired a projectile weapon");
@@ -165,6 +174,9 @@ public class WeaponBase : MonoBehaviour
         // For deleting expired projectiles
         yield return new WaitForSeconds(lifetime);
         Destroy(obj);
-        //Debug.Log("PROJECTILE EXPIRED");
+
+//#if SHOWDEBUGLOG // TODO; Commented coz this is called regardless if projectile still exists. -> Use max range instead?
+        Debug.Log("PROJECTILE EXPIRED");
+//#endif
     }
 }

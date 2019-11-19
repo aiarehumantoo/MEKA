@@ -1,4 +1,6 @@
-﻿using System.Collections;
+﻿//#define SHOWDEBUGLOG
+
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -13,6 +15,7 @@ using UnityEngine;
  *  Delayed explosion. ie. 1 second after contact with ground (but direct is instant?)
  * 
  */
+
 
 public class ProjectileBase : MonoBehaviour
 {
@@ -79,7 +82,9 @@ public class ProjectileBase : MonoBehaviour
         {
             if (IsHitValid(hit) && hit.distance < closestHit.distance)
             {
+#if SHOWDEBUGLOG
                 Debug.Log("PROJECTILE HIT SOMETHING");
+#endif
 
                 foundHit = true;
                 closestHit = hit;
@@ -95,8 +100,9 @@ public class ProjectileBase : MonoBehaviour
             // Maximum range was reached before projectile hit anything
             if (closestHit.distance > Vector3.Distance(transform.position, maxdistPos)) // vector3.Distance = (vec1 - vec2).magnitude
             {
-                // Maximum range was reached before projectile hit anything. Hit distance is math.infinity by default
+#if SHOWDEBUGLOG
                 Debug.Log("PROJECTILE REACHED MAXIMUM RANGE");
+#endif
 
                 foundHit = true;
                 closestHit.point = maxdistPos;
@@ -133,7 +139,9 @@ public class ProjectileBase : MonoBehaviour
     {
         if (hit.collider.gameObject.layer == LayerMask.NameToLayer("Environment"))
         {
+#if SHOWDEBUGLOG
             Debug.Log("PROJECTILE HIT ENVIRONMENT");
+#endif
             return true;
         }
 
@@ -141,7 +149,9 @@ public class ProjectileBase : MonoBehaviour
         {
             if (!ignoreColliders.Contains(hit.collider))
             {
+#if SHOWDEBUGLOG
                 Debug.Log("PROJECTILE HIT ENEMY. " +damagePerShot +" damage");
+#endif
 
                 // Save collider(s) projectile hit directly
                 Collider[] hitCollider = hit.collider.gameObject.GetComponentsInChildren<Collider>();
@@ -176,13 +186,17 @@ public class ProjectileBase : MonoBehaviour
         {
             if (hitColliders[i].gameObject.layer == LayerMask.NameToLayer("Player"))
             {
+#if SHOWDEBUGLOG
                 Debug.Log("SPLASH DID SELFDAMAGE");
+#endif
             }
             if (hitColliders[i].gameObject.layer == LayerMask.NameToLayer("Enemy"))
             {
                 if (!ignoreColliders.Contains(hitColliders[i]))
                 {
+#if SHOWDEBUGLOG
                     Debug.Log("SPLASH HIT ENEMY. " + splashDamage +" damage");
+#endif
 
                     // Save collider(s) inside splash radius    // No need to save colliders, this is done just once. needed for !multihits?
                     Collider[] hitCollider = hitColliders[i].gameObject.GetComponentsInChildren<Collider>();                             //does this get every collider or just childrens

@@ -46,6 +46,7 @@ public class RocketLauncher : SecondaryWeapon
             weaponTimer = 0f;
 
             //base.Fire(); // Access WeaponBase.Fire()
+
             FireProjectile(projectilePrefab, splashDamage); // Fire projectile
         }
     }
