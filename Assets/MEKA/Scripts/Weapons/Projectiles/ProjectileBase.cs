@@ -1,4 +1,4 @@
-﻿//#define SHOWDEBUGLOG
+﻿#define SHOWDEBUGLOG
 
 using System.Collections;
 using System.Collections.Generic;
@@ -43,7 +43,8 @@ public class ProjectileBase : MonoBehaviour
     private float totalTraveledDistance = 0.0f;
 
     //**************************************************
-    public virtual void Setup(float damage, float splashdmg)
+    //public virtual void Setup(float damage, float splashdmg)
+    public void Setup(float damage, float splashdmg)
     {
         damagePerShot = damage;
         splashDamage = splashdmg;

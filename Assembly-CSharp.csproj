@@ -62,6 +62,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\MEKA\Scripts\Console\ConsoleBase.cs" />
+    <Compile Include="Assets\MEKA\Scripts\Console\ConsoleTcpClient.cs" />
     <Compile Include="Assets\MEKA\Scripts\Misc\Debugger.cs" />
     <Compile Include="Assets\MEKA\Scripts\Misc\Settings.cs" />
     <Compile Include="Assets\MEKA\Scripts\Player\CockpitScript.cs" />
@@ -86,10 +88,14 @@
     <Compile Include="Assets\Test Assets\Scripts\define.cs" />
     <Compile Include="Assets\Test Assets\Scripts\Destroy.cs" />
     <Compile Include="Assets\Test Assets\Scripts\groundvector.cs" />
+    <Compile Include="Assets\Test Assets\Scripts\ifacecommand.cs" />
+    <Compile Include="Assets\Test Assets\Scripts\interfacetest.cs" />
     <Compile Include="Assets\Test Assets\Scripts\moveleftright.cs" />
     <Compile Include="Assets\Test Assets\Scripts\ProjectileV2.cs" />
     <Compile Include="Assets\Test Assets\Scripts\StickyProjectile.cs" />
+    <Compile Include="Assets\Test Assets\Scripts\TCPTestClient.cs" />
     <Compile Include="Assets\Test Assets\Scripts\testprojectile.cs" />
+    <Compile Include="Assets\Test Assets\Scripts\udp.cs" />
     <Reference Include="Unity.ProGrids">
       <HintPath>D:/Program Files/Unity projects/MEKA/Library/ScriptAssemblies/Unity.ProGrids.dll</HintPath>
     </Reference>

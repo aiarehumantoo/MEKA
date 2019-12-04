@@ -11,7 +11,7 @@ using UnityEngine;
  */
 
 //**************************************************
-public class RocketLauncher : SecondaryWeapon
+public class RocketLauncher : SecondaryWeapon, IConsole
 {
     [SerializeField] private GameObject projectilePrefab; // Prefab of the projectile
     private float splashDamage = 50.0f; // Maximum amount of splash damage projectile can deal
@@ -49,5 +49,12 @@ public class RocketLauncher : SecondaryWeapon
 
             FireProjectile(projectilePrefab, splashDamage); // Fire projectile
         }
+    }
+
+    //**************************************************
+    public void ConsoleCommand()
+    {
+        //Console test
+        Debug.Log("received console command");
     }
 }

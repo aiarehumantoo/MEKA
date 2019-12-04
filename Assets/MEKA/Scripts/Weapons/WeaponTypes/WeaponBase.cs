@@ -57,7 +57,7 @@ public class WeaponBase : MonoBehaviour
     protected virtual void Start()
     {
         // Get camera
-        playerCamera = Camera.main;  
+        playerCamera = Camera.main;
     }
 
     //**************************************************
