@@ -50,16 +50,19 @@ public class ConsoleBase : ConsoleTcpClient
     {
         //base.ConsoleCommand(message);
 
-        if (message == "FIRE") // For some reason parsed message is all caps
+        if (message == "FIRE") // for testing
         {
             Debug.Log("COMMAND WAS TO FIRE");
+            SendReply("Fired a shot");
         }
 
         if (message == "HELP")
         {
             Debug.Log("Sending back list of console commands");
-            SendReply("Command1 - does stuff \nCommand2 - does more stuff \n...");
+            SendReply("List of console commands: \n" +"Command1 - does stuff \nCommand2 - does more stuff \n...");
         }
+
+        SendReply("Invalid command");
     }
 }
 
