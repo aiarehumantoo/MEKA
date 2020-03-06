@@ -1,4 +1,4 @@
-﻿#define SHOWDEBUGLOG
+﻿//#define SHOWDEBUGLOG
 
 using System.Collections;
 using System.Collections.Generic;

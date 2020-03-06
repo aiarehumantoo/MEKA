@@ -32,13 +32,13 @@ public class Mirv : SecondaryWeapon
     //**************************************************
     protected override void Fire()
     {
-        if (weaponInput.fireWeapon && !outOfAmmo)
+        if (weaponInput.fireWeapon && weaponState == WeaponState.Normal)
         {
             // Reset the timer.
             weaponTimer = 0f;
 
-            //base.Fire(); // Access WeaponBase.Fire()
             FireProjectile(projectilePrefab, splashDamage); // Fire projectile
+            base.Fire();
         }
     }
 }

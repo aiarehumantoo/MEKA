@@ -35,7 +35,7 @@ public class burst2 : SecondaryWeapon
     //**************************************************
     protected override void Fire()
     {
-        if (weaponInput.fireWeapon && !outOfAmmo)
+        if (weaponInput.fireWeapon && /*!outOfAmmo*/ weaponState == WeaponState.Normal)
         {
             // Stop the timer
             weaponTimer = -1.0f;

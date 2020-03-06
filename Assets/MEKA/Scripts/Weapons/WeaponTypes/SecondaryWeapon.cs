@@ -4,9 +4,16 @@ using UnityEngine;
 
 public class SecondaryWeapon : WeaponBase
 {
-    protected bool outOfAmmo = false;
-    private float maxShots = 5.0f; // Use int // or universal implementation for heat/ammo (primary/secondary?)
-    private float shotsLeft = 0.0f;
+    protected enum WeaponState
+    {
+        Normal,
+        OutOfAmmo,
+        Disabled
+    };
+    protected WeaponState weaponState = WeaponState.Normal;
+
+    private int maxShots = 5; // universal implementation for heat/ammo (primary/secondary?)
+    private int shotsLeft = 0;
     private float regenDelay = 7.5f;
     private float regenTimer = 0.0f;
 
@@ -38,25 +45,35 @@ public class SecondaryWeapon : WeaponBase
         base.Update();
 
         GetWeaponInputs();
-        WeaponAmmo();
+        AmmoRegen();
     }
 
     //**************************************************
-    private void WeaponAmmo()
+    protected override void Fire()
     {
-        outOfAmmo = shotsLeft == 0.0f ? true : false;
-        regenTimer = shotsLeft < maxShots ? regenTimer + Time.deltaTime : 0.0f;
+        //base.Fire();
 
-        if (weaponInput.fireWeapon && !outOfAmmo) //check is already done in weapons code
+        shotsLeft--;
+        if (shotsLeft == 0)
         {
-            shotsLeft -= 1.0f;
+            weaponState = WeaponState.OutOfAmmo;
         }
+    }
 
+    //**************************************************
+    private void AmmoRegen()
+    {
+        regenTimer = shotsLeft < maxShots ? regenTimer + Time.deltaTime : 0.0f;
+        
         // Continuously regen ammo
-        if (regenTimer >= regenDelay && shotsLeft < maxShots)
+        if (regenTimer >= regenDelay)
         {
-            shotsLeft += 1.0f;
+            shotsLeft++;
             regenTimer = 0.0f;
+        }
+        if (shotsLeft > 0)
+        {
+            weaponState = WeaponState.Normal;
         }
     }
 

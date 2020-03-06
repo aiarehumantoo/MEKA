@@ -100,7 +100,7 @@ MonoBehaviour:
   m_MinSize: {x: 201, y: 272}
   m_MaxSize: {x: 4001, y: 8042}
   vertical: 1
-  controlID: 42
+  controlID: 67
 --- !u!114 &5
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -192,7 +192,7 @@ MonoBehaviour:
   m_MinSize: {x: 679, y: 543}
   m_MaxSize: {x: 14002, y: 18063}
   vertical: 0
-  controlID: 39
+  controlID: 64
 --- !u!114 &9
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -217,7 +217,7 @@ MonoBehaviour:
   m_MinSize: {x: 403, y: 543}
   m_MaxSize: {x: 10001, y: 18063}
   vertical: 1
-  controlID: 40
+  controlID: 65
 --- !u!114 &10
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -242,7 +242,7 @@ MonoBehaviour:
   m_MinSize: {x: 403, y: 272}
   m_MaxSize: {x: 8003, y: 8042}
   vertical: 0
-  controlID: 41
+  controlID: 66
 --- !u!114 &11
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -389,19 +389,19 @@ MonoBehaviour:
     m_SkipHidden: 0
     m_SearchArea: 1
     m_Folders:
-    - Assets/MEKA/Scripts/Weapons
+    - Assets/MEKA/Scripts/Weapons/Projectiles
   m_ViewMode: 1
   m_StartGridSize: 64
   m_LastFolders:
-  - Assets/MEKA/Scripts/Weapons
+  - Assets/MEKA/Scripts/Weapons/Projectiles
   m_LastFoldersGridSize: -1
   m_LastProjectPath: D:\Program Files\Unity projects\MEKA
   m_LockTracker:
     m_IsLocked: 0
   m_FolderTreeState:
     scrollPos: {x: 0, y: 79}
-    m_SelectedIDs: 02390000
-    m_LastClickedID: 14594
+    m_SelectedIDs: 28390000
+    m_LastClickedID: 14632
     m_ExpandedIDs: 00000000e6380000e8380000ea380000ec380000ee380000f0380000f2380000f4380000f6380000f8380000fa380000fc380000fe38000000390000023900000439000006390000083900000a3900000c3900000e3900001039000012390000143900001639000000ca9a3b
     m_RenameOverlay:
       m_UserAcceptedRename: 0
@@ -604,9 +604,9 @@ MonoBehaviour:
   m_SceneHierarchy:
     m_TreeViewState:
       scrollPos: {x: 0, y: 0}
-      m_SelectedIDs: ea340000
-      m_LastClickedID: 13546
-      m_ExpandedIDs: 42fbffff76340000ea340000
+      m_SelectedIDs: fe2e0000
+      m_LastClickedID: 0
+      m_ExpandedIDs: 42fbffff
       m_RenameOverlay:
         m_UserAcceptedRename: 0
         m_Name: 
@@ -834,7 +834,7 @@ MonoBehaviour:
     m_PrefName: Preview_InspectorPreview
   m_PreviewWindow: {fileID: 0}
   m_LastInspectedObjectInstanceID: -1
-  m_LastVerticalScrollValue: 28
+  m_LastVerticalScrollValue: 0
 --- !u!114 &22
 MonoBehaviour:
   m_ObjectHideFlags: 52
