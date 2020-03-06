@@ -6,14 +6,31 @@ using UnityEngine.UI;
 
 // TODO;
 /*
- *
+ * move weaponstate to base?
+ *      primary is heat based, secondary has ammo
+ *        so maybe better to keep systems seperate
+ *        
+ *    Merge state + inputs?
+ *          keep in mind how vfx for beam weapons works
+ *           ie. for lg keep displaying beam while weapon is able to fire and m1 is held down
+ *             and for rail just display it once when weapon is fired
+ *    
+ *    overheating vs "reload" vs passive cooling
+ *    Overheat -> forced passive cooling to 0?
+ *      Reload->fast heat dissipation
  * 
  */
 
 public class PrimaryWeapon : WeaponBase
 {
-    private bool reloading = false;
-    protected bool overHeated = false;
+    protected enum WeaponState // all states, use shots fired over weaponstate in case of rail?
+    {
+        Normal, // Ready to fire
+        Overheated, // Overheated
+        Disabled // Disabled during dodge, etc. // Allow passive cooling?
+    };
+    protected WeaponState weaponState = WeaponState.Normal;
+
     private const float maxHeat = 100.0f; // <-- TODO: add constants
     protected float heatPerShot; // Heat generated per shot
     private float heatLevel = 0.0f;
@@ -29,7 +46,7 @@ public class PrimaryWeapon : WeaponBase
     private void GetWeaponInputs()
     {
         weaponInput.fireButtonDown = Input.GetButton("Fire1");
-        weaponInput.fireWeapon = Input.GetButton("Fire1") && weaponTimer >= timeBetweenShots;
+        weaponInput.fireWeapon = Input.GetButton("Fire1") && weaponTimer >= timeBetweenShots /*&& weaponState == WeaponState.Normal*/;
 
         weaponInput.reload = Input.GetButton("Reload");
     }
@@ -66,35 +83,21 @@ public class PrimaryWeapon : WeaponBase
     //**************************************************
     private void WeaponHeat()
     {
-        if (overHeated && !reloading)
+        coolingTimer = 0.0f;
+
+        // Heating
+        heatLevel += heatPerShot;
+        if (heatLevel >= maxHeat)
         {
+            heatLevel = maxHeat;
             StartCoroutine(ResetHeat());
-            return;
         }
-        
-
-        //if (weaponInput.fireButtonDown) //+ if actually able to fire
-        //{
-            coolingTimer = 0.0f;
-
-            // Heating
-            heatLevel += heatPerShot;
-            if (heatLevel > maxHeat)
-            {
-                heatLevel = maxHeat;
-                overHeated = true;
-            }
-        //}
     }
 
     //**************************************************
     private void WeaponCooling()
     {
-        if (overHeated && !reloading)
-        {
-            StartCoroutine(ResetHeat());
-        }
-        else if (!weaponInput.fireButtonDown && !overHeated)
+        if (weaponState == WeaponState.Normal)
         {
             float coolingDelay = timeBetweenShots + 1.0f; // Delay before passive cooling starts
             coolingTimer += Time.deltaTime;
@@ -111,21 +114,19 @@ public class PrimaryWeapon : WeaponBase
     //**************************************************
     private void Reload()
     {
-        if (weaponInput.reload)
-        { 
-            overHeated = true;
+        if (weaponInput.reload && weaponState == WeaponState.Normal && heatLevel > 0.0)
+        {
             StartCoroutine(ResetHeat());
         }
     }
 
     IEnumerator ResetHeat()
     {
-        reloading = true;
+        weaponState = WeaponState.Overheated;
         float reloadDuration = 2.5f;
         yield return new WaitForSeconds(reloadDuration);
         heatLevel = 0.0f;
-        overHeated = false;
-        reloading = false;
+        weaponState = WeaponState.Normal;
     }
 
     //**************************************************

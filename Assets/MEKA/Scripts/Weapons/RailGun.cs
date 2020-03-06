@@ -39,7 +39,7 @@ public class RailGun : PrimaryWeapon
     //**************************************************
     protected override void Fire()
     {
-        if (weaponInput.fireWeapon && !overHeated)
+        if (weaponInput.fireWeapon && weaponState == WeaponState.Normal)
         {
             // Reset the timer.
             weaponTimer = 0.0f;

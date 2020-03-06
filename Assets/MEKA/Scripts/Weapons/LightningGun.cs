@@ -44,7 +44,7 @@ public class LightningGun : PrimaryWeapon
     //**************************************************
     protected override void Fire()
     {
-        if (weaponInput.fireWeapon && !overHeated)
+        if (weaponInput.fireWeapon && weaponState == WeaponState.Normal)
         {
             // Reset the timer.
             weaponTimer = 0.0f;
@@ -55,7 +55,7 @@ public class LightningGun : PrimaryWeapon
 
             sfx.UpdateBeam(beamLength);
         }
-        else if (!weaponInput.fireButtonDown || overHeated)
+        else if (!weaponInput.fireButtonDown || weaponState != WeaponState.Normal)
         {
             // Disable SFX when not firing
             sfx.DisableSFX();
