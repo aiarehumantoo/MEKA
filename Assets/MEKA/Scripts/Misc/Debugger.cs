@@ -23,14 +23,18 @@ public class Debugger : MonoBehaviour
         GUI.Label(new Rect(10, 140, 400, 100), "OnGround: " + _controller.isGrounded, style);
 
         var ups = _controller.velocity;
-        ups.y = 0;
-        GUI.Label(new Rect(10, 160, 400, 100), "Speed: " + Mathf.Round(ups.magnitude * 100) / 100 + "ups", style);
+        //ups.y = 0;
+        GUI.Label(new Rect(10, 160, 400, 100), "Player velocity: " + Mathf.Round(ups.magnitude * 100) / 100 + "ups", style);
         
-        var ups2 = _controller.velocity;
+        var upsV = _controller.velocity;
         //ups2.x = 0;
         //ups2.z = 0;
         //GUI.Label(new Rect(0, 120, 400, 100), "Vertical Speed: " + Mathf.Round(ups2.magnitude * 100) / 100 + "ups", style);
-        GUI.Label(new Rect(10, 180, 400, 100), "Vertical Speed: " + ups2.y + "ups", style);
+        GUI.Label(new Rect(10, 180, 400, 100), "Vertical velocity: " + upsV.y + "ups", style);
+
+        var upsH = _controller.velocity;
+        upsH.y = 0;
+        GUI.Label(new Rect(10, 200, 400, 100), "Horizontal velocity: " + /*Mathf.Round(upsH.magnitude * 100) / 100*/ Mathf.Round(upsH.magnitude) + "ups", style);
     }
 
     // Get tag of the object charactercontroller is touching

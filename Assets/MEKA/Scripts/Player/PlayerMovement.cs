@@ -84,7 +84,7 @@ public class PlayerMovement : MonoBehaviour
     float jumpSpeed = 8.0f; // The speed at which the character's up axis gains when hitting jump
 
     float gravity = 25.0f; // Gravity
-    float friction = 6; // Ground friction
+    float groundFriction = 6; // Ground friction
     #endregion
 
     private float dodgeTimer = 1.5f; // Starts without cooldown
@@ -156,6 +156,8 @@ public class PlayerMovement : MonoBehaviour
     //**************************************************
     private void CameraBobbing()
     {
+        return;
+
         var newCameraPosition = playerView.transform.localPosition;
         if (characterController.velocity.magnitude > 0 && characterController.isGrounded)
         {
@@ -226,8 +228,16 @@ public class PlayerMovement : MonoBehaviour
     private void MovementControls()
     {
         GetMovementInputs();
-
         DodgeMove();
+
+        if (!characterController.isGrounded)
+        {
+            ApplyFriction(0.5f); // Always apply air friction
+        }
+        else if (!movementInputs.thrusterMove)
+        {
+            ApplyFriction(1.0f); // Apply ground friction only when walking
+        }
 
         // Boosting
         if (movementInputs.thrusterMove)
@@ -241,6 +251,8 @@ public class PlayerMovement : MonoBehaviour
 
 
 #if false
+        // Stock up slope feels ok (keeps horizontal speed the same)
+
         if (characterController.isGrounded && movementInputs.thrusterMove)
         {
             RaycastHit hit; // A raycast hit to get information about what was hit
@@ -262,8 +274,8 @@ public class PlayerMovement : MonoBehaviour
                     var vel = playerVelocity;
                     //vel.y = 0.0f;
                     var correctedVector = Vector3.Cross(transform.right, hit.normal); // Vector along the surface, direction player is looking at
-                    correctedVector *= vel.magnitude;
-                    Debug.DrawLine(transform.position, transform.position + correctedVector, Color.red, 2.0f);
+                    correctedVector *= /*vel.magnitude*/ 12.5f;
+                    Debug.DrawLine(transform.position, transform.position + correctedVector, Color.red, 2.0f); // Note: hide cockpit camera or debug line is duplicated
 
                     playerVelocity = correctedVector;
                 }
@@ -271,6 +283,39 @@ public class PlayerMovement : MonoBehaviour
         }
 #endif
 
+//#if false
+        // Simple fix; add downforce on slopes
+        if (characterController.isGrounded /*&& movementInputs.thrusterMove*/) //walking down slope jitters too
+        {
+            RaycastHit hit; // A raycast hit to get information about what was hit
+            var groundLayer = LayerMask.GetMask("Environment");
+            var raycastDistance = characterController.height / 1.5f;
+
+            // Raycast downwards
+            Ray groundRay = new Ray();
+            groundRay.origin = transform.position;
+            groundRay.direction = -transform.up;
+
+            if (Physics.Raycast(groundRay, out hit, raycastDistance, groundLayer))
+            {
+                // Not on flat ground
+                //if (Vector3.Angle(Vector3.up, hit.normal) >= 5.0f)
+                //if (hit.normal != Vector3.up)
+                var slopeAngle = Vector3.Angle(Vector3.up, hit.normal);
+                if (Mathf.Abs(slopeAngle) <= 35.0f) // Max slope movement will stick to
+                {
+                    playerVelocity.y -= 5000.0f * Time.deltaTime;
+                    //Debug.Log(slopeAngle);
+                }
+            }
+        }
+        //#endif
+
+        if (characterController.isGrounded && movementInputs.wishJump)
+        {
+            playerVelocity.y = jumpSpeed;
+            movementInputs.wishJump = false;
+        }
 
 
         // Move the controller
@@ -310,7 +355,7 @@ public class PlayerMovement : MonoBehaviour
         inputDir.Normalize();
         inputDir *= thrusterAcceleration;
 
-        playerVelocity += inputDir;
+        /*playerVelocity += inputDir;
         if (playerVelocity.magnitude > thrusterSpeed)
         {
             playerVelocity.Normalize();
@@ -328,16 +373,41 @@ public class PlayerMovement : MonoBehaviour
         {
             playerVelocity.y = jumpSpeed;
             movementInputs.wishJump = false;
+        }*/
+
+        var playerVel = playerVelocity; // Copy movement vector
+        playerVel.y = 0.0f; // Ignore vertical movement
+        playerVel += inputDir;
+        if (playerVel.magnitude > thrusterSpeed)
+        {
+            playerVel.Normalize();
+            playerVel *= thrusterSpeed;
         }
+        else
+        {
+            playerVel += inputDir;
+        }
+
+        // Reset the gravity velocity           
+        playerVel.y = -gravity * Time.deltaTime;
+
+        /*if (movementInputs.wishJump)
+        {
+            playerVel.y = jumpSpeed;
+            movementInputs.wishJump = false;
+        }*/
+
+        // Copy
+        playerVelocity = playerVel;
     }
 
     //**************************************************
     private void WalkMove()
     {
-        if (characterController.isGrounded)
+        /*if (characterController.isGrounded)
             ApplyFriction(1.0f);
         else
-            ApplyFriction(0.5f);
+            ApplyFriction(0.5f);*/
 
         var wishdir = new Vector3(movementInputs.rightMove, 0, movementInputs.forwardMove);
         wishdir = transform.TransformDirection(wishdir);
@@ -354,11 +424,11 @@ public class PlayerMovement : MonoBehaviour
             // Reset the gravity velocity           
             playerVelocity.y = -gravity * Time.deltaTime;
 
-            if (movementInputs.wishJump)
+            /*if (movementInputs.wishJump)
             {
                 playerVelocity.y = jumpSpeed;
                 movementInputs.wishJump = false;
-            }
+            }*/
 
             if ( playerVelocity.magnitude <= /*walkSpeed*/ 7.10f) // when walking. velocity is bit wrong due to little bit of vertical velocity
             {                                                           // + walk speed can momentarily exceed "cap"
@@ -383,12 +453,8 @@ public class PlayerMovement : MonoBehaviour
         var speed = vec.magnitude;
         float drop = 0.0f;
 
-        // Only if the player is on the ground then apply friction
-        //if (_controller.isGrounded)
-        //{
-            var control = speed < walkDeacceleration ? walkDeacceleration : speed;
-            drop = control * friction * Time.deltaTime * t;
-        //}
+        var control = speed < walkDeacceleration ? walkDeacceleration : speed;
+        drop = control * groundFriction * Time.deltaTime * t;
 
         var newspeed = speed - drop;
         if (newspeed < 0)

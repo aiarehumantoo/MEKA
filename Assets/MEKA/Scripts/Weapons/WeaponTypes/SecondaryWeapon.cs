@@ -71,7 +71,7 @@ public class SecondaryWeapon : WeaponBase
             shotsLeft++;
             regenTimer = 0.0f;
         }
-        if (shotsLeft > 0)
+        if (shotsLeft > 0) // todo. stop if disabled state
         {
             weaponState = WeaponState.Normal;
         }
