@@ -29,17 +29,20 @@ public class EocProjectile : ProjectileBase
     //**************************************************
     protected override void Explosion(RaycastHit hit)
     {
-        if (hit.collider.gameObject.layer == LayerMask.NameToLayer("Environment"))
+        // Hit collider
+        if (hit.collider)
         {
-            // Add delay if hit environment
-            const float explosionDelay = 0.75f;
-            StartCoroutine(DelayedExplosion(hit, explosionDelay));
+            if (hit.collider.gameObject.layer == LayerMask.NameToLayer("Environment"))
+            {
+                // Add delay if hit environment
+                const float explosionDelay = 0.75f;
+                StartCoroutine(DelayedExplosion(hit, explosionDelay));
+                return;
+            }
         }
-        else
-        {
-            // Explode immediately
-            base.Explosion(hit);
-        }
+
+        // Explode immediately
+        base.Explosion(hit);
     }
 
     //**************************************************

@@ -7,9 +7,10 @@ using UnityEngine;
 /*
  * TODO;
  * 
- * Save gameobject instead of colliders? For cases when enemy has multiple colliders
- * So that damage is applied just once, regardless of how many colliders enemy has
- *  saving all colliders works too
+ * Dealing damage;
+ *      Save gameobject instead of colliders? For cases when enemy has multiple colliders
+ *      So that damage is applied just once, regardless of how many colliders enemy has
+ *      saving all colliders works too
  *  
  *  Replace lifetime with default maximum distance
  *         For projectiles that explode after short distance (ie. MIRV)
