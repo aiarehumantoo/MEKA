@@ -11,9 +11,14 @@ using UnityEngine;
  * So that damage is applied just once, regardless of how many colliders enemy has
  *  saving all colliders works too
  *  
- *  max distance option; *explodes*
- *  Delayed explosion. ie. 1 second after contact with ground (but direct is instant?)
- * 
+ *  Replace lifetime with default maximum distance
+ *         For projectiles that explode after short distance (ie. MIRV)
+ *         Doubles as deleting projectiles that hit nothing
+ *         
+ *  Todo; filter hits->damage
+ *          Direct hit damage should be dealt only to first target
+ *              Currently looping all hits within raycast distance
+ *              Set raycast to stop after first hit? -> no need to do checks
  */
 
 
@@ -32,18 +37,14 @@ public class ProjectileBase : MonoBehaviour
     // Simulation
     private bool move = true; // Projectile simulation
     protected int shootableMask; // A layer mask so the raycast only hits things on the shootable layer.
-
-    private Vector3 spawnPosition;
     private Vector3 movementVector;
 
     List<Collider> ignoreColliders = new List<Collider>(); // Save damaged colliders so that same damage is not dealt twice
 
-    // TESTING;
-    protected float maximumRange = Mathf.Infinity; // Maximum range             // use max range instead of lifetime? (in weaponbase) 
+    protected float maximumRange = 100.0f; // Maximum range
     private float totalTraveledDistance = 0.0f;
 
     //**************************************************
-    //public virtual void Setup(float damage, float splashdmg)
     public void Setup(float damage, float splashdmg)
     {
         damagePerShot = damage;
@@ -57,8 +58,6 @@ public class ProjectileBase : MonoBehaviour
 
         // Create a layer mask for the Shootable layer.
         shootableMask = LayerMask.GetMask("Enemy", "Environment");
-
-        spawnPosition = transform.position;
     }
 
     //**************************************************
@@ -99,7 +98,7 @@ public class ProjectileBase : MonoBehaviour
             Vector3 maxdistPos = transform.position + predictedMovement.normalized * (maximumRange - totalTraveledDistance);
 
             // Maximum range was reached before projectile hit anything
-            if (closestHit.distance > Vector3.Distance(transform.position, maxdistPos)) // vector3.Distance = (vec1 - vec2).magnitude
+            if (closestHit.distance > Vector3.Distance(transform.position, maxdistPos))
             {
 #if SHOWDEBUGLOG
                 Debug.Log("PROJECTILE REACHED MAXIMUM RANGE");

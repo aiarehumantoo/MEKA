@@ -163,20 +163,5 @@ public class WeaponBase : MonoBehaviour
         GameObject projectile = null;
         projectile = (GameObject)Instantiate(projectilePrefab, projectileSpawn, playerCamera.transform.rotation);
         projectile.GetComponent<ProjectileBase>().Setup(damagePerShot, splashDamage); // Setup projectile stats
-        StartCoroutine(DeleteObject(projectile, 5.0f));
-
-        //Debug.Log("Fired a projectile weapon");
-    }
-
-    //**************************************************
-    private IEnumerator DeleteObject(GameObject obj, float lifetime)
-    {
-        // For deleting expired projectiles
-        yield return new WaitForSeconds(lifetime);
-        Destroy(obj);
-
-//#if SHOWDEBUGLOG // TODO; Commented coz this is called regardless if projectile still exists. -> Use max range instead?
-        Debug.Log("PROJECTILE EXPIRED");
-//#endif
     }
 }

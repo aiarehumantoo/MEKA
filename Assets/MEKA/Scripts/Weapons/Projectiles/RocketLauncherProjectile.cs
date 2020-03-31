@@ -26,32 +26,3 @@ public class RocketLauncherProjectile : ProjectileBase
         base.Explosion(hit);
     }
 }
-
-
-
-#if false
-    // Override for projectile that explodes with delay
-
-    //**************************************************
-    protected override void Explosion(RaycastHit hit)
-    {
-        if (hit.collider.gameObject.layer == LayerMask.NameToLayer("Environment"))
-        {
-            // Add delay if hit environment
-            const float explosionDelay = 1.5f;
-            StartCoroutine(DelayedExplosion(hit, explosionDelay));
-        }
-        else
-        {
-            // Explode immediately
-            base.Explosion(hit);
-        }
-    }
-
-    //**************************************************
-    private IEnumerator DelayedExplosion(RaycastHit hit, float time)
-    {
-        yield return new WaitForSeconds(time);
-        base.Explosion(hit);
-    }
-#endif
