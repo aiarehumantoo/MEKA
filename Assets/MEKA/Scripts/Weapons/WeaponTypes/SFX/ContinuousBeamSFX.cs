@@ -3,15 +3,20 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /* NOTES;
+ 
+ Material whiteDiffuseMat = new Material(Shader.Find("Unlit/Texture"));
+ lineRenderer.material = whiteDiffuseMat;
+  
  Materials, like textures, are not cleaned up automatically. 
  When you destroy objects whose scripts have explicitly created materials like this, you MUST manually destroy the material asset yourself. 
  Forgetting to do so causes a memory leak.
+
  private void OnDestroy()
  {
      Destroy(this.renderer.material);
  }
 
- */
+*/
 
 public class ContinuousBeamSFX : MonoBehaviour
 {
