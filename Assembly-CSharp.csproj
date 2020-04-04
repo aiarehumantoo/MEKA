@@ -64,12 +64,14 @@
   <ItemGroup>
     <Compile Include="Assets\MEKA\Scripts\Console\ConsoleBase.cs" />
     <Compile Include="Assets\MEKA\Scripts\Console\ConsoleTcpClient.cs" />
+    <Compile Include="Assets\MEKA\Scripts\HealthBase.cs" />
     <Compile Include="Assets\MEKA\Scripts\Misc\Debugger.cs" />
     <Compile Include="Assets\MEKA\Scripts\Misc\Settings.cs" />
     <Compile Include="Assets\MEKA\Scripts\Player\CockpitScript.cs" />
     <Compile Include="Assets\MEKA\Scripts\Player\Crosshair.cs" />
     <Compile Include="Assets\MEKA\Scripts\Player\PlayerMovement.cs" />
     <Compile Include="Assets\MEKA\Scripts\Player\SFX\CameraSFX.cs" />
+    <Compile Include="Assets\MEKA\Scripts\TargetDummyHealth.cs" />
     <Compile Include="Assets\MEKA\Scripts\Weapons\LightningGun.cs" />
     <Compile Include="Assets\MEKA\Scripts\Weapons\Mirv.cs" />
     <Compile Include="Assets\MEKA\Scripts\Weapons\Projectiles\EocProjectile.cs" />

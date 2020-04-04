@@ -6,6 +6,8 @@ using UnityEngine;
 
 // TODO
 /*
+ * Assigning hitsounds
+ *      load from resources? get rid of assigning in editor for each weapon
  * 
  * 
  * What about mixed type? ie. hitscan with projectile alt fire mode (charged shot?)
@@ -52,12 +54,18 @@ public class WeaponBase : MonoBehaviour
     protected Camera playerCamera; // Camera location for shooting
     protected float weaponTimer; // A timer to determine when to fire
 
+    private AudioSource audioSource;
+    public AudioClip[] hitSounds; // 0 = hitsound, 1 = killsound
 
     //**************************************************
     protected virtual void Start()
     {
         // Get camera
         playerCamera = Camera.main;
+
+        // Get audio source
+        audioSource = transform.root.GetComponent<AudioSource>();
+        //TODO: create if not found
     }
 
     //**************************************************
@@ -104,6 +112,7 @@ public class WeaponBase : MonoBehaviour
                 Debug.Log("HITSCAN HIT ENEMY. " + damagePerShot + " damage");
 #endif
                 // Deal damage
+                DealDamage(shootHit.transform.root.gameObject, damagePerShot);
             }
         }
         else // Raycast hit nothing
@@ -143,6 +152,7 @@ public class WeaponBase : MonoBehaviour
                 Debug.Log("HITSCAN HIT ENEMY. " + damagePerShot + " damage");
 #endif
                 // Deal damage
+                DealDamage(shootHit.transform.root.gameObject, damagePerShot);
             }
         }
         else // Raycast hit nothing
@@ -162,6 +172,37 @@ public class WeaponBase : MonoBehaviour
         //Create the projectile from the Prefab
         GameObject projectile = null;
         projectile = (GameObject)Instantiate(projectilePrefab, projectileSpawn, playerCamera.transform.rotation);
-        projectile.GetComponent<ProjectileBase>().Setup(damagePerShot, splashDamage); // Setup projectile stats
+        projectile.GetComponent<ProjectileBase>().Setup(damagePerShot, splashDamage, this); // Setup projectile stats
+    }
+
+
+    //**************************************************
+    private void DealDamage(GameObject target, float damage)
+    {
+        HealthBase targetHealth = target.GetComponent<HealthBase>();
+        if (targetHealth)
+        {
+            if (!targetHealth.IsDead())
+            {
+                // Damage target & play hitsounds
+                PlayHitSounds(targetHealth.ReceiveDamage(damage));
+            }
+        }
+
+    }
+
+    //**************************************************
+    public void PlayHitSounds(bool finalHit)
+    {
+        if (finalHit)
+        {
+            audioSource.clip = hitSounds[1];
+            audioSource.PlayOneShot(audioSource.clip);
+        }
+        else
+        {
+            audioSource.clip = hitSounds[0];
+            audioSource.PlayOneShot(audioSource.clip);
+        }
     }
 }

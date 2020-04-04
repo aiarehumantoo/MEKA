@@ -6,9 +6,11 @@ using UnityEngine;
 
 /*
  * TODO;
- * 
+ * Calculate splash damage. dropoff?
  *  
- *              
+ *  Play hitsound once if hit something?
+ *  calling hitsound?
+ *  
  */
 
 
@@ -30,14 +32,18 @@ public class ProjectileBase : MonoBehaviour
     protected float maximumRange = 100.0f; // Maximum range
     private float totalTraveledDistance = 0.0f;
 
+    // Weapon that fired this projectile
+    protected WeaponBase weaponBase;
+
     // List of hit (root) gameobjects
     List<GameObject> hitTargets = new List<GameObject>(); // Filters out multihits. (Several colliders or direct + splash)
 
     //**************************************************
-    public void Setup(float damage, float splashdmg)
+    public void Setup(float damage, float splashdmg, WeaponBase parentScript)
     {
         damagePerShot = damage;
         splashDamage = splashdmg;
+        weaponBase = parentScript;
     }
 
     //**************************************************
@@ -168,8 +174,18 @@ public class ProjectileBase : MonoBehaviour
             // Save target (root gameobject)
             hitTargets.Add(target);
 
-            // Damage target
-            //hit.collider.gameObject.GetComponent<HealthBase>().ReceiveDamage();
+            HealthBase targetHealth = target.GetComponent<HealthBase>();
+            if (targetHealth)
+            {
+                if (!targetHealth.IsDead())
+                {
+                    // Damage target & play hitsounds
+                    if (weaponBase)
+                    {
+                        weaponBase.PlayHitSounds(targetHealth.ReceiveDamage(damage));
+                    }
+                }
+            }
         }
 
     }
