@@ -8,8 +8,6 @@ using UnityEngine;
  * TODO;
  * Calculate splash damage. dropoff?
  *  
- *  Play hitsound once if hit something?
- *  calling hitsound?
  *  
  */
 
@@ -168,7 +166,7 @@ public class ProjectileBase : MonoBehaviour
             return;
         }
 
-        // Make sure target was not already hit
+        // Make sure target was not already damaged
         if (!hitTargets.Contains(target))
         {
             // Save target (root gameobject)
@@ -182,7 +180,12 @@ public class ProjectileBase : MonoBehaviour
                     // Damage target & play hitsounds
                     if (weaponBase)
                     {
-                        weaponBase.PlayHitSounds(targetHealth.ReceiveDamage(damage));
+                        //weaponBase.PlayHitSounds(targetHealth.ReceiveDamage(damage));
+                        bool lethalDmg = targetHealth.ReceiveDamage(damage);
+                        if (hitTargets.Count == 1)
+                        {
+                            weaponBase.PlayHitSounds(lethalDmg); // Play hitsound only once
+                        }
                     }
                 }
             }
