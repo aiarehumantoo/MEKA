@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class SecondaryWeapon : WeaponBase
 {
-    protected enum WeaponState
+    protected enum WeaponState // Same as PrimaryWeapon`s. Just different naming for sake of clarity
     {
         Normal,
         OutOfAmmo,
@@ -12,7 +12,7 @@ public class SecondaryWeapon : WeaponBase
     };
     protected WeaponState weaponState = WeaponState.Normal;
 
-    private int maxShots = 5; // universal implementation for heat/ammo (primary/secondary?)
+    private int maxShots = 5;
     private int shotsLeft = 0;
     private float regenDelay = 7.5f;
     private float regenTimer = 0.0f;
@@ -71,7 +71,7 @@ public class SecondaryWeapon : WeaponBase
             shotsLeft++;
             regenTimer = 0.0f;
         }
-        if (shotsLeft > 0) // todo. stop if disabled state
+        if (shotsLeft > 0)
         {
             weaponState = WeaponState.Normal;
         }

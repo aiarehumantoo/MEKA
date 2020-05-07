@@ -6,24 +6,22 @@ using UnityEngine.UI;
 
 // TODO;
 /*
- * move weaponstate to base?
+ * move weaponstate to base?                    *********
  *      primary is heat based, secondary has ammo
  *        so maybe better to keep systems seperate
+ *        *functionality should be the same. normal, noammo, disabled
  *        
- *    Merge state + inputs?
- *          keep in mind how vfx for beam weapons works
- *           ie. for lg keep displaying beam while weapon is able to fire and m1 is held down
- *             and for rail just display it once when weapon is fired
  *    
  *    overheating vs "reload" vs passive cooling
  *    Overheat -> forced passive cooling to 0?
  *      Reload->fast heat dissipation
+ *      *is there need for penalty? autoreload might suffice
  * 
  */
 
 public class PrimaryWeapon : WeaponBase
 {
-    protected enum WeaponState // all states, use shots fired over weaponstate in case of rail?
+    protected enum WeaponState
     {
         Normal, // Ready to fire
         Overheated, // Overheated
@@ -31,7 +29,7 @@ public class PrimaryWeapon : WeaponBase
     };
     protected WeaponState weaponState = WeaponState.Normal;
 
-    private const float maxHeat = 100.0f; // <-- TODO: add constants
+    private const float maxHeat = 100.0f; // Maximum heat
     protected float heatPerShot; // Heat generated per shot
     private float heatLevel = 0.0f;
     private float coolingRate = 0.1f; // Passive cooling per Update

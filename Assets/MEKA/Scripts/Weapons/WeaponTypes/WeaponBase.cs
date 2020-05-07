@@ -7,7 +7,7 @@ using UnityEngine;
 // TODO
 /*
  * Assigning hitsounds
- *      load from resources? get rid of assigning in editor for each weapon
+ *      load from resources? get rid of assigning in editor for each weapon (unless different types of hitsounds are needed)
  * 
  * 
  * What about mixed type? ie. hitscan with projectile alt fire mode (charged shot?)
@@ -18,6 +18,7 @@ using UnityEngine;
  * 
  * 
  * Raycast for projectile weapons too incase of player is too close to a wall
+ * (not needed if using camera instead of barrel location)
  * For projectiles;
  * Raycast camera to spawnpoint > hits > splash
  *                              > no hit > spawn projectile
@@ -47,7 +48,7 @@ public class WeaponBase : MonoBehaviour
     // Weapon stats
     protected float damagePerShot; // The damage inflicted by each shot
     protected float timeBetweenShots; // The time between each shot
-    protected float maximumRange; // Maximum range                                // Todo; Add as optional for projectiles. ie. MIRV pellets explode at max range
+    protected float maximumRange; // Maximum range // Note: Projectiles use their own max range since single weapon may use 2 different projectiles
 
     [SerializeField] protected Transform weapon; // Weapon location
     public WeaponInput weaponInput; // Player inputs
@@ -174,7 +175,6 @@ public class WeaponBase : MonoBehaviour
         projectile = (GameObject)Instantiate(projectilePrefab, projectileSpawn, playerCamera.transform.rotation);
         projectile.GetComponent<ProjectileBase>().Setup(damagePerShot, splashDamage, this); // Setup projectile stats
     }
-
 
     //**************************************************
     private void DealDamage(GameObject target, float damage)

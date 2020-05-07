@@ -23,7 +23,6 @@ public class RocketLauncher : SecondaryWeapon, IConsole
 
         // Weapon stats
         damagePerShot = 90.0f;
-        //splashDamage = 50.0f;
         timeBetweenShots = 1.5f;
 
         weaponTimer = timeBetweenShots; // Start without cooldown
