@@ -21,6 +21,7 @@ using UnityStandardAssets.Utility;  // Utility scripts
 //Notes:
 // Unity documentation recommends calling charactercontroller.Move() only once per frame -> void Update() 
 // But FixedUpdate() is not linked to framerate and therefore should be more consistent
+// * Time.deltatime does fix framerate dependency but consistency is also important
 
 // Serialized variables are visible in the inspector just like public values (regardless if public or not)
 
@@ -46,8 +47,8 @@ public class PlayerMovement : MonoBehaviour
     //Camera
     private Camera playerView; // Player camera
     private float playerViewYOffset = 0.6f; // The height at which the camera is bound to
-    private float xMouseSensitivity = 20.0f; // Horizontal sensitivity
-    private float yMouseSensitivity = 20.0f; // Vertical sensitivity
+    private float xMouseSensitivity = 37.0f; // Horizontal sensitivity
+    private float yMouseSensitivity = 37.0f; // Vertical sensitivity
     private float mouseYaw = 0.022f; //mouse yaw/pitch. Overwatch = 0.0066, Quake 0.022
 
     // Camera rotations
@@ -103,7 +104,7 @@ public class PlayerMovement : MonoBehaviour
         }
 
         // Get horizontal mouse input
-        var wishTurn = Input.GetAxisRaw("Mouse X") * xMouseSensitivity * mouseYaw;
+        var wishTurn = Input.GetAxisRaw("Mouse X") * xMouseSensitivity /* * mouseYaw*/ * Time.deltaTime;
         var wishAngle = torsoAngle + wishTurn;
 
         if (Mathf.Abs(wishAngle) <= turnrateAngleThreshold)
@@ -135,13 +136,10 @@ public class PlayerMovement : MonoBehaviour
         torsoAngle += (Mathf.Abs(torsoAngle) > legsResetRate) ? (resetDirection * legsResetRate) : -torsoAngle;
 
         // Get vertical mouse input
-        mouseY -= Input.GetAxisRaw("Mouse Y") * yMouseSensitivity * mouseYaw;
+        mouseY -= Input.GetAxisRaw("Mouse Y") * yMouseSensitivity /* * mouseYaw*/ * Time.deltaTime;
 
         // Clamp the vertical rotation
-        if (mouseY < -90)
-            mouseY = -90;
-        else if (mouseY > 90)
-            mouseY = 90;
+        mouseY = Mathf.Clamp(mouseY, -90.0f, 90.0f);
 
         // X,Y,Z // Vertical, Horizontal, Tilt
         this.transform.rotation = Quaternion.Euler(0, mouseX, 0); // Rotates the collider
@@ -243,7 +241,7 @@ public class PlayerMovement : MonoBehaviour
                 var slopeAngle = Vector3.Angle(Vector3.up, hit.normal);
                 if (Mathf.Abs(slopeAngle) <= 35.0f) // Max slope movement will stick to
                 {
-                    playerVelocity.y -= 5000.0f * Time.deltaTime;
+                    playerVelocity.y -= 5000.0f * Time.deltaTime; // JUST SET since this isnt gravity? keep deltatime
                     //Debug.Log(slopeAngle);
                 }
             }
@@ -316,6 +314,10 @@ public class PlayerMovement : MonoBehaviour
     //**************************************************
     private void WalkMove()
     {
+        // TODO; Test simpler MovementVector + AccelerationVector
+        // AccelerationVector = 0 if TotalVector.magnitude > cap
+        // Or accelerate only if current velocity is below cap
+
         // Apply friction
         float frictionScale = characterController.isGrounded ? 1.0f : 0.5f;
         ApplyFriction(frictionScale);
@@ -339,7 +341,7 @@ public class PlayerMovement : MonoBehaviour
             Vector3 velocityVector = playerVelocity;
             velocityVector.y = 0;
             float horizontalVelocity = velocityVector.magnitude;
-            if (horizontalVelocity <= walkSpeed * 1.2f)
+            if (horizontalVelocity <= walkSpeed * 1.2f) // Walking speed can momentarily exceed the cap
             {
                 // Apply walking effect to camera
                 CameraBobbing();
