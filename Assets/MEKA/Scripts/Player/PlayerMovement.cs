@@ -223,12 +223,15 @@ public class PlayerMovement : MonoBehaviour
             WalkMove();
         }
 
-        // Add downforce on slopes to fix bouncing
+        // Add downforce to fix bouncing
         if (characterController.isGrounded)
         {
             RaycastHit hit; // A raycast hit to get information about what was hit
             var groundLayer = LayerMask.GetMask("Environment");
             var raycastDistance = characterController.height / 1.5f;
+
+            // TODO; raycast downwards is not enough. Player can stand on the edge and raycast will miss
+            // Do raycast w/ radius, colliderHit or spherecast to fix this
 
             // Raycast downwards
             Ray groundRay = new Ray();
@@ -237,11 +240,10 @@ public class PlayerMovement : MonoBehaviour
 
             if (Physics.Raycast(groundRay, out hit, raycastDistance, groundLayer))
             {
-                // Not on flat ground
                 var slopeAngle = Vector3.Angle(Vector3.up, hit.normal);
                 if (Mathf.Abs(slopeAngle) <= 35.0f) // Max slope movement will stick to
                 {
-                    playerVelocity.y -= 5000.0f * Time.deltaTime; // JUST SET since this isnt gravity? keep deltatime
+                    playerVelocity.y = -5000.0f;
                     //Debug.Log(slopeAngle);
                 }
             }
@@ -304,8 +306,7 @@ public class PlayerMovement : MonoBehaviour
         }
 
         // Reset the gravity velocity
-        //playerVel.y = -gravity * Time.deltaTime; // Zero gravity caused some jitter with earlier system. Fixed now?
-        playerVel.y = 0.0f;
+        playerVel.y = -gravity * Time.deltaTime;
 
         // Copy
         playerVelocity = playerVel;
@@ -314,10 +315,6 @@ public class PlayerMovement : MonoBehaviour
     //**************************************************
     private void WalkMove()
     {
-        // TODO; Test simpler MovementVector + AccelerationVector
-        // AccelerationVector = 0 if TotalVector.magnitude > cap
-        // Or accelerate only if current velocity is below cap
-
         // Apply friction
         float frictionScale = characterController.isGrounded ? 1.0f : 0.5f;
         ApplyFriction(frictionScale);
@@ -335,8 +332,7 @@ public class PlayerMovement : MonoBehaviour
             Accelerate(wishdir, wishspeed, walkAcceleration);
 
             // Reset the gravity velocity           
-            //playerVelocity.y = -gravity * Time.deltaTime;
-            playerVelocity.y = 0.0f;
+            playerVelocity.y = -gravity * Time.deltaTime;
 
             Vector3 velocityVector = playerVelocity;
             velocityVector.y = 0;
