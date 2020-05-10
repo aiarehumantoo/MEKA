@@ -87,6 +87,7 @@ public class PlayerMovement : MonoBehaviour
 
     private MovementInputs movementInputs; // Player commands
     private CharacterController characterController; // Player controller
+    bool wasOnGround = false; // Was controller on ground last tick?
 
     [HideInInspector]
     public GUIStyle style; // Debug; for displaying values on screen
@@ -171,7 +172,7 @@ public class PlayerMovement : MonoBehaviour
         movementInputs.thrusterMove = (characterController.isGrounded && Input.GetButton("Boost") && Input.GetAxisRaw("Vertical") > 0.01f) ? true : false;
         movementInputs.dodgeMove = (characterController.isGrounded && Input.GetButton("Boost") && Mathf.Abs(Input.GetAxisRaw("Vertical")) < 0.01f && Mathf.Abs(Input.GetAxisRaw("Horizontal")) > 0.01f) ? true : false;
 
-        movementInputs.wishJump = Input.GetButtonDown("Jump") ? true : false;
+        movementInputs.wishJump = Input.GetButtonDown("Jump") ? true : movementInputs.wishJump /* false -> jumps are not queued*/;
     }
 
     //**************************************************
@@ -249,11 +250,21 @@ public class PlayerMovement : MonoBehaviour
             }
         }
 
+        // Reset vertical velocity when dropping off a platform
+        if (!characterController.isGrounded && wasOnGround && playerVelocity.y <= 0.0f)
+        {
+            playerVelocity.y = -gravity * Time.deltaTime;
+        }
+
+        // Jumps can be queued
         if (characterController.isGrounded && movementInputs.wishJump)
         {
             playerVelocity.y = jumpSpeed;
             movementInputs.wishJump = false;
         }
+
+        // Save previous ground state
+        wasOnGround = characterController.isGrounded;
 
         // Move the controller
         characterController.Move(playerVelocity * Time.deltaTime);
