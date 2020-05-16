@@ -67,6 +67,7 @@
     <Compile Include="Assets\MEKA\Scripts\HealthBase.cs" />
     <Compile Include="Assets\MEKA\Scripts\Misc\Debugger.cs" />
     <Compile Include="Assets\MEKA\Scripts\Misc\Settings.cs" />
+    <Compile Include="Assets\MEKA\Scripts\Misc\ShowFps.cs" />
     <Compile Include="Assets\MEKA\Scripts\Player\CockpitScript.cs" />
     <Compile Include="Assets\MEKA\Scripts\Player\Crosshair.cs" />
     <Compile Include="Assets\MEKA\Scripts\Player\PlayerMovement.cs" />

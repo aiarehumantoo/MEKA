@@ -7,7 +7,10 @@ using UnityStandardAssets.Utility;  // Utility scripts
 
 // TODO:
 
+// Optimize raycasting (every usage. not just movement)
+
 // BUG; dodging off ledge sometimes slams player down on the ground below
+    // Should be fixed now that vertical velocity is reset
 
 // Dodge:
 // give speed + stop fiction?
@@ -60,7 +63,7 @@ public class PlayerMovement : MonoBehaviour
 
     private float torsoAngle = 0.0f; // Angle between mech torso and legs. Used to limit turnrate
     private float turnrateAngleThreshold = 45.0f; // At what angle turnrate cap kicks in
-    private float legsResetRate = 1.5f; // How fast legs reset towards torso
+    private float legsResetRate = 200.0f; // How fast legs reset towards torso
     #endregion
 
     #region HeadBob
@@ -87,7 +90,7 @@ public class PlayerMovement : MonoBehaviour
 
     private MovementInputs movementInputs; // Player commands
     private CharacterController characterController; // Player controller
-    bool wasOnGround = false; // Was controller on ground last tick?
+    private bool wasOnGround = false; // Was controller on ground last tick?
 
     [HideInInspector]
     public GUIStyle style; // Debug; for displaying values on screen
@@ -105,7 +108,7 @@ public class PlayerMovement : MonoBehaviour
         }
 
         // Get horizontal mouse input
-        var wishTurn = Input.GetAxisRaw("Mouse X") * xMouseSensitivity /* * mouseYaw*/ * Time.deltaTime;
+        var wishTurn = Input.GetAxisRaw("Mouse X") * xMouseSensitivity * Time.deltaTime;
         var wishAngle = torsoAngle + wishTurn;
 
         if (Mathf.Abs(wishAngle) <= turnrateAngleThreshold)
@@ -134,10 +137,11 @@ public class PlayerMovement : MonoBehaviour
         // Turn legs towards 0.0 angle
         debugAngle = torsoAngle; // Save debug value
         float resetDirection = torsoAngle < 0.0 ? 1.0f : -1.0f;
-        torsoAngle += (Mathf.Abs(torsoAngle) > legsResetRate) ? (resetDirection * legsResetRate) : -torsoAngle;
+        float scaledResetRate = legsResetRate * Time.deltaTime; // Scale reset rate // Note: Forgot to scale angle comparison -> slow turning did not register
+        torsoAngle += (Mathf.Abs(torsoAngle) > scaledResetRate) ? (resetDirection * scaledResetRate) : -torsoAngle;
 
         // Get vertical mouse input
-        mouseY -= Input.GetAxisRaw("Mouse Y") * yMouseSensitivity /* * mouseYaw*/ * Time.deltaTime;
+        mouseY -= Input.GetAxisRaw("Mouse Y") * yMouseSensitivity * Time.deltaTime;
 
         // Clamp the vertical rotation
         mouseY = Mathf.Clamp(mouseY, -90.0f, 90.0f);
@@ -231,14 +235,12 @@ public class PlayerMovement : MonoBehaviour
             var groundLayer = LayerMask.GetMask("Environment");
             var raycastDistance = characterController.height / 1.5f;
 
-            // TODO; raycast downwards is not enough. Player can stand on the edge and raycast will miss
-            // Do raycast w/ radius, colliderHit or spherecast to fix this
-
             // Raycast downwards
             Ray groundRay = new Ray();
             groundRay.origin = transform.position;
             groundRay.direction = -transform.up;
 
+            /* Doesnt work if ground isnt directly below player
             if (Physics.Raycast(groundRay, out hit, raycastDistance, groundLayer))
             {
                 var slopeAngle = Vector3.Angle(Vector3.up, hit.normal);
@@ -247,6 +249,35 @@ public class PlayerMovement : MonoBehaviour
                     playerVelocity.y = -5000.0f;
                     //Debug.Log(slopeAngle);
                 }
+                Debug.DrawLine(hit.point, hit.point + hit.normal, Color.green, 2.0f); // Draw ground normal
+            }*/
+
+            // Gets normal of edge -> incorrect angle
+            if(Physics.SphereCast(transform.position, characterController.radius, -transform.up, out hit, characterController.height / 1.5f, groundLayer))
+            {
+                var slopeAngle = Vector3.Angle(Vector3.up, hit.normal);
+                if (Mathf.Abs(slopeAngle) <= 35.0f) // Max slope movement will stick to
+                {
+                    playerVelocity.y = -5000.0f;
+                    Debug.Log(slopeAngle); // Angle is wrong when pixelwalking
+
+                    /*       /      <-- normal
+                     * ____ /    
+                     *     |
+                     *     |     <-- platform cross-section
+                     */
+                }
+                Debug.DrawLine(hit.point, hit.point + hit.normal, Color.green, 2.0f); // Draw ground normal
+
+#if false
+                // obtain the normals from the Mesh
+                Mesh mesh = hit.transform.GetComponent<MeshFilter>().mesh;
+                Vector3[] normals = mesh.normals;
+                foreach (var normal in normals)
+                {
+                    Debug.DrawLine(transform.position, transform.position + normal, Color.green, 2.0f); // Draw ALL normals
+                }
+#endif
             }
         }
 
@@ -402,6 +433,10 @@ public class PlayerMovement : MonoBehaviour
     //**************************************************
     void OnControllerColliderHit(ControllerColliderHit hit)
     {
+        // Display ground normal (enable gizmos)
+        //var slopeAngle = Vector3.Angle(Vector3.up, hit.normal);
+        //Debug.Log(slopeAngle);
+        //Debug.DrawLine(hit.point, hit.point + hit.normal, Color.green, 2.0f); // Draw ground normal
 
 #if false
         // DEBUG/TESTING;
