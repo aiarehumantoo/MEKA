@@ -259,7 +259,7 @@ public class PlayerMovement : MonoBehaviour
                 if (Mathf.Abs(slopeAngle) <= 35.0f) // Max slope movement will stick to
                 {
                     playerVelocity.y = -5000.0f;
-                    Debug.Log(slopeAngle); // Angle is wrong when pixelwalking
+                    //Debug.Log(slopeAngle); // Angle is wrong when pixelwalking
 
                     /*       /      <-- normal
                      * ____ /    
@@ -288,9 +288,11 @@ public class PlayerMovement : MonoBehaviour
         }
 
         // Jumps can be queued
-        if (characterController.isGrounded && movementInputs.wishJump)
+        if (characterController.isGrounded && movementInputs.wishJump && dodgeTimer >= 0.25f)
         {
-            playerVelocity.y = jumpSpeed;
+            //playerVelocity.y = jumpSpeed;
+            const float jumpHeight = 1.8f;
+            playerVelocity.y = Mathf.Sqrt(jumpHeight * 2.0f * gravity);
             movementInputs.wishJump = false;
         }
 
@@ -327,20 +329,39 @@ public class PlayerMovement : MonoBehaviour
     //**************************************************
     private void ThrusterMove()
     {
-        const float thrusterAcceleration = 0.05f;
+        const float thrusterAcceleration = 14.5f;
 
         var inputDir = new Vector3(movementInputs.rightMove, 0, movementInputs.forwardMove);
         inputDir = transform.TransformDirection(inputDir);
         inputDir.Normalize();
-        inputDir *= thrusterAcceleration;
+        inputDir *= thrusterAcceleration * Time.deltaTime;
 
         var playerVel = playerVelocity; // Copy movement vector
         playerVel.y = 0.0f; // Ignore vertical movement
-        playerVel += inputDir;
-        if (playerVel.magnitude > thrusterSpeed)
+        var wishVector = playerVel + inputDir;
+        if (wishVector.magnitude > thrusterSpeed)
         {
-            playerVel.Normalize();
-            playerVel *= thrusterSpeed;
+            //ApplyFriction(0.25f); // TODO: clean this
+            {
+                var t = 0.25f; // Scale
+
+                var vec = playerVel;
+                vec.y = 0.0f;
+                var speed = vec.magnitude;
+                float drop = 0.0f;
+
+                var control = speed < walkDeacceleration ? walkDeacceleration : speed;
+                drop = control * groundFriction * Time.deltaTime * t;
+
+                var newspeed = speed - drop;
+                if (newspeed < 0)
+                    newspeed = 0;
+                if (speed > 0)
+                    newspeed /= speed;
+
+                playerVel.x *= newspeed;
+                playerVel.z *= newspeed;
+            }
         }
         else
         {
