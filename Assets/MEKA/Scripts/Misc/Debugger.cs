@@ -4,10 +4,27 @@ using UnityEngine;
 
 public class Debugger : MonoBehaviour
 {
+    // Disable Field Unused warning
+#pragma warning disable 0414
+
     private CharacterController _controller;
 
     public GUIStyle style;
     string touching = "Null";
+
+    // Debug variables
+    private float debugTurn = 0;
+    private float debugLegsAngle = 0;
+
+    public void UpdateDebugTurnRate(float val)
+    {
+        debugTurn = val;
+    }
+
+    public void UpdateDebugLegsAngle(float val)
+    {
+        debugLegsAngle = val;
+    }
 
     void Start()
     {
@@ -17,29 +34,68 @@ public class Debugger : MonoBehaviour
         style.fontStyle = FontStyle.BoldAndItalic;
     }
 
+    void Awake()
+    {
+        // Set up graph properties
+        int group = 0;
+        DebugGUI.SetGraphProperties("smoothFrameRate", "SmoothFPS", 0, 200, group, new Color(0, 1, 1), false);
+        DebugGUI.SetGraphProperties("frameRate", "FPS", 0, 200, group++, new Color(1, 0.5f, 1), false);
+
+        DebugGUI.SetGraphProperties("PlayerVelocity", "Horizontal Velocity", 0, 50, group, Color.green, false);
+        DebugGUI.SetGraphProperties("PlayerVelocityY", "Vertical Velocity", 0, 50, group++, Color.yellow, false);
+
+        DebugGUI.SetGraphProperties("PlayerTurnRate", "TurnRate", 0, 500, group, new Color(1.0f, 0.64f, 0.0f), false); // 200 is capped turn rate
+        DebugGUI.SetGraphProperties("PlayerLegsAngle", "Torso/legs angle", 0, 45, group++, Color.green, false);
+    }
+
+    private void Update()
+    {
+        // Manual persistent logging
+        DebugGUI.LogPersistent("smoothFrameRate", "SmoothFPS: " + (1 / Time.deltaTime).ToString("F3"));
+        DebugGUI.LogPersistent("frameRate", "FPS: " + (1 / Time.smoothDeltaTime).ToString("F3"));
+
+        // FPS Graph
+        if (Time.smoothDeltaTime != 0)
+            DebugGUI.Graph("smoothFrameRate", 1 / Time.smoothDeltaTime);
+        if (Time.deltaTime != 0)
+            DebugGUI.Graph("frameRate", 1 / Time.deltaTime);
+
+        // Player stats
+        DebugGUI.Graph("PlayerVelocity", _controller.velocity.magnitude);
+        DebugGUI.Graph("PlayerVelocityY", _controller.velocity.y);
+
+        DebugGUI.Graph("PlayerTurnRate", debugTurn);
+        DebugGUI.Graph("PlayerLegsAngle", debugLegsAngle);
+    }
+
     private void OnGUI()
     {
         GUI.Label(new Rect(10, 120, 400, 100), "Touching: " + touching, style);
         GUI.Label(new Rect(10, 140, 400, 100), "OnGround: " + _controller.isGrounded, style);
 
-        var ups = _controller.velocity;
-        //ups.y = 0;
-        GUI.Label(new Rect(10, 160, 400, 100), "Player velocity: " + Mathf.Round(ups.magnitude * 100) / 100 + "ups", style);
-        
-        var upsV = _controller.velocity;
-        //ups2.x = 0;
-        //ups2.z = 0;
-        //GUI.Label(new Rect(0, 120, 400, 100), "Vertical Speed: " + Mathf.Round(ups2.magnitude * 100) / 100 + "ups", style);
-        GUI.Label(new Rect(10, 180, 400, 100), "Vertical velocity: " + upsV.y + "ups", style);
+        var ups = _controller.velocity; // Movement vector
+        GUI.Label(new Rect(10, 160, 400, 100), "Player velocity: " + ups.magnitude +"\t ~" +Mathf.Round(ups.magnitude * 10) / 10 + "ups", style);
 
-        var upsH = _controller.velocity;
+        var upsH = ups;
         upsH.y = 0;
-        GUI.Label(new Rect(10, 200, 400, 100), "Horizontal velocity: " + /*Mathf.Round(upsH.magnitude * 100) / 100*/ Mathf.Round(upsH.magnitude) + "ups", style);
+        GUI.Label(new Rect(10, 180, 400, 100), "Horizontal velocity: " + upsH.magnitude + "\t ~" + Mathf.Round(upsH.magnitude * 10) / 10 + "ups", style);
+
+        GUI.Label(new Rect(10, 200, 400, 100), "Vertical velocity: " +"~" +Mathf.Round(ups.y * 100) / 100 + "ups", style);
     }
 
     // Get tag of the object charactercontroller is touching
     void OnControllerColliderHit(ControllerColliderHit hit)
     {
         touching = hit.collider.tag;
+    }
+
+    void OnDestroy()
+    {
+        // Clean up our logs and graphs when this object is destroyed
+        DebugGUI.RemoveGraph("smoothFrameRate");
+        DebugGUI.RemoveGraph("frameRate");
+
+        DebugGUI.RemovePersistent("smoothFrameRate");
+        DebugGUI.RemovePersistent("frameRate");
     }
 }

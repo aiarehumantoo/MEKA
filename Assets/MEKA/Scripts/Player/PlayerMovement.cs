@@ -95,7 +95,9 @@ public class PlayerMovement : MonoBehaviour
     [HideInInspector]
     public GUIStyle style; // Debug; for displaying values on screen
 
+    private Debugger debugger;
     public float debugAngle = 0.0f; // Debug variable
+    private float debugTurnSpeed = 0.0f;
 
     //**************************************************
     private void CameraControls()
@@ -116,6 +118,8 @@ public class PlayerMovement : MonoBehaviour
             // Turn does not go over threshold
             mouseX += wishTurn;
             torsoAngle += wishTurn;
+
+            debugTurnSpeed = wishTurn / Time.deltaTime; // Save debug value
         }
         else
         {
@@ -131,11 +135,18 @@ public class PlayerMovement : MonoBehaviour
                 var turnRange = ((wishTurn > 0.0f && torsoAngle > 0.0f) || (wishTurn < 0.0f && torsoAngle < 0.0f)) ? sameSide : diffSide;
                 mouseX += wishTurn > 0.0f ? turnRange : -turnRange;
                 torsoAngle += wishTurn > 0.0f ? turnRange : -turnRange;
+
+                debugTurnSpeed = turnRange / Time.deltaTime; // Save debug value
             }
         }
 
-        // Turn legs towards 0.0 angle
+        // Update debug graphs
+        debugTurnSpeed = Mathf.Round(Mathf.Abs(debugTurnSpeed));
+        debugger.UpdateDebugTurnRate(debugTurnSpeed);
+        debugger.UpdateDebugLegsAngle(Mathf.Abs(torsoAngle));
         debugAngle = torsoAngle; // Save debug value
+
+        // Turn legs towards 0.0 angle
         float resetDirection = torsoAngle < 0.0 ? 1.0f : -1.0f;
         float scaledResetRate = legsResetRate * Time.deltaTime; // Scale reset rate // Note: Forgot to scale angle comparison -> slow turning did not register
         torsoAngle += (Mathf.Abs(torsoAngle) > scaledResetRate) ? (resetDirection * scaledResetRate) : -torsoAngle;
@@ -203,6 +214,8 @@ public class PlayerMovement : MonoBehaviour
         // Debug text
         style.normal.textColor = Color.green;
         style.fontStyle = FontStyle.BoldAndItalic;
+
+        debugger = GetComponent<Debugger>();
     }
 
     //**************************************************
@@ -338,7 +351,7 @@ public class PlayerMovement : MonoBehaviour
 
         var playerVel = playerVelocity; // Copy movement vector
         playerVel.y = 0.0f; // Ignore vertical movement
-        var wishVector = playerVel + inputDir;
+        /*var wishVector = playerVel + inputDir;
         if (wishVector.magnitude > thrusterSpeed)
         {
             //ApplyFriction(0.25f); // TODO: clean this
@@ -366,7 +379,43 @@ public class PlayerMovement : MonoBehaviour
         else
         {
             playerVel += inputDir;
+        }*/
+
+        //
+        if (playerVel.magnitude > thrusterSpeed)
+        {
+            //ApplyFriction(0.25f); // TODO: clean this
+            {
+                var t = 0.25f; // Scale
+
+                var vec = playerVel;
+                vec.y = 0.0f;
+                var speed = vec.magnitude;
+                float drop = 0.0f;
+
+                var control = speed < walkDeacceleration ? walkDeacceleration : speed;
+                drop = control * groundFriction * Time.deltaTime * t;
+
+                var newspeed = speed - drop;
+                if (newspeed < 0)
+                    newspeed = 0;
+                if (speed > 0)
+                    newspeed /= speed;
+
+                playerVel.x *= newspeed;
+                playerVel.z *= newspeed;
+            }
         }
+        else
+        {
+            playerVel += inputDir;
+            if (playerVel.magnitude > thrusterSpeed)
+            {
+                playerVel.Normalize();
+                playerVel *= thrusterSpeed;
+            }
+        }
+        //
 
         // Reset the gravity velocity
         playerVel.y = -gravity * Time.deltaTime;
@@ -507,6 +556,8 @@ public class PlayerMovement : MonoBehaviour
     private void OnGUI()
     {
         // FOR TESTING
+
+        GUI.Label(new Rect(10, 230, 400, 100), "Turn speed: " + debugTurnSpeed, style);
 
         GUI.Label(new Rect(10, 250, 400, 100), "Torso/legs angle: " + debugAngle, style);
         

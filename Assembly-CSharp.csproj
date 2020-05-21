@@ -62,6 +62,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\DebugGUI\Attributes\DebugGUIGraphAttribute.cs" />
+    <Compile Include="Assets\DebugGUI\Attributes\DebugGUIPrintAttribute.cs" />
+    <Compile Include="Assets\DebugGUI\DebugGUI.cs" />
+    <Compile Include="Assets\DebugGUI\Examples\DebugGUIExamples.cs" />
     <Compile Include="Assets\MEKA\Scripts\Console\ConsoleBase.cs" />
     <Compile Include="Assets\MEKA\Scripts\Console\ConsoleTcpClient.cs" />
     <Compile Include="Assets\MEKA\Scripts\HealthBase.cs" />
@@ -103,6 +107,7 @@
     <Compile Include="Assets\Test Assets\Scripts\moveleftright.cs" />
     <Compile Include="Assets\Test Assets\Scripts\testprojectile.cs" />
     <Compile Include="Assets\Test Assets\Scripts\udp.cs" />
+    <None Include="Assets\DebugGUI\README.txt" />
     <Reference Include="Unity.ProGrids">
       <HintPath>D:/Program Files/Unity projects/MEKA/Library/ScriptAssemblies/Unity.ProGrids.dll</HintPath>
     </Reference>
