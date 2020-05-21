@@ -42,7 +42,7 @@ public class Debugger : MonoBehaviour
         DebugGUI.SetGraphProperties("frameRate", "FPS", 0, 200, group++, new Color(1, 0.5f, 1), false);
 
         DebugGUI.SetGraphProperties("PlayerVelocity", "Horizontal Velocity", 0, 50, group, Color.green, false);
-        DebugGUI.SetGraphProperties("PlayerVelocityY", "Vertical Velocity", 0, 50, group++, Color.yellow, false);
+        DebugGUI.SetGraphProperties("PlayerVelocityY", "Vertical Velocity", -50, 50, group++, Color.yellow, false);
 
         DebugGUI.SetGraphProperties("PlayerTurnRate", "TurnRate", 0, 500, group, new Color(1.0f, 0.64f, 0.0f), false); // 200 is capped turn rate
         DebugGUI.SetGraphProperties("PlayerLegsAngle", "Torso/legs angle", 0, 45, group++, Color.green, false);
@@ -61,8 +61,11 @@ public class Debugger : MonoBehaviour
             DebugGUI.Graph("frameRate", 1 / Time.deltaTime);
 
         // Player stats
-        DebugGUI.Graph("PlayerVelocity", _controller.velocity.magnitude);
-        DebugGUI.Graph("PlayerVelocityY", _controller.velocity.y);
+        var vel = _controller.velocity;
+        var velY = vel.y;
+        vel.y = 0;
+        DebugGUI.Graph("PlayerVelocity", vel.magnitude);
+        DebugGUI.Graph("PlayerVelocityY", velY);
 
         DebugGUI.Graph("PlayerTurnRate", debugTurn);
         DebugGUI.Graph("PlayerLegsAngle", debugLegsAngle);
