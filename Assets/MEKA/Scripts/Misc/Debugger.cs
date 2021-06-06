@@ -16,6 +16,10 @@ public class Debugger : MonoBehaviour
     private float debugTurn = 0;
     private float debugLegsAngle = 0;
 
+    //***
+    public float slopeAngle = 0;
+    public float downForce = 0;
+
     public void UpdateDebugTurnRate(float val)
     {
         debugTurn = val;
@@ -46,6 +50,8 @@ public class Debugger : MonoBehaviour
 
         DebugGUI.SetGraphProperties("PlayerTurnRate", "TurnRate", 0, 500, group, new Color(1.0f, 0.64f, 0.0f), false); // 200 is capped turn rate
         DebugGUI.SetGraphProperties("PlayerLegsAngle", "Torso/legs angle", 0, 45, group++, Color.green, false);
+
+        DebugGUI.SetGraphProperties("Slope angle", "Slope angle", 0, 45, group++, Color.green, false);
     }
 
     private void Update()
@@ -69,6 +75,8 @@ public class Debugger : MonoBehaviour
 
         DebugGUI.Graph("PlayerTurnRate", debugTurn);
         DebugGUI.Graph("PlayerLegsAngle", debugLegsAngle);
+
+        DebugGUI.Graph("Slope angle", Mathf.Abs(slopeAngle));
     }
 
     private void OnGUI()
@@ -84,6 +92,9 @@ public class Debugger : MonoBehaviour
         GUI.Label(new Rect(10, 180, 400, 100), "Horizontal velocity: " + upsH.magnitude + "\t ~" + Mathf.Round(upsH.magnitude * 10) / 10 + "ups", style);
 
         GUI.Label(new Rect(10, 200, 400, 100), "Vertical velocity: " +"~" +Mathf.Round(ups.y * 100) / 100 + "ups", style);
+
+        GUI.Label(new Rect(10, 300, 400, 100), "Slope angle (vel dir): " + Mathf.Round(slopeAngle * 100) / 100 + " degrees", style);
+        GUI.Label(new Rect(10, 320, 400, 100), "Downforce: " + Mathf.Round(downForce * 100) / 100 + " ups", style);
     }
 
     // Get tag of the object charactercontroller is touching

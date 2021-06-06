@@ -108,6 +108,9 @@
     <Compile Include="Assets\Test Assets\Scripts\testprojectile.cs" />
     <Compile Include="Assets\Test Assets\Scripts\udp.cs" />
     <None Include="Assets\DebugGUI\README.txt" />
+    <None Include="Assets\StandardAssets\ParticleSystems\Shaders\PriorityParticleAddSoft.shader" />
+    <None Include="Assets\StandardAssets\ParticleSystems\Shaders\PriorityParticleAdd.shader" />
+    <None Include="Assets\StandardAssets\ParticleSystems\Shaders\PriorityParticleAlpha.shader" />
     <Reference Include="Unity.ProGrids">
       <HintPath>D:/Program Files/Unity projects/MEKA/Library/ScriptAssemblies/Unity.ProGrids.dll</HintPath>
     </Reference>
