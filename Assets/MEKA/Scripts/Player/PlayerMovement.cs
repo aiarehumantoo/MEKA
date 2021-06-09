@@ -357,7 +357,7 @@ public class PlayerMovement : MonoBehaviour
         }*/
         //
 
-        //downForce.y = 0.0f;
+        downForce.y = 0.0f;
         if (characterController.isGrounded)
         {
             //downForce.y = -100.0f; //  See vertical vel graph; sudden dip when walking off a ledge
@@ -374,7 +374,7 @@ public class PlayerMovement : MonoBehaviour
         groundRay.direction = -transform.up;
 
         // charcontroller check has delay or is too lenient?
-        var rayVec = new Vector3(0, raycastDistance, 0);
+        var rayVec = new Vector3(0, characterController.height * 0.5f, 0);
         Debug.DrawLine(transform.position, transform.position - rayVec, Color.red, 5.0f);
         if (Physics.Raycast(groundRay, out hit, raycastDistance, groundLayer) && characterController.isGrounded)
         {
@@ -408,6 +408,96 @@ public class PlayerMovement : MonoBehaviour
             //downForce.y = 0.0f;
         }
 
+        //***
+        var color = Color.red;
+        //downForce.y = 0.0f;
+        //downForce.y = -9.81f;
+        if (characterController.isGrounded)
+        {
+            //playerVelocity.y = 0;
+            var predictedPos = transform.position + (playerVelocity * Time.deltaTime);
+            if (Physics.SphereCast(predictedPos, characterController.radius, Vector3.down, out hit, characterController.height *0.9f, groundLayer))
+            {
+                //color = Color.blue;
+                //downForce.y = -9.81f;
+                
+
+                //dip is smaller with smaller radius but ideally radius = charcontr.radius
+                //playerVelocity.y = 0;
+                
+            }
+            else
+            {
+                //downForce.y = 0.0f;
+            }
+        }
+        else
+        {
+            //downForce.y = 0.0f;
+        }
+
+        //***
+        if (characterController.isGrounded)
+        {
+            //color = Color.blue;
+            //downForce.y = -9.81f;
+        }
+        if (!characterController.isGrounded && wasOnGround)
+        {
+            //playerVelocity.y = characterController.velocity.y;
+
+            // Note;
+            // OnGround -> enable downforce
+            // + Copying vel.y on first air frame
+            // -> smoothes out movement + fixes slopes. But player still sticks to edge of platforms
+            // which might be undesired (+ results in accelerated fall)
+            // play with values to get slower initial fall whilst sticking to slopes still works
+
+            // Option2
+            // raycast down
+            // hit -> downforce
+            // pixelwalking slope does not work
+
+            // TEST;
+            // predicted pos
+            // raycast down
+            // slope -> apply downforce
+            // could hit edge of platform? likely wouldnt work unless edges can be detected
+        }
+
+        // TEST; raycast sides to check for pixel walking
+        if (characterController.isGrounded)
+        {
+            // Note;
+            // By approaching platform edge at angle player will stick to it and thus
+            // do a small dip before gravity takes over.
+            // But otherwise this implementation seems to work flawlessly.
+
+            //  Edit;
+            // Sticks to edges longer when moving sideways
+
+            // Raycast down from both sides to check for pixel walking
+            var leftDir = Vector3.left;
+            leftDir = transform.TransformDirection(leftDir);
+            leftDir.Normalize();
+            leftDir *= characterController.radius;
+
+            if (Physics.Raycast(transform.position + leftDir, Vector3.down, characterController.height, groundLayer) ||
+               Physics.Raycast(transform.position - leftDir, Vector3.down, characterController.height, groundLayer))
+            {
+                color = Color.blue;
+                downForce.y = -9.81f;
+            }
+
+            //*** TEST;
+            /*var pos1 = transform.position + leftDir;
+            var pos2 = pos1 + (Vector3.down * characterController.height / 2);
+            var pos3 = transform.position - leftDir;
+            var pos4 = pos3 + (Vector3.down * characterController.height / 2);
+            Debug.DrawLine(pos1, pos2, color, 5.0f);
+            Debug.DrawLine(pos3, pos4, color, 5.0f);*/
+        }
+
         // Jumps can be queued
         if (characterController.isGrounded && movementInputs.wishJump && dodgeTimer >= 0.25f)
         {
@@ -427,11 +517,11 @@ public class PlayerMovement : MonoBehaviour
         wasOnGround = characterController.isGrounded;
 
         // Move the controller
-        characterController.Move((playerVelocity /*+ downForce*/) * Time.deltaTime);
+        characterController.Move((playerVelocity + downForce) * Time.deltaTime);
 
         //***
         // Stick to slopes
-        downForce.y = 0.0f;
+        //downForce.y = 0.0f;
         RaycastHit hit2; // A raycast hit to get information about what was hit
         var groundLayer2 = LayerMask.GetMask("Environment");
         var slopeForceRayLength = 1.5f; // times distance from origin to ground
@@ -452,8 +542,8 @@ public class PlayerMovement : MonoBehaviour
                 if (slopeAngle <= -5.0f) // Max slope movement will stick to
                 //if (hit.normal != Vector3.up)
                 {
-                    downForce.y = -100.0f; // down * 100?
-                    characterController.Move(downForce * Time.deltaTime);
+                    //downForce.y = -100.0f; // down * 100?
+                    //characterController.Move(downForce * Time.deltaTime);
 
                     // "It is recommended that you make only one call to Move or SimpleMove per frame."
                     // But slope check after moving works better than downforce
@@ -473,8 +563,8 @@ public class PlayerMovement : MonoBehaviour
 
         // Debug velocity vector
         // Vel vector and movement should match
-        Debug.DrawLine(transform.position, transform.position + playerVelocity * Time.deltaTime, Color.blue, 5.0f);
-        Debug.DrawLine(prevPos, transform.position, Color.red, 5.0f);
+        //Debug.DrawLine(transform.position, transform.position + playerVelocity * Time.deltaTime, Color.green, 5.0f);
+        Debug.DrawLine(prevPos, transform.position, color, 5.0f);
         prevPos = transform.position;
     }
 
