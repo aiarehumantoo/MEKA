@@ -103,7 +103,6 @@ public class PlayerMovement : MonoBehaviour
     private Vector3 prevPos;
 
     private Vector3 downForce = Vector3.zero;
-    private bool isJumping = false;
 
     //**************************************************
     private void CameraControls()
@@ -247,256 +246,60 @@ public class PlayerMovement : MonoBehaviour
             WalkMove();
         }
 
-#if false
-        // Add downforce to fix bouncing
-        if (characterController.isGrounded)
-        {
-            RaycastHit hit; // A raycast hit to get information about what was hit
-            var groundLayer = LayerMask.GetMask("Environment");
-            var raycastDistance = characterController.height / 1.5f;
+        // Handling slopes & pixel walking;
+        // #1; Apply downforce when player is grounded
+        //      Player sticks to edges
+        // #2; Grounded + raycast
+        //      Pixelwalk on slopes does not work
+        // #3; 1 + first air frame playerVelocity.y = characterController.velocity.y;
+        //      Sticks to edges but transition to falling is smooth
+        // #4; onground + raycast fails -> pixelwalking
+        //      Get edge normal & apply force to that direction
+        // #5; Raycast left/right sides
+        //      Sticks to edges when walking sideways
 
-            // Raycast downwards
-            Ray groundRay = new Ray();
-            groundRay.origin = transform.position;
-            groundRay.direction = -transform.up;
+        // #6; Calc edge vector from its normal and compare with players direction vector
+        //      Do not apply downforce if movement dir is towards the edge
+        //      + Check for pixel walk first
+        //      Dir = (normal.x, 0, normal.z)
+        //      edge vector = dir.left //not needed?
 
-            /* Doesnt work if ground isnt directly below player
-            if (Physics.Raycast(groundRay, out hit, raycastDistance, groundLayer))
-            {
-                var slopeAngle = Vector3.Angle(Vector3.up, hit.normal);
-                if (Mathf.Abs(slopeAngle) <= 35.0f) // Max slope movement will stick to
-                {
-                    playerVelocity.y = -5000.0f;
-                    //Debug.Log(slopeAngle);
-                }
-                Debug.DrawLine(hit.point, hit.point + hit.normal, Color.green, 2.0f); // Draw ground normal
-            }*/
-
-            // Gets normal of edge -> incorrect angle
-            if(Physics.SphereCast(transform.position, characterController.radius, -transform.up, out hit, characterController.height / 1.5f, groundLayer))
-            {
-                var slopeAngle = Vector3.Angle(Vector3.up, hit.normal);
-                if (Mathf.Abs(slopeAngle) <= 35.0f) // Max slope movement will stick to
-                {
-                    playerVelocity.y = -5000.0f;
-                    //Debug.Log(slopeAngle); // Angle is wrong when pixelwalking
-
-                    /*       /      <-- normal
-                     * ____ /    
-                     *     |
-                     *     |     <-- platform cross-section
-                     */
-                }
-                Debug.DrawLine(hit.point, hit.point + hit.normal, Color.green, 2.0f); // Draw ground normal
-
-#if false
-                // obtain the normals from the Mesh
-                Mesh mesh = hit.transform.GetComponent<MeshFilter>().mesh;
-                Vector3[] normals = mesh.normals;
-                foreach (var normal in normals)
-                {
-                    Debug.DrawLine(transform.position, transform.position + normal, Color.green, 2.0f); // Draw ALL normals
-                }
-#endif
-            }
-        }
-
-                // Reset vertical velocity when dropping off a platform
-        if (!characterController.isGrounded && wasOnGround && playerVelocity.y <= 0.0f)
-        {
-            playerVelocity.y = -gravity * Time.deltaTime;
-        }
-#endif
-
-#if false
-        // Rotate movement vector to be parallel with the ground
-        if (characterController.isGrounded && playerVelocity.magnitude > 5.0f)
-        {
-            RaycastHit hit; // A raycast hit to get information about what was hit
-            var groundLayer = LayerMask.GetMask("Environment");
-            var raycastDistance = characterController.height / 1.5f;
-
-            if (Physics.SphereCast(transform.position, characterController.radius, -transform.up, out hit, characterController.height / 1.5f, groundLayer))
-            {
-                //var slopevec = Vector3.Cross(hit.normal, -transform.right); //fwd dir along slope, not move vec
-
-                var temp = playerVelocity;
-                temp.Normalize();
-                temp = Quaternion.Euler(0, -90, 0) * temp; // left
-                var slopevec = Vector3.Cross(hit.normal, temp);
-                var slopeAngle = 90 - Vector3.Angle(Vector3.up, slopevec);
-                //if (Mathf.Abs(slopeAngle) <= 35.0f && Mathf.Abs(slopeAngle) >= 5.0f)
-                {
-                    GetComponent<Debugger>().slopeAngle = slopeAngle;
-                    //Debug.DrawLine(transform.position, transform.position + slopevec * 2, Color.red, 2.0f);
-
-                    // Horizontal velocity slows down since total speed stays the same.
-                    // TODO; Test if constant horizontal vel feels better
-                    //playerVelocity = slopevec * playerVelocity.magnitude;
-
-                    //playerVelocity.y = -1000.0f; // flat -> slope; briefly off the ground
-
-                // Add downforce to motion calcs instead?
-                }
-            }
-
-            //playerVelocity.y = -1000.0f;
-        }
-#endif
 
         //***
-        /*if (characterController.isGrounded && !movementInputs.wishJump)
-        {
-            downForce.y = -100.0f; // Always applying the downforce is smoother. No bump when entering a slope
-            // TODO; theres still 1 frame reset delay? obvious with higher force
-        }
-        // Reset vertical velocity when dropping off a platform
-        if (!characterController.isGrounded && downForce.y <= 0.0f)
-        {
-            downForce.y = 0.0f;
-        }*/
-        //
+        var color = Color.blue;
 
         downForce.y = 0.0f;
         if (characterController.isGrounded)
         {
-            //downForce.y = -100.0f; //  See vertical vel graph; sudden dip when walking off a ledge
-
-            // !!! works otherwise fine but theres a dip when walkng off a ledge
+            var groundLayer = LayerMask.GetMask("Environment");
+            if (Physics.Raycast(transform.position, Vector3.down, characterController.height, groundLayer))
+            {
+                color = Color.red;
+                downForce.y = -9.81f;
+            }
         }
-        RaycastHit hit; // A raycast hit to get information about what was hit
-        var groundLayer = LayerMask.GetMask("Environment");
-        var raycastDistance = characterController.height / 1.5f;
-
-        // Raycast downwards
-        Ray groundRay = new Ray();
-        groundRay.origin = transform.position;
-        groundRay.direction = -transform.up;
-
-        // charcontroller check has delay or is too lenient?
-        var rayVec = new Vector3(0, characterController.height * 0.5f, 0);
-        Debug.DrawLine(transform.position, transform.position - rayVec, Color.red, 5.0f);
-        if (Physics.Raycast(groundRay, out hit, raycastDistance, groundLayer) && characterController.isGrounded)
+        /*else if ( wasOnGround)
         {
-            //downForce.y = -100.0f;
-
-            // !!! this version bugs only when going down slope when raycast does not touch the ground
-            // !! some bugs with dodging off ledges?
-            // could try spherecasting predicted position to check if player will stay on the ground
-        }
-        if (Physics.SphereCast(transform.position, characterController.radius / 1.5f, -transform.up, out hit, characterController.height / 1.5f, groundLayer))
-        {
-            // same with spherecast of charcontroller size
-            // smaller spherecast -> smaller dip
-            //if (characterController.isGrounded)
-            //downForce.y = -100.0f;
-        }
-
-        // spherecast predicted pos // what if in a wall?
-        /*if (Physics.SphereCast(transform.position + ((playerVelocity + downForce) * Time.deltaTime), characterController.radius, -transform.up, out hit, characterController.height, groundLayer))
-        {
-            downForce.y = -100.0f;
+            playerVelocity.y = characterController.velocity.y;
         }*/
 
-        //enable on first touch?
-        if (characterController.isGrounded && !wasOnGround)
+        /*if (characterController.isGrounded)
         {
-            //downForce.y = -100.0f; //  See vertical vel graph; sudden dip when walking off a ledge
-        }
-        if (!characterController.isGrounded)
-        {
-            //downForce.y = 0.0f;
-        }
-
-        //***
-        var color = Color.red;
-        //downForce.y = 0.0f;
-        //downForce.y = -9.81f;
-        if (characterController.isGrounded)
-        {
-            //playerVelocity.y = 0;
-            var predictedPos = transform.position + (playerVelocity * Time.deltaTime);
-            if (Physics.SphereCast(predictedPos, characterController.radius, Vector3.down, out hit, characterController.height *0.9f, groundLayer))
-            {
-                //color = Color.blue;
-                //downForce.y = -9.81f;
-                
-
-                //dip is smaller with smaller radius but ideally radius = charcontr.radius
-                //playerVelocity.y = 0;
-                
-            }
-            else
-            {
-                //downForce.y = 0.0f;
-            }
-        }
-        else
-        {
-            //downForce.y = 0.0f;
-        }
-
-        //***
-        if (characterController.isGrounded)
-        {
-            //color = Color.blue;
-            //downForce.y = -9.81f;
-        }
-        if (!characterController.isGrounded && wasOnGround)
-        {
-            //playerVelocity.y = characterController.velocity.y;
-
-            // Note;
-            // OnGround -> enable downforce
-            // + Copying vel.y on first air frame
-            // -> smoothes out movement + fixes slopes. But player still sticks to edge of platforms
-            // which might be undesired (+ results in accelerated fall)
-            // play with values to get slower initial fall whilst sticking to slopes still works
-
-            // Option2
-            // raycast down
-            // hit -> downforce
-            // pixelwalking slope does not work
-
-            // TEST;
-            // predicted pos
-            // raycast down
-            // slope -> apply downforce
-            // could hit edge of platform? likely wouldnt work unless edges can be detected
-        }
-
-        // TEST; raycast sides to check for pixel walking
-        if (characterController.isGrounded)
-        {
-            // Note;
-            // By approaching platform edge at angle player will stick to it and thus
-            // do a small dip before gravity takes over.
-            // But otherwise this implementation seems to work flawlessly.
-
-            //  Edit;
-            // Sticks to edges longer when moving sideways
-
             // Raycast down from both sides to check for pixel walking
             var leftDir = Vector3.left;
             leftDir = transform.TransformDirection(leftDir);
             leftDir.Normalize();
             leftDir *= characterController.radius;
 
+            var groundLayer = LayerMask.GetMask("Environment");
             if (Physics.Raycast(transform.position + leftDir, Vector3.down, characterController.height, groundLayer) ||
                Physics.Raycast(transform.position - leftDir, Vector3.down, characterController.height, groundLayer))
             {
-                color = Color.blue;
+                color = Color.red;
                 downForce.y = -9.81f;
             }
-
-            //*** TEST;
-            /*var pos1 = transform.position + leftDir;
-            var pos2 = pos1 + (Vector3.down * characterController.height / 2);
-            var pos3 = transform.position - leftDir;
-            var pos4 = pos3 + (Vector3.down * characterController.height / 2);
-            Debug.DrawLine(pos1, pos2, color, 5.0f);
-            Debug.DrawLine(pos3, pos4, color, 5.0f);*/
-        }
+        }*/
+        //***
 
         // Jumps can be queued
         if (characterController.isGrounded && movementInputs.wishJump && dodgeTimer >= 0.25f)
@@ -507,11 +310,7 @@ public class PlayerMovement : MonoBehaviour
             movementInputs.wishJump = false;
 
             downForce.y = 0.0f;
-            isJumping = true;
         }
-        //Debug.Log(playerVelocity.y);
-        //Debug.Log(downForce.y);
-        //GetComponent<Debugger>().downForce = downForce.y;
 
         // Save previous ground state
         wasOnGround = characterController.isGrounded;
@@ -519,52 +318,14 @@ public class PlayerMovement : MonoBehaviour
         // Move the controller
         characterController.Move((playerVelocity + downForce) * Time.deltaTime);
 
-        //***
-        // Stick to slopes
-        //downForce.y = 0.0f;
-        RaycastHit hit2; // A raycast hit to get information about what was hit
-        var groundLayer2 = LayerMask.GetMask("Environment");
-        var slopeForceRayLength = 1.5f; // times distance from origin to ground
-        if (!isJumping)
-        {
-            // w/ raycast; the usual edge bug
-            // w/ spherecast; off edge dip bug
-            if (Physics.Raycast(transform.position, Vector3.down, out hit, characterController.height / 2 * slopeForceRayLength, groundLayer2))
-            //if (Physics.SphereCast(transform.position, characterController.radius, Vector3.down, out hit, characterController.height / 2 * slopeForceRayLength, groundLayer))
-            {
-                
-                var temp = playerVelocity;
-                temp.Normalize();
-                temp = Quaternion.Euler(0, -90, 0) * temp; // left
-                var slopevec = Vector3.Cross(hit.normal, temp);
-                var slopeAngle = 90 - Vector3.Angle(Vector3.up, slopevec);
-                GetComponent<Debugger>().slopeAngle = slopeAngle;
-                if (slopeAngle <= -5.0f) // Max slope movement will stick to
-                //if (hit.normal != Vector3.up)
-                {
-                    //downForce.y = -100.0f; // down * 100?
-                    //characterController.Move(downForce * Time.deltaTime);
-
-                    // "It is recommended that you make only one call to Move or SimpleMove per frame."
-                    // But slope check after moving works better than downforce
-                    // since downforce would have to be 0 before player goes over the edge
-
-                    // camera bob bugs when walking down a slope
-                    // platform edges are still buggy
-                }
-            }
-        }
+        // DEBUGGING
         GetComponent<Debugger>().downForce = downForce.y;
-
-        if (characterController.isGrounded)
-        {
-            isJumping = false;
-        }
 
         // Debug velocity vector
         // Vel vector and movement should match
         //Debug.DrawLine(transform.position, transform.position + playerVelocity * Time.deltaTime, Color.green, 5.0f);
         Debug.DrawLine(prevPos, transform.position, color, 5.0f);
+        Debug.DrawLine(prevPos, prevPos + (Vector3.down * characterController.height / 2), color, 5.0f);
         prevPos = transform.position;
     }
 
@@ -879,6 +640,35 @@ private void ThrusterMove()
     //**************************************************
     void OnControllerColliderHit(ControllerColliderHit hit)
     {
+        // Vel dir slope angle;
+        var temp0 = playerVelocity;
+        temp0.Normalize();
+        temp0 = Quaternion.Euler(0, -90, 0) * temp0; // left
+        var slopevec = Vector3.Cross(hit.normal, temp0);
+        var slopeAngle = 90 - Vector3.Angle(Vector3.up, slopevec);
+        GetComponent<Debugger>().slopeAngle = slopeAngle;
+
+        return;
+
+        // Works but maybe bit excessive
+        // onground + raycast check -> pixelwalk?
+
+        //Debug.DrawLine(transform.position, transform.position + hit.normal, Color.green, 2.0f); // Draw ground normal
+
+        // Obtain the normals from the Mesh
+        Mesh mesh = hit.transform.GetComponent<MeshFilter>().mesh;
+        Vector3[] normals = mesh.normals;
+        foreach (var normal0 in normals)
+        {
+            //Debug.DrawLine(transform.position, transform.position + normal, Color.green, 2.0f); // Draw ALL normals
+
+            if (hit.normal == normal0)
+            {
+                GetComponent<Debugger>().pixelWalking = false;
+                return;
+            }
+        }
+        GetComponent<Debugger>().pixelWalking = true;
         return;
 
         // Display ground normal (enable gizmos)

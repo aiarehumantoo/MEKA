@@ -19,6 +19,7 @@ public class Debugger : MonoBehaviour
     //***
     public float slopeAngle = 0;
     public float downForce = 0;
+    public bool pixelWalking = false;
 
     public void UpdateDebugTurnRate(float val)
     {
@@ -95,6 +96,7 @@ public class Debugger : MonoBehaviour
 
         GUI.Label(new Rect(10, 300, 400, 100), "Slope angle (vel dir): " + Mathf.Round(slopeAngle * 100) / 100 + " degrees", style);
         GUI.Label(new Rect(10, 320, 400, 100), "Downforce: " + Mathf.Round(downForce * 100) / 100 + " ups", style);
+        GUI.Label(new Rect(10, 340, 400, 100), "PixelWalking: " + pixelWalking, style);
     }
 
     // Get tag of the object charactercontroller is touching

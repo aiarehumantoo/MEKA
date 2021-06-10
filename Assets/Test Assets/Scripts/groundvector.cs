@@ -19,7 +19,16 @@ public class groundvector : MonoBehaviour
         {
             var startpos = shootHit.point;
             var normal = shootHit.normal;
-            Debug.DrawLine(startpos, startpos + normal, Color.green);
+            //Debug.DrawLine(startpos, startpos + normal, Color.green);
+        }
+
+        // obtain the normals from the Mesh
+        Mesh mesh = GetComponent<MeshFilter>().mesh;
+        Vector3[] normals = mesh.normals;
+        foreach (var normal in normals)
+        {
+            var localNormal = transform.TransformDirection(normal);
+            Debug.DrawLine(transform.position, transform.position + localNormal, Color.green, 2.0f); // Draw ALL normals
         }
     }
 }
