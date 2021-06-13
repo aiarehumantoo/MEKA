@@ -256,7 +256,7 @@ public class PlayerMovement : MonoBehaviour
         // #4; onground + raycast fails -> pixelwalking
         //      Get edge normal & apply force to that direction
         // #5; Raycast left/right sides
-        //      Sticks to edges when walking sideways
+        //      Sticks to edges when walking sideways. #7 works way better
 
         // #6; Calc edge vector from its normal and compare with players direction vector
         //      Do not apply downforce if movement dir is towards the edge
@@ -264,12 +264,18 @@ public class PlayerMovement : MonoBehaviour
         //      Dir = (normal.x, 0, normal.z)
         //      edge vector = dir.left //not needed?
 
+        // #7; Raycast velocity vectors sides at predicted position
+        //      Sticks to edges when aproaching at an angle
+        //      Spherecast / charctrl ground check does not work well since player will
+        //          always stick to edges
+        //      Restrict player to hit`s height? Stops edge "sinking"
+
 
         //***
         var color = Color.blue;
 
         downForce.y = 0.0f;
-        if (characterController.isGrounded)
+        /*if (characterController.isGrounded)
         {
             var groundLayer = LayerMask.GetMask("Environment");
             if (Physics.Raycast(transform.position, Vector3.down, characterController.height, groundLayer))
@@ -277,7 +283,7 @@ public class PlayerMovement : MonoBehaviour
                 color = Color.red;
                 downForce.y = -9.81f;
             }
-        }
+        }*/
         /*else if ( wasOnGround)
         {
             playerVelocity.y = characterController.velocity.y;
@@ -299,6 +305,109 @@ public class PlayerMovement : MonoBehaviour
                 downForce.y = -9.81f;
             }
         }*/
+        //***
+        /*if (characterController.isGrounded)
+        {
+            color = Color.red;
+            downForce.y = -9.81f;
+
+            var groundLayer = LayerMask.GetMask("Environment");
+            if (!Physics.Raycast(transform.position, Vector3.down, characterController.height, groundLayer))
+            {
+                // > Pixel walking
+                GetComponent<Debugger>().pixelWalking = true;
+
+                RaycastHit hit;
+                if (Physics.SphereCast(transform.position, characterController.radius, Vector3.down, out hit, characterController.height, groundLayer))
+                {
+                    //var normal = hit.transform.TransformDirection(hit.normal);
+
+                    //var dropDir = new Vector3(hit.normal.x, 0, hit.normal.z);
+                    //var dropDir = new Vector3(normal.x, 0, normal.z);
+                    //dropDir = hit.normal;
+                    //dropDir = normal;
+                    //dropDir = hit.transform.TransformDirection(dropDir);
+                    //Debug.DrawLine(hit.point, hit.point + dropDir, color, 5.0f);
+
+                    Vector3 dropDir = Vector3.zero;
+                    dropDir.x = hit.normal.x;
+                    //dropDir.y = hit.normal.y;
+                    dropDir.z = hit.normal.z;
+                    //dropDir.Normalize();
+                    //Vector3 pos = new Vector3(0, 5, -20);
+                    //Debug.DrawLine(pos, pos + dropDir, color, 5.0f);
+                    Debug.DrawLine(hit.point, hit.point + dropDir, color, 5.0f);
+
+                    // Remember; hit.point = point of collision; hit.transform.position = location of hit target
+
+                    //var edge = Quaternion.Euler(0, -90, 0) * dropDir; // left
+                    //Debug.DrawLine(hit.point, hit.point + edge, color, 5.0f);
+
+                    // Moving towards the drop
+                    var moveDir = playerVelocity;
+                    moveDir.y = 0;
+                    if (Vector3.Dot(dropDir, moveDir) > 0.1f)
+                    {
+                        color = Color.red;
+                        downForce.y = 0.0f;
+                    }
+
+                    // TODO;
+                    // dropdir is wrong on slopes
+
+                    Vector3 dir = hit.normal;
+                }
+            }
+            else
+            {
+                GetComponent<Debugger>().pixelWalking = false;
+
+                // what if pixel walking with platform below
+            }
+        }*/
+
+        //***
+        /*if (characterController.isGrounded)
+        {
+            var groundLayer = LayerMask.GetMask("Environment");
+            RaycastHit hit;
+            if (Physics.Raycast(transform.position, Vector3.down, out hit, characterController.height, groundLayer))
+            {
+                var slopeParallel = Vector3.Cross(-transform.right, hit.normal);
+
+                // Slope vector (player`s forward dir)
+                Debug.DrawLine(transform.position, transform.position + slopeParallel, color, 5.0f);
+            }
+        }*/
+
+        //***
+
+        // Sticks to edges whem approacing at angle but otherwise no bugs?
+        var horizontalVelocity = playerVelocity;
+        horizontalVelocity.y = 0;
+        if (characterController.isGrounded && horizontalVelocity.magnitude > 0.0f)
+        {
+            Vector3 fwdDir = new Vector3(playerVelocity.x, 0, playerVelocity.z);
+            //fwdDir.Normalize(); //used for predicted pos calc > normalize just for this calc
+            Vector3 sideDir = Vector3.Cross(fwdDir.normalized, Vector3.up);
+            sideDir *= characterController.radius;
+
+            var predictedPos = transform.position + fwdDir * Time.deltaTime;
+
+            var groundLayer = LayerMask.GetMask("Environment");
+            if (Physics.Raycast(predictedPos + sideDir, Vector3.down, characterController.height, groundLayer) ||
+                Physics.Raycast(predictedPos - sideDir, Vector3.down, characterController.height, groundLayer))
+            {
+                color = Color.red;
+                downForce.y = -9.81f; // *delta
+            }
+
+            var test = Vector3.down * characterController.height / 2;
+            //Debug.DrawLine(predictedPos + sideDir, predictedPos + sideDir +test, color, 5.0f);
+            //Debug.DrawLine(predictedPos - sideDir, predictedPos - sideDir +test, color, 5.0f);
+            //Debug.DrawLine(predictedPos - sideDir, predictedPos + sideDir, color, 5.0f);
+        }
+
         //***
 
         // Jumps can be queued
@@ -324,6 +433,7 @@ public class PlayerMovement : MonoBehaviour
         // Debug velocity vector
         // Vel vector and movement should match
         //Debug.DrawLine(transform.position, transform.position + playerVelocity * Time.deltaTime, Color.green, 5.0f);
+
         Debug.DrawLine(prevPos, transform.position, color, 5.0f);
         Debug.DrawLine(prevPos, prevPos + (Vector3.down * characterController.height / 2), color, 5.0f);
         prevPos = transform.position;
@@ -662,7 +772,7 @@ private void ThrusterMove()
         {
             //Debug.DrawLine(transform.position, transform.position + normal, Color.green, 2.0f); // Draw ALL normals
 
-            if (hit.normal == normal0)
+            if ( hit.normal == normal0)
             {
                 GetComponent<Debugger>().pixelWalking = false;
                 return;
