@@ -270,6 +270,14 @@ public class PlayerMovement : MonoBehaviour
         //          always stick to edges
         //      Restrict player to hit`s height? Stops edge "sinking"
 
+        // #8; Get edge normal
+        //      add reversed slope normal to edges normal
+        // --> slope dir
+
+        // ##
+        // Edge normal changes depending on what part of charctrl is touching it
+        // -> accurate edgedir vector isnt possible?
+
 
         //***
         var color = Color.blue;
@@ -398,14 +406,154 @@ public class PlayerMovement : MonoBehaviour
             if (Physics.Raycast(predictedPos + sideDir, Vector3.down, characterController.height, groundLayer) ||
                 Physics.Raycast(predictedPos - sideDir, Vector3.down, characterController.height, groundLayer))
             {
-                color = Color.red;
-                downForce.y = -9.81f; // *delta
+                //color = Color.red;
+                //downForce.y = -9.81f; // *delta
             }
 
             var test = Vector3.down * characterController.height / 2;
             //Debug.DrawLine(predictedPos + sideDir, predictedPos + sideDir +test, color, 5.0f);
             //Debug.DrawLine(predictedPos - sideDir, predictedPos - sideDir +test, color, 5.0f);
             //Debug.DrawLine(predictedPos - sideDir, predictedPos + sideDir, color, 5.0f);
+        }
+
+        //***
+        if (characterController.isGrounded)
+        {
+            //color = Color.red;
+            //downForce.y = -9.81f;
+
+            var groundLayer = LayerMask.GetMask("Environment");
+            if (!Physics.Raycast(transform.position, Vector3.down, characterController.height, groundLayer))
+            {
+                // > Pixel walking
+                //GetComponent<Debugger>().pixelWalking = true;
+
+                RaycastHit hit;
+                Vector3 edgeNormal;
+                Vector3 slopeNormal;
+                Vector3 fwdDir = new Vector3(playerVelocity.x, 0, playerVelocity.z);
+                Vector3 sideDir = Vector3.Cross(fwdDir.normalized, Vector3.up);
+                sideDir *= characterController.radius;
+                sideDir *= 1.5f;
+                /*if (Physics.Raycast(transform.position + sideDir, Vector3.down, out hit, characterController.height, groundLayer))
+                {
+                    edgeNormal = hit.normal;
+                    var hitpos = hit.point;
+
+                    // TESTING; not the best way to get the slope normal
+                    if (Physics.Raycast(transform.position + sideDir *1.5f, Vector3.down, out hit, characterController.height, groundLayer))
+                    {
+                        // Edge`s normal - slope`s normal
+                        var edgeDir = edgeNormal - hit.normal;
+
+                        Debug.DrawLine(hitpos, hitpos + edgeDir * 2, color, 5.0f);
+                    }
+
+                }
+                else if (Physics.Raycast(transform.position - sideDir, Vector3.down, out hit, characterController.height, groundLayer))
+                {
+                    edgeNormal = hit.normal;
+
+                    // TESTING; not the best way to get the slope normal
+                    if (Physics.Raycast(transform.position - sideDir * 1.5f, Vector3.down, out hit, characterController.height, groundLayer))
+                    {
+                        // Edge`s normal - slope`s normal
+                        var edgeDir = edgeNormal - hit.normal;
+                    }
+                }*/
+                if (Physics.SphereCast(transform.position, characterController.radius, Vector3.down, out hit, characterController.height, groundLayer))
+                {
+                    edgeNormal = hit.normal;
+                    var pos = hit.point;
+
+                    //Debug.DrawLine(pos, pos + edgeNormal, Color.black, 5.0f);
+
+                    if (Physics.Raycast(transform.position + sideDir, Vector3.down, out hit, characterController.height, groundLayer))
+                    {
+                        slopeNormal = hit.normal;
+                        var edgeDir = edgeNormal.normalized - slopeNormal.normalized;
+                        edgeDir.y = 0;
+                        //Debug.DrawLine(pos, pos + edgeDir, Color.green, 5.0f);
+                    }
+                    else if (Physics.Raycast(transform.position - sideDir, Vector3.down, out hit, characterController.height, groundLayer))
+                    {
+                        slopeNormal = hit.normal;
+                        var edgeDir = edgeNormal.normalized - slopeNormal.normalized;
+                        edgeDir.y = 0;
+                        //Debug.DrawLine(pos, pos + edgeDir, Color.green, 5.0f);
+                    }
+                }
+            }
+            else
+            {
+                //GetComponent<Debugger>().pixelWalking = false;
+            }
+        }
+
+        //***
+        // Disable downforce on first edge frame
+        if (characterController.isGrounded)
+        {
+            //color = Color.red;
+            //downForce.y = -9.81f;
+            var groundLayer = LayerMask.GetMask("Environment");
+            if (Physics.Raycast(transform.position, Vector3.down, characterController.height, groundLayer))
+            {
+                var fwdDir = new Vector3(playerVelocity.x, 0, playerVelocity.z);
+                var predictedPos = transform.position + fwdDir * Time.deltaTime;
+                if (!Physics.Raycast(predictedPos, Vector3.down, characterController.height, groundLayer))
+                {
+                    //color = Color.blue;
+                    //downForce.y = 0.0f;
+                    //playerVelocity.y = 0.0f;
+                }
+            }
+        }
+
+        //***
+
+        // Apply downforce if player is on the ground or pixel walking parallel with the ground
+        if (characterController.isGrounded)
+        {
+            RaycastHit hit;
+            var groundLayer = LayerMask.GetMask("Environment");
+            if (Physics.Raycast(transform.position, Vector3.down, characterController.height, groundLayer))
+            {
+                color = Color.red;
+                downForce.y = -9.81f;
+            }
+            else if (Physics.SphereCast(transform.position, characterController.radius, Vector3.down, out hit, characterController.height, groundLayer))
+            {
+                // Get direction of the edge
+                var closestPoint = hit.collider.bounds.ClosestPoint(transform.position); // Closest point on bounding box disregards shape of the ground
+                var edgeDir = transform.position - closestPoint;
+                edgeDir.y = 0;
+                edgeDir.Normalize();
+
+                // Moving towards the drop
+                var moveDir = playerVelocity;
+                moveDir.y = 0;
+                moveDir.Normalize();
+                if (Vector3.Dot(edgeDir, moveDir) > 0.2f)
+                {
+                    color = Color.blue;
+                    downForce.y = 0.0f;
+                }
+                else
+                {
+                    color = Color.red;
+                    downForce.y = -9.81f;
+                }
+
+                //Debug.DrawLine(closestPoint, closestPoint + edgeDir, Color.green, 5.0f);
+                //Debug.DrawLine(closestPoint, closestPoint + moveDir, Color.magenta, 5.0f);
+            }
+
+            // TODO;
+            // bugs with other surfaces close enough?
+            // might have to use predicted position
+            // + first air frame playerVelocity.y = characterController.velocity.y;
+            //      ie. going down slope and then dropping off -> smoother
         }
 
         //***
@@ -439,74 +587,74 @@ public class PlayerMovement : MonoBehaviour
         prevPos = transform.position;
     }
 
-//**************************************************
-private void DodgeMove()
-{
-    const float dodgeSpeed = 60.0f;
-    const float dodgeCooldown = 1.5f;
-
-    dodgeTimer += Time.deltaTime;
-
-    if (movementInputs.dodgeMove && dodgeTimer >= dodgeCooldown)
+    //**************************************************
+    private void DodgeMove()
     {
-        if (movementInputs.rightMove > 0.01f)
+        const float dodgeSpeed = 60.0f;
+        const float dodgeCooldown = 1.5f;
+
+        dodgeTimer += Time.deltaTime;
+
+        if (movementInputs.dodgeMove && dodgeTimer >= dodgeCooldown)
         {
-            playerVelocity += transform.right * dodgeSpeed;
-            dodgeTimer = 0;
-        }
-        if (movementInputs.rightMove < -0.01f)
-        {
-            playerVelocity -= transform.right * dodgeSpeed;
-            dodgeTimer = 0;
+            if (movementInputs.rightMove > 0.01f)
+            {
+                playerVelocity += transform.right * dodgeSpeed;
+                dodgeTimer = 0;
+            }
+            if (movementInputs.rightMove < -0.01f)
+            {
+                playerVelocity -= transform.right * dodgeSpeed;
+                dodgeTimer = 0;
+            }
         }
     }
-}
 
-//**************************************************
-private void ThrusterMove()
-{
-    float thrusterSpeed = 12.5f; // Movement speed while boosting
+    //**************************************************
+    private void ThrusterMove()
+    {
+        float thrusterSpeed = 12.5f; // Movement speed while boosting
 
 #if false
-    const float thrusterAcceleration = 14.5f;
-    float walkDeacceleration = 10.0f; // Deacceleration
+            const float thrusterAcceleration = 14.5f;
+            float walkDeacceleration = 10.0f; // Deacceleration
 
-    var inputDir = new Vector3(movementInputs.rightMove, 0, movementInputs.forwardMove);
-    inputDir = transform.TransformDirection(inputDir);
-    inputDir.Normalize();
-    inputDir *= thrusterAcceleration * Time.deltaTime;
+            var inputDir = new Vector3(movementInputs.rightMove, 0, movementInputs.forwardMove);
+            inputDir = transform.TransformDirection(inputDir);
+            inputDir.Normalize();
+            inputDir *= thrusterAcceleration * Time.deltaTime;
 
-    var playerVel = playerVelocity; // Copy movement vector
-    playerVel.y = 0.0f; // Ignore vertical movement
-    /*var wishVector = playerVel + inputDir;
-    if (wishVector.magnitude > thrusterSpeed)
-    {
-        //ApplyFriction(0.25f); // TODO: clean this
-        {
-            var t = 0.25f; // Scale
+            var playerVel = playerVelocity; // Copy movement vector
+            playerVel.y = 0.0f; // Ignore vertical movement
+            /*var wishVector = playerVel + inputDir;
+            if (wishVector.magnitude > thrusterSpeed)
+            {
+                //ApplyFriction(0.25f); // TODO: clean this
+                {
+                    var t = 0.25f; // Scale
 
-            var vec = playerVel;
-            vec.y = 0.0f;
-            var speed = vec.magnitude;
-            float drop = 0.0f;
+                    var vec = playerVel;
+                    vec.y = 0.0f;
+                    var speed = vec.magnitude;
+                    float drop = 0.0f;
 
-            var control = speed < walkDeacceleration ? walkDeacceleration : speed;
-            drop = control * groundFriction * Time.deltaTime * t;
+                    var control = speed < walkDeacceleration ? walkDeacceleration : speed;
+                    drop = control * groundFriction * Time.deltaTime * t;
 
-            var newspeed = speed - drop;
-            if (newspeed < 0)
-                newspeed = 0;
-            if (speed > 0)
-                newspeed /= speed;
+                    var newspeed = speed - drop;
+                    if (newspeed < 0)
+                        newspeed = 0;
+                    if (speed > 0)
+                        newspeed /= speed;
 
-            playerVel.x *= newspeed;
-            playerVel.z *= newspeed;
-        }
-    }
-    else
-    {
-        playerVel += inputDir;
-    }*/
+                    playerVel.x *= newspeed;
+                    playerVel.z *= newspeed;
+                }
+            }
+            else
+            {
+                playerVel += inputDir;
+            }*/
 
         //
         if (playerVel.magnitude > thrusterSpeed)
@@ -551,14 +699,14 @@ private void ThrusterMove()
         playerVelocity = playerVel;
 #endif
 
-//cant change direction until speed drops below boosting speed
-//speed drops slower if boosters are on?
-//maybe bit weird for boosting in wrong direction to maintain speed longer
-// req correct direction to maintain speed longer?
-//or currentvector + wishvector, but speed cant increase if > thrusterspeed
-//or reduce speed at constant rate if speed is over thrusterspeed (dodging)
+        //cant change direction until speed drops below boosting speed
+        //speed drops slower if boosters are on?
+        //maybe bit weird for boosting in wrong direction to maintain speed longer
+        // req correct direction to maintain speed longer?
+        //or currentvector + wishvector, but speed cant increase if > thrusterspeed
+        //or reduce speed at constant rate if speed is over thrusterspeed (dodging)
 
-//#if false
+        //#if false
         //TEST: direction changes are too immediate?
         const float thrusterAcceleration = 14.5f;
 
@@ -576,7 +724,7 @@ private void ThrusterMove()
 
         // Reset the gravity velocity
         playerVelocity.y = -gravity * Time.deltaTime;
-//#endif
+        //#endif
 
         //vector + vector
         // angle acceleration penalty?
@@ -750,6 +898,10 @@ private void ThrusterMove()
     //**************************************************
     void OnControllerColliderHit(ControllerColliderHit hit)
     {
+        //***
+        // slopedir = {normal.x, -normal.y, normal.z}
+        //***
+
         // Vel dir slope angle;
         var temp0 = playerVelocity;
         temp0.Normalize();
@@ -772,7 +924,7 @@ private void ThrusterMove()
         {
             //Debug.DrawLine(transform.position, transform.position + normal, Color.green, 2.0f); // Draw ALL normals
 
-            if ( hit.normal == normal0)
+            if (hit.normal == normal0)
             {
                 GetComponent<Debugger>().pixelWalking = false;
                 return;
@@ -786,7 +938,7 @@ private void ThrusterMove()
         //Debug.Log(slopeAngle);
         //Debug.DrawLine(hit.point, hit.point + hit.normal, Color.green, 2.0f); // Draw ground normal
 
-//#if false
+        //#if false
         // DEBUG/TESTING;
 
         // Get ground normal
@@ -815,7 +967,7 @@ private void ThrusterMove()
         Debug.Log(currentSlope);
 
         // If the slope is on a slope too steep and the player is Grounded the player is pushed down the slope.
-        if (currentSlope >= 25f && characterController.isGrounded )
+        if (currentSlope >= 25f && characterController.isGrounded)
         {
             //isSliding = true;
             transform.position += slopeParallel.normalized / 50;
@@ -833,7 +985,7 @@ private void ThrusterMove()
             }
         }*/
         //***************************
-//#endif
+        //#endif
     }
 
     //**************************************************
@@ -844,7 +996,7 @@ private void ThrusterMove()
         GUI.Label(new Rect(10, 230, 400, 100), "Turn speed: " + debugTurnSpeed, style);
 
         GUI.Label(new Rect(10, 250, 400, 100), "Torso/legs angle: " + debugAngle, style);
-        
+
         if (Mathf.Abs(debugAngle) >= turnrateAngleThreshold)
             GUI.Label(new Rect(10, 270, 400, 100), "Turn speed restricted", style);
     }
