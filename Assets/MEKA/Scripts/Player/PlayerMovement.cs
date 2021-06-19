@@ -280,9 +280,8 @@ public class PlayerMovement : MonoBehaviour
 
 
         //***
-        var color = Color.blue;
-
-        downForce.y = 0.0f;
+        //var color = Color.blue;
+        //downForce.y = 0.0f;
         /*if (characterController.isGrounded)
         {
             var groundLayer = LayerMask.GetMask("Environment");
@@ -511,30 +510,90 @@ public class PlayerMovement : MonoBehaviour
         }
 
         //***
-
+#if false
         // Apply downforce if player is on the ground or pixel walking parallel with the ground
         if (characterController.isGrounded)
         {
+            Vector3 fwdDir = new Vector3(playerVelocity.x, 0, playerVelocity.z);
+            var predictedPosition = transform.position + fwdDir * Time.deltaTime;
+            //predictedPosition = transform.position;
+
             RaycastHit hit;
             var groundLayer = LayerMask.GetMask("Environment");
-            if (Physics.Raycast(transform.position, Vector3.down, characterController.height, groundLayer))
+            if (Physics.Raycast(/*transform.position*/ predictedPosition, Vector3.down, characterController.height, groundLayer))
             {
                 color = Color.red;
                 downForce.y = -9.81f;
             }
-            else if (Physics.SphereCast(transform.position, characterController.radius, Vector3.down, out hit, characterController.height, groundLayer))
+            else if (Physics.SphereCast(/*transform.position*/ predictedPosition, characterController.radius, Vector3.down, out hit, characterController.height, groundLayer))
             {
                 // Get direction of the edge
-                var closestPoint = hit.collider.bounds.ClosestPoint(transform.position); // Closest point on bounding box disregards shape of the ground
-                var edgeDir = transform.position - closestPoint;
+                //var closestPoint = hit.collider.bounds.ClosestPoint(transform.position); // Closest point on bounding box disregards shape of the ground //is not rotated //also doesnt work with complex shapes
+                //var closestPoint = hit.collider.ClosestPoint(/*transform.position*/ predictedPosition); // wrong on slopes coz y; needs to be horizontally closest po
+
+                //*** EDGE VECTOR TEST
+                (Vector3, Vector3) points = (Vector3.zero, Vector3.zero);
+                (float, float) dists = (Mathf.Infinity, Mathf.Infinity);
+                //var verts = hit.transform.GetComponent<MeshFilter>().mesh.vertices;
+                var verts = hit.transform.GetComponent<MeshCollider>().sharedMesh.vertices; // would have to check if mesh or primitive -> manual calcs if latter
+                foreach (var v in verts)
+                {
+                    var vw = hit.transform.TransformPoint(v);
+                    //vw.y = 0;
+                    //Debug.DrawLine(vw, vw + Vector3.up, Color.green, 5.0f);
+
+                    var vdist = Vector3.Distance(/*transform.position*/ predictedPosition, vw);
+                    if (/*vdist > 1.0e-5 &&*/ dists.Item1 > vdist) // Skip if points overlap > cant get direction vector
+                    {
+                        points.Item1 = vw;
+                        dists.Item1 = vdist;
+
+                        // just save dir vec
+                    }
+                }
+                /*foreach (var v in verts) //clean this up
+                {
+                    var vw = hit.transform.TransformPoint(v);
+                    vw.y = 0;
+                    var vdist = Vector3.Distance(transform.position, vw);
+                    if (dists.Item2 > vdist && vw != points.Item1)
+                    {
+                        points.Item2 = vw;
+                        dists.Item2 = vdist;
+                    }
+                }*/
+                /*var vec = points.Item2 - points.Item1;
+                Debug.DrawLine(points.Item1, points.Item1 + vec, Color.cyan, 5.0f);
+                Debug.DrawLine(points.Item1, points.Item1 + Vector3.up, Color.blue, 5.0f);
+                Debug.DrawLine(points.Item2, points.Item2 + Vector3.up, Color.red, 5.0f);*/
+
+                var vec = points.Item1 - hit.point;
+                Debug.DrawLine(hit.point, hit.point + vec, Color.cyan, 5.0f);
+                Debug.DrawLine(points.Item1, points.Item1 + Vector3.up, Color.cyan, 5.0f);
+                //***
+
+                //var edgeDir = transform.position - closestPoint;
+                var edgeDir = points.Item1 - hit.point;
                 edgeDir.y = 0;
+                var overlap = edgeDir.magnitude < 1.0e-5; // corner
+                GetComponent<Debugger>().downForce = edgeDir.magnitude;
                 edgeDir.Normalize();
+                //GetComponent<Debugger>().downForce = edgeDir.magnitude;
+
+                var start = hit.point;
+                start.y = 0;
+                var end = points.Item1;
+                end.y = 0;
+                var dropDir = predictedPosition - (start + Vector3.Project(predictedPosition - start, end - start));
+                dropDir.y = 0;
+                dropDir.Normalize();
+                Debug.DrawLine(hit.point, hit.point + dropDir, Color.cyan, 5.0f);
 
                 // Moving towards the drop
                 var moveDir = playerVelocity;
                 moveDir.y = 0;
                 moveDir.Normalize();
-                if (Vector3.Dot(edgeDir, moveDir) > 0.2f)
+                if (Vector3.Dot(/*edgeDir*/ dropDir, moveDir) > 0.2f) // drop dir
                 {
                     color = Color.blue;
                     downForce.y = 0.0f;
@@ -544,8 +603,30 @@ public class PlayerMovement : MonoBehaviour
                     color = Color.red;
                     downForce.y = -9.81f;
                 }
+                /*if (Mathf.Abs(Vector3.Dot(edgeDir, moveDir)) > 0.8f) //ground dir
+                {
+                    color = Color.red;
+                    downForce.y = -9.81f;
+                }
+                else
+                {
+                    color = Color.blue;
+                    downForce.y = 0.0f;
+                }*/
 
-                //Debug.DrawLine(closestPoint, closestPoint + edgeDir, Color.green, 5.0f);
+                if (overlap)
+                {
+                    // on corner, check next predicted position
+                    predictedPosition = transform.position + fwdDir * Time.deltaTime * 2;
+                    if (Physics.SphereCast(predictedPosition, characterController.radius, Vector3.down, out hit, characterController.height, groundLayer))
+                    { 
+                    }
+
+                        // works but also means that downforce is always applied at corners
+                        // would be better to calculate edge vector with another vertex when points overlap
+                }
+
+                //Debug.DrawLine(transform.position, transform.position + edgeDir, Color.green, 5.0f);
                 //Debug.DrawLine(closestPoint, closestPoint + moveDir, Color.magenta, 5.0f);
             }
 
@@ -554,6 +635,104 @@ public class PlayerMovement : MonoBehaviour
             // might have to use predicted position
             // + first air frame playerVelocity.y = characterController.velocity.y;
             //      ie. going down slope and then dropping off -> smoother
+            // todo; get edge vector -> closestpoint
+            // what if points overlap
+        }
+#endif
+
+        //***
+        // SAME AS ABOVE
+        var color = Color.blue;
+        downForce.y = 0.0f;
+        if (characterController.isGrounded)
+        {
+            Vector3 fwdDir = new Vector3(playerVelocity.x, 0, playerVelocity.z) * Time.deltaTime;
+            var predictedPosition = transform.position + fwdDir;
+
+            RaycastHit hit;
+            var groundLayer = LayerMask.GetMask("Environment");
+            if (Physics.Raycast(predictedPosition, Vector3.down, characterController.height, groundLayer))
+            {
+                color = Color.red;
+                downForce.y = -9.81f;
+            }
+            else
+            {
+                // Pixelwalking
+                Vector3 npos = Vector3.zero; // debug
+                Vector3 ndir = Vector3.zero;
+
+                bool ApplyDownforce(Vector3 pos)
+                {
+                    if (Physics.SphereCast(pos, characterController.radius, Vector3.down, out hit, characterController.height, groundLayer))
+                    {
+                        Vector3 points = Vector3.zero;
+                        float dists = Mathf.Infinity;
+                        //var verts = hit.transform.GetComponent<MeshFilter>().mesh.vertices;
+                        var verts = hit.transform.GetComponent<MeshCollider>().sharedMesh.vertices; // would have to check if mesh or primitive -> manual calcs if latter
+                        foreach (var v in verts)
+                        {
+                            var vw = hit.transform.TransformPoint(v);
+                            var vdist = Vector3.Distance(pos, vw);
+                            if (dists > vdist)
+                            {
+                                points = vw;
+                                dists = vdist;
+
+                                // just save dir vec
+                            }
+                        }
+
+                        var edgeDir = points - hit.point;
+                        edgeDir.y = 0;
+                        if (edgeDir.magnitude < 1.0e-5) // corner > points overlap
+                        {
+                            color = Color.red;
+                            downForce.y = -9.81f;
+                            return false;
+                        }
+                        edgeDir.Normalize();
+
+                        var start = hit.point;
+                        start.y = 0;
+                        var end = points;
+                        end.y = 0;
+                        var dropDir = pos - (start + Vector3.Project(pos - start, end - start));
+                        dropDir.y = 0;
+                        dropDir.Normalize();
+
+                        //Debug.DrawLine(hit.point, hit.point + dropDir, Color.cyan, 5.0f);
+                        npos = hit.point; // debug
+                        ndir = dropDir;
+
+                        // Moving towards the drop
+                        var moveDir = playerVelocity;
+                        moveDir.y = 0;
+                        moveDir.Normalize();
+                        if (Vector3.Dot(dropDir, moveDir) > 0.2f)
+                        {
+                            color = Color.blue;
+                            downForce.y = 0.0f;
+                        }
+                        else
+                        {
+                            color = Color.red;
+                            downForce.y = -9.81f;
+                        }
+                    }
+                    return true;
+                }
+
+                if (!ApplyDownforce(predictedPosition))
+                {
+                    // Corner > try again at next position
+                    predictedPosition += fwdDir;
+                    ApplyDownforce(predictedPosition);
+                }
+
+                if (ndir.magnitude > 0.0f) // debug
+                    Debug.DrawLine(npos, npos + ndir, Color.cyan, 5.0f);
+            }
         }
 
         //***
@@ -576,7 +755,7 @@ public class PlayerMovement : MonoBehaviour
         characterController.Move((playerVelocity + downForce) * Time.deltaTime);
 
         // DEBUGGING
-        GetComponent<Debugger>().downForce = downForce.y;
+        //GetComponent<Debugger>().downForce = downForce.y;
 
         // Debug velocity vector
         // Vel vector and movement should match
