@@ -529,7 +529,7 @@ public class PlayerMovement : MonoBehaviour
             {
                 // Get direction of the edge
                 //var closestPoint = hit.collider.bounds.ClosestPoint(transform.position); // Closest point on bounding box disregards shape of the ground //is not rotated //also doesnt work with complex shapes
-                //var closestPoint = hit.collider.ClosestPoint(/*transform.position*/ predictedPosition); // wrong on slopes coz y; needs to be horizontally closest po
+                //var closestPoint = hit.collider.ClosestPoint(/*transform.position*/ predictedPosition); // wrong on slopes coz y; needs to be horizontally closest pos
 
                 //*** EDGE VECTOR TEST
                 (Vector3, Vector3) points = (Vector3.zero, Vector3.zero);
@@ -659,13 +659,18 @@ public class PlayerMovement : MonoBehaviour
             else
             {
                 // Pixelwalking
+
                 Vector3 npos = Vector3.zero; // debug
                 Vector3 ndir = Vector3.zero;
 
-                bool ApplyDownforce(Vector3 pos)
+                bool ApplyDownforce(Vector3 pos, bool first)
                 {
+                    //Debug.DrawLine(pos, pos + Vector3.down * characterController.height, Color.cyan, 5.0f);
+
                     if (Physics.SphereCast(pos, characterController.radius, Vector3.down, out hit, characterController.height, groundLayer))
                     {
+                        //Debug.DrawLine(hit.point, hit.point + Vector3.up * 2, Color.green, 5.0f);
+
                         Vector3 points = Vector3.zero;
                         float dists = Mathf.Infinity;
                         //var verts = hit.transform.GetComponent<MeshFilter>().mesh.vertices;
@@ -683,25 +688,100 @@ public class PlayerMovement : MonoBehaviour
                             }
                         }
 
-                        var edgeDir = points - hit.point;
-                        edgeDir.y = 0;
-                        if (edgeDir.magnitude < 1.0e-5) // corner > points overlap
-                        {
-                            color = Color.red;
-                            downForce.y = -9.81f;
-                            return false;
-                        }
-                        edgeDir.Normalize();
+                        var lineStart = hit.point;
+                        //Debug.DrawLine(hit.point, hit.point + Vector3.up, Color.red, 5.0f); //***
 
+                        //***
                         var start = hit.point;
                         start.y = 0;
                         var end = points;
                         end.y = 0;
-                        var dropDir = pos - (start + Vector3.Project(pos - start, end - start));
+                        var xxPos = pos;
+                        //***
+
+                        var edgeDir = points - hit.point;
+                        edgeDir.y = 0;
+                        if (edgeDir.magnitude < 1.0e-5) // points overlap > corner
+                        {
+                            //color = Color.red;
+                            //downForce.y = -9.81f;
+                            /*if (!first)
+                            {
+                                Debug.DrawLine(hit.point, hit.point + Vector3.up * 2, Color.black, 5.0f);
+                            }
+
+                            predictedPosition.y = hit.point.y;*/
+
+                            //return false;
+
+                            //***   
+                            //Debug.Log("first hit corner");
+
+                            // Try to get edge direction; Next predicted position at hit height > closest collider point
+                            var checkPos = pos + fwdDir;
+                            /*if (Physics.Raycast(predictedPosition, Vector3.down, characterController.height, groundLayer))
+                            {
+                                // Next predicted position is on the ground
+                                color = Color.red;
+                                downForce.y = -9.81f;
+                                return true;
+
+                                // can just check distance from pos to closestpoint instead?
+                            }*/
+
+                            //***
+                            /* "Basically the convex check mark will make a collider around your mesh without any 
+                             * 'indented' areas. Say your mesh is a jail door made out of bars. 
+                             * With a mesh collider you could still shoot between the bars. 
+                             * But if you check convex, unity will make a more optimized collider 
+                             * around all if the bars, but your not gonna be able to anything between them. " */
+
+                            checkPos.y = hit.point.y;
+                            var closestPoint = hit.collider.ClosestPoint(checkPos); // !!!only works on convex
+
+                            if (Vector3.Distance(checkPos, closestPoint) < 1.0e-5)
+                            {
+                                // Next predicted position is on the ground
+                                color = Color.red;
+                                downForce.y = -9.81f;
+                                return true;
+                            }
+
+                            edgeDir = points - closestPoint;
+                            edgeDir.y = 0;
+                            //Debug.DrawLine(closestPoint, closestPoint + Vector3.up * 2, Color.blue, 5.0f);
+                            lineStart = closestPoint;
+                            if (edgeDir.magnitude < 1.0e-5) // points overlap > corner
+                            {
+                                Debug.LogError("second hit corner");
+                                return false;
+                            }
+                            // >> Succeeded finding out edge directon vector. Continue with calcs
+                            start = closestPoint;
+                            start.y = 0;
+                            //end = points;
+                            //end.y = 0;
+                            xxPos = pos + fwdDir;
+
+                            // This doesnt work if 2nd check is on another colliders area?
+                            // edgedir is sometimes wrong at "corners"
+                            // colliders closest point might not be at the edge
+
+                            //***
+
+                        }
+                        //Debug.DrawLine(lineStart, lineStart + edgeDir, Color.red, 5.0f); //***
+                        edgeDir.Normalize();
+
+                        /*var start = hit.point;
+                        start.y = 0;
+                        var end = points;
+                        end.y = 0;*/
+                            var dropDir = xxPos - (start + Vector3.Project(xxPos - start, end - start)); // Pos - closest point on vector
                         dropDir.y = 0;
                         dropDir.Normalize();
 
-                        //Debug.DrawLine(hit.point, hit.point + dropDir, Color.cyan, 5.0f);
+                        Debug.DrawLine(lineStart, lineStart + dropDir, Color.cyan, 5.0f);
                         npos = hit.point; // debug
                         ndir = dropDir;
 
@@ -723,17 +803,74 @@ public class PlayerMovement : MonoBehaviour
                     return true;
                 }
 
-                if (!ApplyDownforce(predictedPosition))
+                /*if (!ApplyDownforce(predictedPosition, true))
                 {
                     // Corner > try again at next position
                     predictedPosition += fwdDir;
-                    ApplyDownforce(predictedPosition);
-                }
+                    if (!ApplyDownforce(predictedPosition, false))
+                    {
+                        Debug.Log("corner");
 
-                if (ndir.magnitude > 0.0f) // debug
-                    Debug.DrawLine(npos, npos + ndir, Color.cyan, 5.0f);
+                        //***
+                        // Sometimes both checks are too close to vertex
+                        // and no downforce is applied when it should be
+                        // Raycast hits upper platform first?
+
+                        // BUG;
+                        // its possible for both spherecast to hit same spot
+                        // but the bump isnt noticeable unless 2nd pos is far enough from flat -> slope point
+
+                        // Ignore collisions with already hit col?
+                        // Wont work if its part of the same object
+                        // plus raycast would hit top corner anyway?
+                        // > maybe filter out vertex
+                        // How to get next vertex? desired vertex isnt always closest
+                    }
+                }*/
+
+                // No need for 2nd raycast? do collider point check if first hits corner
+                ApplyDownforce(predictedPosition, true);
+
+                //if (ndir.magnitude > 0.0f) // debug
+                    //Debug.DrawLine(npos, npos + ndir, Color.cyan, 5.0f);
             }
         }
+
+        //***
+        // TEST; use currentpos + predictedpos to get edge dir
+        // instead of either + vertexpos
+
+        /*if (characterController.isGrounded)
+        {
+            Vector3 fwdDir = new Vector3(playerVelocity.x, 0, playerVelocity.z) * Time.deltaTime;
+            var predictedPosition = transform.position + fwdDir;
+            // = 0; -9 if dir calc ok
+
+            RaycastHit hit;
+            var groundLayer = LayerMask.GetMask("Environment");
+            if (!Physics.Raycast(predictedPosition, Vector3.down, characterController.height, groundLayer))
+            {
+                var startPos = Vector3.zero;
+                var endPos = Vector3.zero;
+
+                if (Physics.SphereCast(transform.position, characterController.radius, Vector3.down, out hit, characterController.height, groundLayer))
+                {
+                    startPos = hit.point;
+
+                    if (Physics.SphereCast(predictedPosition, characterController.radius, Vector3.down, out hit, characterController.height, groundLayer))
+                    {
+                        endPos = hit.point;
+
+                        var vec = endPos - startPos;
+                        vec.y = 0;
+                        var dist = vec.magnitude;
+                        vec.Normalize();
+                        if (dist >= fwdDir.magnitude * 0.95f)
+                            Debug.DrawLine(startPos, startPos + vec, Color.cyan, 5.0f);
+                    }
+                }
+            }
+        }*/
 
         //***
 
@@ -755,14 +892,14 @@ public class PlayerMovement : MonoBehaviour
         characterController.Move((playerVelocity + downForce) * Time.deltaTime);
 
         // DEBUGGING
-        //GetComponent<Debugger>().downForce = downForce.y;
+        GetComponent<Debugger>().downForce = downForce.y;
 
         // Debug velocity vector
         // Vel vector and movement should match
         //Debug.DrawLine(transform.position, transform.position + playerVelocity * Time.deltaTime, Color.green, 5.0f);
 
         Debug.DrawLine(prevPos, transform.position, color, 5.0f);
-        Debug.DrawLine(prevPos, prevPos + (Vector3.down * characterController.height / 2), color, 5.0f);
+        Debug.DrawLine(prevPos, prevPos + (Vector3.down * characterController.height / 1.85f), color, 5.0f);
         prevPos = transform.position;
     }
 

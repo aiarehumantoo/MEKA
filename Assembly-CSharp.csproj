@@ -94,6 +94,7 @@
     <Compile Include="Assets\MEKA\Scripts\Weapons\WeaponTypes\SFX\SingleBeamSFX.cs" />
     <Compile Include="Assets\MEKA\Scripts\Weapons\WeaponTypes\SecondaryWeapon.cs" />
     <Compile Include="Assets\MEKA\Scripts\Weapons\WeaponTypes\WeaponBase.cs" />
+    <Compile Include="Assets\MEKA\Scripts\_testing\CornerTest.cs" />
     <Compile Include="Assets\Test Assets\Scripts\Beam.cs" />
     <Compile Include="Assets\Test Assets\Scripts\Destroy.cs" />
     <Compile Include="Assets\Test Assets\Scripts\ProjectileV2.cs" />
