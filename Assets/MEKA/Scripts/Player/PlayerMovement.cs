@@ -653,8 +653,8 @@ public class PlayerMovement : MonoBehaviour
             var groundLayer = LayerMask.GetMask("Environment");
             if (Physics.Raycast(predictedPosition, Vector3.down, characterController.height, groundLayer))
             {
-                color = Color.red;
-                downForce.y = -9.81f;
+                //color = Color.red;
+                //downForce.y = -9.81f;
             }
             else
             {
@@ -829,7 +829,7 @@ public class PlayerMovement : MonoBehaviour
                 }*/
 
                 // No need for 2nd raycast? do collider point check if first hits corner
-                ApplyDownforce(predictedPosition, true);
+                //ApplyDownforce(predictedPosition, true);
 
                 //if (ndir.magnitude > 0.0f) // debug
                     //Debug.DrawLine(npos, npos + ndir, Color.cyan, 5.0f);
@@ -839,6 +839,7 @@ public class PlayerMovement : MonoBehaviour
         //***
         // TEST; use currentpos + predictedpos to get edge dir
         // instead of either + vertexpos
+        // overlap instead of spherecast?
 
         /*if (characterController.isGrounded)
         {
@@ -871,6 +872,96 @@ public class PlayerMovement : MonoBehaviour
                 }
             }
         }*/
+
+        //***
+        // iter 9000
+
+        if (characterController.isGrounded)
+        {
+            Vector3 fwdDir = new Vector3(playerVelocity.x, 0, playerVelocity.z) * Time.deltaTime;
+            var predictedPosition = transform.position + fwdDir;
+
+            RaycastHit hit;
+            var groundLayer = LayerMask.GetMask("Environment");
+            if (Physics.Raycast(transform.position, Vector3.down, characterController.height, groundLayer))
+            {
+                if (Physics.Raycast(predictedPosition, Vector3.down, characterController.height, groundLayer))
+                {
+                    // Ground > ground
+                    color = Color.red;
+                    downForce.y = -9.81f;
+                }
+                else
+                {
+                    // Ground > edge or air
+
+                    // ground > slope pixel walk > hop
+                    // would have to check if movedir == dropdir
+                    // thus making this iter pointless
+                }
+            }
+            else
+            {
+                if (Physics.Raycast(predictedPosition, Vector3.down, characterController.height, groundLayer))
+                {
+                    // Edge > ground
+                    color = Color.red;
+                    downForce.y = -9.81f;
+                }
+                else
+                {
+                    // Edge > edge or air
+
+                    /*var closestGround = Vector3.zero;
+                    var GroundDistance = Mathf.Infinity;
+                    foreach (var col in Physics.OverlapSphere(predictedPosition + Vector3.down * characterController.height / 2, characterController.radius, groundLayer) )
+                    {
+                        // Get closest point on ground
+                        var point = col.ClosestPoint(predictedPosition);
+                        var dist = Vector3.Distance(point, predictedPosition);
+                        if (GroundDistance > dist)
+                        {
+                            closestGround = point;
+                            GroundDistance = dist;
+                        }
+                    }
+                    if (GroundDistance <= characterController.radius)
+                    {
+                        // Edge > edge
+                        if (Physics.SphereCast(transform.position, characterController.radius, Vector3.down, out hit, characterController.height, groundLayer))
+                        {
+                            var edgeDir = closestGround - hit.point;
+                            edgeDir.y = 0;
+                        }
+                    }
+                    else
+                    {
+                        // No hits; Edge > air
+                    }*/
+
+                    // TEST;
+                    // No need to check for drop direction?
+                    // Apply downforce as long as predicted position is on the ground (edge)
+                    // Edge > edge
+                    //if (Physics.SphereCast(transform.position, characterController.radius, Vector3.down, out hit, characterController.height, groundLayer))
+                    if (Physics.OverlapSphere(predictedPosition + Vector3.down * characterController.height / 2, characterController.radius, groundLayer).Length > 0)
+                    {
+                        color = Color.red;
+                        downForce.y = -9.81f;
+
+                        // Doesnt work?
+                        // Sticks to edges (after first frame)
+
+                        // just get dropdir with pos?
+                        // (if possible to get right pos on ground) (w/o elevation)
+                    }
+                    else
+                    {
+                        // Edge > air
+                    }
+                }
+            }
+        }
 
         //***
 
