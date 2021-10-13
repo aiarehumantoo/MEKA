@@ -95,7 +95,7 @@ public class PlayerMovement : MonoBehaviour
     [HideInInspector]
     public GUIStyle style; // Debug; for displaying values on screen
 
-    private Debugger debugger;
+    //private Debugger debugger;
     public float debugAngle = 0.0f; // Debug variable
     private float debugTurnSpeed = 0.0f;
 
@@ -103,6 +103,13 @@ public class PlayerMovement : MonoBehaviour
     private Vector3 prevPos;
 
     private Vector3 downForce = Vector3.zero;
+
+    //**************************************************
+    public void SetSensitivity(float sensitivity)
+    {
+        xMouseSensitivity = sensitivity;
+        yMouseSensitivity = sensitivity;
+    }
 
     //**************************************************
     private void CameraControls()
@@ -147,8 +154,8 @@ public class PlayerMovement : MonoBehaviour
 
         // Update debug graphs
         debugTurnSpeed = Mathf.Round(Mathf.Abs(debugTurnSpeed));
-        debugger.UpdateDebugTurnRate(debugTurnSpeed);
-        debugger.UpdateDebugLegsAngle(Mathf.Abs(torsoAngle));
+        Debugger.UpdateDebugTurnRate(debugTurnSpeed);
+        Debugger.UpdateDebugLegsAngle(Mathf.Abs(torsoAngle));
         debugAngle = torsoAngle; // Save debug value
 
         // Turn legs towards 0.0 angle
@@ -220,7 +227,8 @@ public class PlayerMovement : MonoBehaviour
         style.normal.textColor = Color.green;
         style.fontStyle = FontStyle.BoldAndItalic;
 
-        debugger = GetComponent<Debugger>();
+        //debugger = GetComponent<Debugger>();
+        Debugger.SetCharacterController(characterController);
     }
 
     //**************************************************
@@ -983,7 +991,7 @@ public class PlayerMovement : MonoBehaviour
         characterController.Move((playerVelocity + downForce) * Time.deltaTime);
 
         // DEBUGGING
-        GetComponent<Debugger>().downForce = downForce.y;
+        //GetComponent<Debugger>().downForce = downForce.y;
 
         // Debug velocity vector
         // Vel vector and movement should match
@@ -1315,7 +1323,7 @@ public class PlayerMovement : MonoBehaviour
         temp0 = Quaternion.Euler(0, -90, 0) * temp0; // left
         var slopevec = Vector3.Cross(hit.normal, temp0);
         var slopeAngle = 90 - Vector3.Angle(Vector3.up, slopevec);
-        GetComponent<Debugger>().slopeAngle = slopeAngle;
+        //GetComponent<Debugger>().slopeAngle = slopeAngle;
 
         return;
 
@@ -1399,7 +1407,6 @@ public class PlayerMovement : MonoBehaviour
     private void OnGUI()
     {
         // FOR TESTING
-
         GUI.Label(new Rect(10, 230, 400, 100), "Turn speed: " + debugTurnSpeed, style);
 
         GUI.Label(new Rect(10, 250, 400, 100), "Torso/legs angle: " + debugAngle, style);

@@ -2,15 +2,54 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+using Utilities.DeveloperConsole.Commands;
+
 public class Debugger : MonoBehaviour
 {
     // Disable Field Unused warning
 #pragma warning disable 0414
 
+    //***
+    // Ensure an instance is present
+    private static Debugger _instance;
+    private static Debugger Instance
+    {
+        get
+        {
+            if (_instance == null)
+            {
+                _instance = FindObjectOfType<Debugger>();
+
+                if (_instance == null && Application.isPlaying)
+                {
+                    _instance = new GameObject("Debugger").AddComponent<Debugger>();
+                }
+            }
+            return _instance;
+        }
+    }
+    public static void ToggleDebugger()
+    {
+        Instance.ToggleUI();
+    }
+
+    public static void SetCharacterController(CharacterController controller)
+    {
+        Instance._controller = controller;
+    }
+    // or DeveloperConsoleBehaviour create in player script
+
+    //TODO;
+    //remove script from player
+
+    //***
+
     private CharacterController _controller;
 
     public GUIStyle style;
     string touching = "Null";
+
+    bool hide = true;
 
     // Debug variables
     private float debugTurn = 0;
@@ -21,23 +60,29 @@ public class Debugger : MonoBehaviour
     public float downForce = 0;
     public bool pixelWalking = false;
 
-    public void UpdateDebugTurnRate(float val)
+    public void ToggleUI()
     {
-        debugTurn = val;
+        hide = !hide;
+        DebugGUI.ToggleDebuiUI();
     }
 
-    public void UpdateDebugLegsAngle(float val)
+    public static void UpdateDebugTurnRate(float val)
     {
-        debugLegsAngle = val;
+        Instance.debugTurn = val;
     }
 
-    void Start()
+    public static void UpdateDebugLegsAngle(float val)
     {
-        _controller = GetComponent<CharacterController>();
+        Instance.debugLegsAngle = val;
+    }
+
+    /*void Start()
+    {
+        //_controller = GetComponent<CharacterController>();
 
         style.normal.textColor = Color.green; // Debug text color
         style.fontStyle = FontStyle.BoldAndItalic;
-    }
+    }*/
 
     void Awake()
     {
@@ -53,6 +98,9 @@ public class Debugger : MonoBehaviour
         DebugGUI.SetGraphProperties("PlayerLegsAngle", "Torso/legs angle", 0, 45, group++, Color.green, false);
 
         DebugGUI.SetGraphProperties("Slope angle", "Slope angle", 0, 45, group++, Color.green, false);
+
+        // Hide at start
+        DebugGUI.ToggleDebuiUI();
     }
 
     private void Update()
@@ -82,6 +130,16 @@ public class Debugger : MonoBehaviour
 
     private void OnGUI()
     {
+        if (hide)
+        {
+            return;
+        }
+
+        string touching = "Null";
+        GUIStyle style = new GUIStyle();
+        style.normal.textColor = Color.green; // Debug text color
+        style.fontStyle = FontStyle.BoldAndItalic;
+
         GUI.Label(new Rect(10, 120, 400, 100), "Touching: " + touching, style);
         GUI.Label(new Rect(10, 140, 400, 100), "OnGround: " + _controller.isGrounded, style);
 
@@ -100,18 +158,19 @@ public class Debugger : MonoBehaviour
     }
 
     // Get tag of the object charactercontroller is touching
-    void OnControllerColliderHit(ControllerColliderHit hit)
+    /*void OnControllerColliderHit(ControllerColliderHit hit)
     {
         touching = hit.collider.tag;
-    }
+    }*/
 
-    void OnDestroy()
+    /*void OnDestroy()
     {
         // Clean up our logs and graphs when this object is destroyed
+        // Creates new instance from OnDestroy() -> not cleaned up on close
         DebugGUI.RemoveGraph("smoothFrameRate");
         DebugGUI.RemoveGraph("frameRate");
 
         DebugGUI.RemovePersistent("smoothFrameRate");
         DebugGUI.RemovePersistent("frameRate");
-    }
+    }*/
 }

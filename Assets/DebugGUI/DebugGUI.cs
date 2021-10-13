@@ -54,6 +54,11 @@ public class DebugGUI : MonoBehaviour
     static bool LogsEnabled { get { return Instance.displayLogs && (Instance.drawInBuild || Application.isEditor); } }
     static bool GraphsEnabled { get { return Instance.displayGraphs && (Instance.drawInBuild || Application.isEditor); } }
 
+    public static void ToggleDebuiUI()
+    {
+        Instance.displayGraphs = !Instance.displayGraphs;
+    }
+
     /// <summary>
     /// Create or update an existing message with the same key.
     /// </summary>
