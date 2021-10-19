@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using System;
 
+using Utilities.DebugUI;
+
 namespace Utilities.DeveloperConsole.Commands
 {
     [CreateAssetMenu(fileName = "New Debug Command", menuName = "Utilities/DeveloperConsole/Commands/Debug Command")]
@@ -15,13 +17,7 @@ namespace Utilities.DeveloperConsole.Commands
 
             if (args[0].Equals("toggleui", StringComparison.OrdinalIgnoreCase)) {
 
-                // TEST
-                //var go = GameObject.FindGameObjectWithTag("Player");
-                //go.GetComponent<Debugger>().ToggleUI();
-
-                //FindObjectOfType<DebugGUI>().ToggleDebuiUI();
                 Debugger.ToggleDebugger();
-                //DebugGUI.ToggleDebuiUI();
                 return true;
             }
             return true;

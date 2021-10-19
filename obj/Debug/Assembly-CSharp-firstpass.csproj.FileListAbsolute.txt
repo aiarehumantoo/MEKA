@@ -288,3 +288,9 @@ D:\Program Files\Unity projects\MEKA\Temp\bin\Debug\UnityEngine.WindModule.xml
 D:\Program Files\Unity projects\MEKA\Temp\bin\Debug\UnityEngine.XRModule.xml
 D:\Program Files\Unity projects\MEKA\Temp\bin\Debug\UnityEditor.TestRunner.pdb
 D:\Program Files\Unity projects\MEKA\Temp\bin\Debug\UnityEngine.TestRunner.pdb
+D:\Program Files\Unity projects\MEKA\Temp\bin\Debug\Unity.InputSystem.dll
+D:\Program Files\Unity projects\MEKA\Temp\bin\Debug\Unity.TextMeshPro.dll
+D:\Program Files\Unity projects\MEKA\Temp\bin\Debug\Unity.TextMeshPro.Editor.dll
+D:\Program Files\Unity projects\MEKA\Temp\bin\Debug\Unity.InputSystem.pdb
+D:\Program Files\Unity projects\MEKA\Temp\bin\Debug\Unity.TextMeshPro.Editor.pdb
+D:\Program Files\Unity projects\MEKA\Temp\bin\Debug\Unity.TextMeshPro.pdb

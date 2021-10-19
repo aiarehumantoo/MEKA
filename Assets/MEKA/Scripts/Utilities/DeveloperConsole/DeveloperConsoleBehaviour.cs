@@ -15,6 +15,8 @@ namespace Utilities.DeveloperConsole
         [SerializeField] private GameObject uiCanvas = null;
         [SerializeField] private TMP_InputField inputField = null;
 
+        [SerializeField] private GameObject debuggerCanvas = null;
+
         private float pausedTimeScale;
 
         private static DeveloperConsoleBehaviour instance;

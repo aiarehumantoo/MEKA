@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityStandardAssets.Utility;  // Utility scripts
 
+//using Utilities.Camera;
+using Utilities.DebugUI;
+
 //=============================================
 
 // TODO:
@@ -62,8 +65,8 @@ public class PlayerMovement : MonoBehaviour
     private float playerTopVelocity = 0.0f;
 
     private float torsoAngle = 0.0f; // Angle between mech torso and legs. Used to limit turnrate
-    private float turnrateAngleThreshold = 45.0f; // At what angle turnrate cap kicks in
-    private float legsResetRate = 200.0f; // How fast legs reset towards torso
+    private const float turnrateAngleThreshold = 45.0f; // At what angle turnrate cap kicks in
+    private const float legsResetRate = 200.0f; // How fast legs reset towards torso
     #endregion
 
     #region HeadBob
@@ -154,8 +157,8 @@ public class PlayerMovement : MonoBehaviour
 
         // Update debug graphs
         debugTurnSpeed = Mathf.Round(Mathf.Abs(debugTurnSpeed));
-        Debugger.UpdateDebugTurnRate(debugTurnSpeed);
-        Debugger.UpdateDebugLegsAngle(Mathf.Abs(torsoAngle));
+        Debugger.DebugTurnRate = debugTurnSpeed;
+        Debugger.DebugLegsAngle = Mathf.Abs(torsoAngle);
         debugAngle = torsoAngle; // Save debug value
 
         // Turn legs towards 0.0 angle
@@ -228,7 +231,7 @@ public class PlayerMovement : MonoBehaviour
         style.fontStyle = FontStyle.BoldAndItalic;
 
         //debugger = GetComponent<Debugger>();
-        Debugger.SetCharacterController(characterController);
+        Debugger.Configure(characterController, turnrateAngleThreshold);
     }
 
     //**************************************************
@@ -434,6 +437,7 @@ public class PlayerMovement : MonoBehaviour
             {
                 // > Pixel walking
                 //GetComponent<Debugger>().pixelWalking = true;
+                Debugger.PixelWalking = true;
 
                 RaycastHit hit;
                 Vector3 edgeNormal;
@@ -494,6 +498,7 @@ public class PlayerMovement : MonoBehaviour
             else
             {
                 //GetComponent<Debugger>().pixelWalking = false;
+                Debugger.PixelWalking = false;
             }
         }
 
@@ -992,6 +997,7 @@ public class PlayerMovement : MonoBehaviour
 
         // DEBUGGING
         //GetComponent<Debugger>().downForce = downForce.y;
+        Debugger.DownForce = downForce.y;
 
         // Debug velocity vector
         // Vel vector and movement should match
@@ -1325,6 +1331,11 @@ public class PlayerMovement : MonoBehaviour
         var slopeAngle = 90 - Vector3.Angle(Vector3.up, slopevec);
         //GetComponent<Debugger>().slopeAngle = slopeAngle;
 
+        Debugger.SlopeAngle = slopeAngle;
+
+        // Get tag of the object charactercontroller is touching
+        Debugger.Touching = hit.collider.tag;
+
         return;
 
         // Works but maybe bit excessive
@@ -1341,11 +1352,11 @@ public class PlayerMovement : MonoBehaviour
 
             if (hit.normal == normal0)
             {
-                GetComponent<Debugger>().pixelWalking = false;
+                //GetComponent<Debugger>().pixelWalking = false;
                 return;
             }
         }
-        GetComponent<Debugger>().pixelWalking = true;
+        //GetComponent<Debugger>().pixelWalking = true;
         return;
 
         // Display ground normal (enable gizmos)
@@ -1404,7 +1415,8 @@ public class PlayerMovement : MonoBehaviour
     }
 
     //**************************************************
-    private void OnGUI()
+    // moved to debugger
+    /*private void OnGUI()
     {
         // FOR TESTING
         GUI.Label(new Rect(10, 230, 400, 100), "Turn speed: " + debugTurnSpeed, style);
@@ -1413,5 +1425,5 @@ public class PlayerMovement : MonoBehaviour
 
         if (Mathf.Abs(debugAngle) >= turnrateAngleThreshold)
             GUI.Label(new Rect(10, 270, 400, 100), "Turn speed restricted", style);
-    }
+    }*/
 }
