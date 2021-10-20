@@ -66,6 +66,9 @@
     <Compile Include="Assets\DebugGUI\Attributes\DebugGUIPrintAttribute.cs" />
     <Compile Include="Assets\DebugGUI\DebugGUI.cs" />
     <Compile Include="Assets\DebugGUI\Examples\DebugGUIExamples.cs" />
+    <Compile Include="Assets\MEKA\Scripts\Pickups\ArmourItem.cs" />
+    <Compile Include="Assets\MEKA\Scripts\Pickups\ArmourShard.cs" />
+    <Compile Include="Assets\MEKA\Scripts\Pickups\BasePickupItem.cs" />
     <Compile Include="Assets\MEKA\Scripts\Player\CockpitScript.cs" />
     <Compile Include="Assets\MEKA\Scripts\Player\HUD\Crosshair.cs" />
     <Compile Include="Assets\MEKA\Scripts\Player\HealthBase.cs" />
