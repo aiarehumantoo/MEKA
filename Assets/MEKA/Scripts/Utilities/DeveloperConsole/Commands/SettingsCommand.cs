@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using System;
 
+using Utilities.Settings;
+
 namespace Utilities.DeveloperConsole.Commands
 {
     [CreateAssetMenu(fileName = "New Settings Command", menuName = "Utilities/DeveloperConsole/Commands/Settings Command")]
@@ -17,6 +19,9 @@ namespace Utilities.DeveloperConsole.Commands
                         return false;
                     }
                     GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerMovement>().SetSensitivity(sens);
+
+                    // Save setting
+                    PlayerSettings.SaveFloat(PlayerSettings.FloatKeys.MouseSensitivity, sens);
                 }
             }
             return true;

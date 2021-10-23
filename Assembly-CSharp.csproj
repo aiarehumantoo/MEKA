@@ -86,6 +86,7 @@
     <Compile Include="Assets\MEKA\Scripts\Utilities\DeveloperConsole\Commands\SettingsCommand.cs" />
     <Compile Include="Assets\MEKA\Scripts\Utilities\DeveloperConsole\DeveloperConsole.cs" />
     <Compile Include="Assets\MEKA\Scripts\Utilities\DeveloperConsole\DeveloperConsoleBehaviour.cs" />
+    <Compile Include="Assets\MEKA\Scripts\Utilities\Settings\PlayerSettings.cs" />
     <Compile Include="Assets\MEKA\Scripts\Weapons\HeavyBolter.cs" />
     <Compile Include="Assets\MEKA\Scripts\Weapons\LightningGun.cs" />
     <Compile Include="Assets\MEKA\Scripts\Weapons\Mirv.cs" />

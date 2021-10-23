@@ -13,11 +13,4 @@ public class ArmourShard : ArmourItem
 
         armourAmount = 5.0f;
     }
-
-    protected override void GiveItem(GameObject player)
-    {
-        //base.GiveItem(player);
-
-        GiveArmour(player);
-    }
 }

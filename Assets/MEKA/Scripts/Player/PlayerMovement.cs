@@ -5,6 +5,7 @@ using UnityStandardAssets.Utility;  // Utility scripts
 
 //using Utilities.Camera;
 using Utilities.DebugUI;
+using Utilities.Settings;
 
 //=============================================
 
@@ -13,7 +14,7 @@ using Utilities.DebugUI;
 // Optimize raycasting (every usage. not just movement)
 
 // BUG; dodging off ledge sometimes slams player down on the ground below
-    // Should be fixed now that vertical velocity is reset
+// Should be fixed now that vertical velocity is reset
 
 // Dodge:
 // give speed + stop fiction?
@@ -56,6 +57,7 @@ public class PlayerMovement : MonoBehaviour
     private float xMouseSensitivity = 37.0f; // Horizontal sensitivity
     private float yMouseSensitivity = 37.0f; // Vertical sensitivity
     private float mouseYaw = 0.022f; //mouse yaw/pitch. Overwatch = 0.0066, Quake 0.022
+    private const float defaultMouseSensitivity = 15.0f;
 
     // Camera rotations
     private float mouseY = 0.0f;
@@ -208,6 +210,11 @@ public class PlayerMovement : MonoBehaviour
     //**************************************************
     private void Start()
     {
+        // Load mouse sensitivity
+        float mouseSens = PlayerSettings.GetFloat(PlayerSettings.FloatKeys.MouseSensitivity, defaultMouseSensitivity);
+        xMouseSensitivity = mouseSens;
+        yMouseSensitivity = mouseSens;
+
         // Enable camera / audio listener
         playerView = Camera.main;
         playerView.enabled = true;
