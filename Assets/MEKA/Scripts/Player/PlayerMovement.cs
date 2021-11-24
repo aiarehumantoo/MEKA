@@ -34,6 +34,10 @@ using Utilities.Settings;
 
 //=============================================
 
+/*#if !(DEVELOPMENT_BUILD || UNITY_EDITOR)
+     Debug.unityLogger.logEnabled = false; 
+#endif*/
+
 
 
 // Contains the command the user wishes upon the character
@@ -999,8 +1003,44 @@ public class PlayerMovement : MonoBehaviour
         // Save previous ground state
         wasOnGround = characterController.isGrounded;
 
+        //
+        var previousY = transform.position.y;
+
         // Move the controller
-        characterController.Move((playerVelocity + downForce) * Time.deltaTime);
+        characterController.Move((playerVelocity /*+ downForce*/) * Time.deltaTime);
+
+        // Snapping test
+        if (wasOnGround && !characterController.isGrounded)
+        {
+            if (previousY > transform.position.y)
+            {
+                // Moved down -> downwards slope or in air
+                // try to snap on ground
+
+                RaycastHit hit;
+                var groundLayer = LayerMask.GetMask("Environment");
+                var snapDistance = 9.81f; // * Time.deltaTime; // -gravity if absolute distance
+                if (Physics.SphereCast(transform.position, characterController.radius, Vector3.down, out hit, snapDistance, groundLayer))
+                {
+                    /*var snapHeight = hit.point.y + characterController.height / 2;
+                    //transform.position = new Vector3(transform.position.x, snapHeight, transform.position.z);
+
+                    var pos = new Vector3(transform.position.x, snapHeight, transform.position.z);
+                    Debug.Log("Snap");
+                    Debug.DrawLine(transform.position, pos, color, 5.0f);
+
+                    // Too high because slope + spherecast
+                    transform.position = new Vector3(transform.position.x, snapHeight, transform.position.z);
+                    Debug.DrawLine(transform.position, transform.position + transform.forward *5, Color.green, 5.0f);
+                    //Debug.Break();*/
+
+                    Vector3 t = new Vector3(0, -9.81f, 0); // doesnt work perfectly + Move() twice is bad for performance
+                    characterController.Move(t * Time.deltaTime);
+                    Debug.Log("Snap");
+                }
+            }
+        }
+        //***
 
         // DEBUGGING
         //GetComponent<Debugger>().downForce = downForce.y;

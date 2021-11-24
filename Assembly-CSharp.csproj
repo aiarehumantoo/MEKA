@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <LangVersion>latest</LangVersion>
+    <LangVersion>7.3</LangVersion>
   </PropertyGroup>
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -55,6 +55,7 @@
   <ItemGroup>
     <Compile Include="Assets\MEKA\Scripts\Weapons\RailGun.cs" />
     <Compile Include="Assets\MEKA\Scripts\_testing\CornerTest.cs" />
+    <Compile Include="Assets\MEKA\Scripts\Utilities\Timer\Timer.cs" />
     <Compile Include="Assets\MEKA\Scripts\Weapons\Projectiles\MirvProjectile.cs" />
     <Compile Include="Assets\Test Assets\Scripts\ProjectileV2.cs" />
     <Compile Include="Assets\Test Assets\Scripts\moveleftright.cs" />
@@ -102,6 +103,8 @@
     <Compile Include="Assets\MEKA\Scripts\Utilities\DeveloperConsole\Commands\ConsoleCommand.cs" />
     <Compile Include="Assets\Test Assets\Scripts\burstfiretest.cs" />
     <Compile Include="Assets\Test Assets\Scripts\testprojectile.cs" />
+    <Compile Include="Assets\MEKA\Scripts\Utilities\Timer\TimerBehaviour.cs" />
+    <Compile Include="Assets\MEKA\Scripts\_testing\SlopeTesting.cs" />
     <Compile Include="Assets\Test Assets\Scripts\groundvector.cs" />
     <Compile Include="Assets\MEKA\Scripts\Weapons\Mirv.cs" />
     <Compile Include="Assets\MEKA\Scripts\Utilities\DeveloperConsole\DeveloperConsole.cs" />

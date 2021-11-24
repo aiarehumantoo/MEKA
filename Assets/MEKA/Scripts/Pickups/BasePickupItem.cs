@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+using UnityEngine.Assertions;
+
 public class BasePickupItem : MonoBehaviour
 {
     // Respawn
@@ -19,6 +21,10 @@ public class BasePickupItem : MonoBehaviour
     protected virtual void Start()
     {
         meshRenderer = this.gameObject.GetComponent<MeshRenderer>();
+
+#if DEBUG
+        Assert.IsTrue(meshRenderer);
+#endif
     }
 
     protected virtual void GiveItem(GameObject player)
